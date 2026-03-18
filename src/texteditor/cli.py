@@ -13,6 +13,20 @@ except ModuleNotFoundError as e:
 
 from texteditor import TextEditor, UnsupportedCharacterError
 
+KEY_MAP = {
+    0: "",
+    curses.KEY_ENTER: "ENTER",
+    10: "ENTER",
+    curses.KEY_LEFT: "LEFT",
+    curses.KEY_RIGHT: "RIGHT",
+    curses.KEY_UP: "UP",
+    curses.KEY_DOWN: "DOWN",
+    curses.KEY_HOME: "HOME",
+    curses.KEY_END: "END",
+    curses.KEY_BACKSPACE: "BACKSPACE",
+    8: "BACKSPACE",
+    curses.KEY_DC: "DELETE"
+}
 
 def _movement_factory(editor: TextEditor):
     return {
@@ -32,9 +46,9 @@ def _keystroke(stdscr, editor: TextEditor, movement_dict: dict):
     key = stdscr.getch()
 
     if key == 27:
-        return True
+        return True, key
     elif _move(key, movement_dict):
-        return False
+        return False, key
     else:
         try:
             editor.insert(chr(key))
@@ -44,7 +58,7 @@ def _keystroke(stdscr, editor: TextEditor, movement_dict: dict):
         except UnsupportedCharacterError:
             # Simply ignore invalid characters
             pass
-        return False
+        return False, key
 
 
 def _move(key, movement_dict: dict):
@@ -54,7 +68,7 @@ def _move(key, movement_dict: dict):
     return False
 
 
-def _display(stdscr, editor: TextEditor):
+def _display(stdscr, editor: TextEditor, key):
     line_c, col_c = editor.cursor
     total_lines = 0
 
@@ -78,6 +92,7 @@ def _display(stdscr, editor: TextEditor):
             total_lines += 1
 
     stdscr.addstr(total_lines + 1, 0, f"Cursor: {editor.line_cursor}")
+    stdscr.addstr(total_lines + 2, 0, f"Key:    {KEY_MAP.get(key, chr(key).upper())}")
 
 
 def _render_with_cursor(stdscr, sub_line, col_c, offset, total_lines, display_line_nr, line_len, line_limit):
@@ -109,17 +124,22 @@ def _run_editor(stdscr, editor: TextEditor):
     stdscr.nodelay(True)  # prevent blocking
 
     movement_dict = _movement_factory(editor)
+    key = -1
+    last_key = 0  # initialize
 
     try:
         while True:
             stdscr.clear()
 
-            _display(stdscr, editor)
+            if key == -1:
+                key = last_key
+            _display(stdscr, editor, key)
+            last_key = key
 
             stdscr.refresh()
 
             try:
-                quit_flag = _keystroke(stdscr, editor, movement_dict)
+                quit_flag, key = _keystroke(stdscr, editor, movement_dict)
                 if quit_flag:
                     break
             except curses.error:
