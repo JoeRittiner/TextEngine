@@ -1,6 +1,17 @@
-import curses
+import argparse
+from pathlib import Path
+from typing import Optional, Union
 
-from text_editor import TextEditor, UnsupportedCharacterError
+try:
+    import curses
+except ModuleNotFoundError as e:
+    import sys
+
+    print(e.msg)
+    print("Try installing 'windows-curses'.")
+    sys.exit(1)
+
+from texteditor import TextEditor, UnsupportedCharacterError
 
 
 def _movement_factory(editor: TextEditor):
@@ -119,11 +130,40 @@ def _run_editor(stdscr, editor: TextEditor):
         pass
 
 
-def main():
-    editor = TextEditor(line_limit=20, text="Welcome!")
+def main_cli():
+    parser = argparse.ArgumentParser(description="Simple TextEditor CLI")
+    parser.add_argument("--file", type=Path, default=None, help="File to read")
+    parser.add_argument("--width", type=int, default=20, help="Width of display")
 
+    args = parser.parse_args()
+
+    # Return an exit code if needed
+    return main(args.file, args.width)
+
+
+def main(file: Optional[Union[Path, str]], width: int):
+    if isinstance(file, str):
+        file = Path(file)
+
+    content: str = ""
+    if file is None:
+        pass
+    elif not file.exists():
+        print(f"Error: File {file} not found!")
+        return 1
+    elif not file.is_file():
+        print(f"Error: File {file} not found!")
+        return 1
+    else:
+        content = file.read_text(encoding="utf-8")
+
+    editor = TextEditor(line_limit=width, text=content)
     curses.wrapper(_run_editor, editor)
 
+    return 0
 
-if __name__ == '__main__':
-    main()
+
+if __name__ == "__main__":
+    import sys  # Lazy in 3.15
+
+    sys.exit(main(None, 20))

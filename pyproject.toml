@@ -17,6 +17,5 @@ readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
 
-# [project.scripts]  # For later
-# texteditor-cli = "texteditor:main_cli"
-# import sys; from texteditor import main_cli; sys.exit(main_cli())
+[project.scripts]  # For later
+texteditor-demo = "texteditor:main_cli"
