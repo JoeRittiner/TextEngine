@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project]
+name = "texteditor"
+version = "0.0.1"
+dependencies = []  # None so far
+authors = [
+    { name = "Joe Rittiner" }
+]
+description = "Lovely Spam! Wonderful Spam!"  # Temporary
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+
+# [project.scripts]  # For later
+# texteditor-cli = "texteditor:main_cli"
+# import sys; from texteditor import main_cli; sys.exit(main_cli())

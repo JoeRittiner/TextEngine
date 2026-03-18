@@ -3,7 +3,7 @@ from typing import Tuple, Optional
 import pytest
 
 from interfaces import AbstractTestHorizontalMove, AbstractTestVerticalMove
-from src import TextEditor, UnsupportedCharacterError
+from src.texteditor import TextEditor, UnsupportedCharacterError
 
 UNSUPPORTED_CHARS = ["\a", "\b", "\f", "\r", "\t", "\v"]
 

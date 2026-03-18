@@ -1,6 +1,6 @@
 from textwrap import wrap
 
-from text_editor import TextEditor
+from .text_editor import TextEditor
 
 
 class TextEditorFancy(TextEditor):
