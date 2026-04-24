@@ -155,3 +155,9 @@ The component provides methods to retrieve the exact location of the cursor in d
 * **Logical Position:** Returned as an ``index`` integer, representing the absolute character offset in the raw
   underlying string.
 
+Functional Requirements
+-----------------------
+
+.. _f-req_text_manipulation:
+
+.. include:: f-req_text_manipulation.rst
