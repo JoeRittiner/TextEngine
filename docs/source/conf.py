@@ -21,6 +21,7 @@ sys.path.insert(0, os.path.abspath('../../tests'))
 
 extensions = [
     'sphinx.ext.napoleon',  # Allows NumPy style docstrings
+    'sphinx_needs'
 ]
 
 templates_path = ['_templates']
@@ -30,3 +31,13 @@ templates_path = ['_templates']
 
 html_theme = 'alabaster'
 html_static_path = ['_static']
+
+needs_id_regex = r"^[A-Z0-9-]{3,}"
+needs_id_length = 3
+
+needs_types = [
+    dict(directive="req", title="Requirement", prefix="FR-", style="node"),
+    dict(directive="freq_text", title="Text Manipulation", prefix="FR-TEXT-", style="node"),
+    dict(directive="nfreq", title="Requirement", prefix="NFR-", style="node"),
+    dict(directive="nreq", title="Requirement", prefix="NR-", style="node"),
+]

@@ -158,6 +158,18 @@ The component provides methods to retrieve the exact location of the cursor in d
 Functional Requirements
 -----------------------
 
-.. _f-req_text_manipulation:
+.. toctree::
+   :maxdepth: 2
 
-.. include:: f-req_text_manipulation.rst
+   f-req_text_manipulation
+
+Text Manipulation
+~~~~~~~~~~~~~~~~~
+
+See :doc:`f-req_text_manipulation`
+
+.. needtable::
+   :types: req
+   :columns: title;id
+   :style: table
+

@@ -1,51 +1,127 @@
 Text Manipulation
-~~~~~~~~~~~~~~~~~
+=================
 
-#. The component must maintain a mutable text buffer.
+Buffer
+------
 
-   * The text buffer must be protected from external modification.
-        No external operation can mutate the buffer.
+.. req:: The system must maintain an internal text buffer
+   :id: FR-TEXT-001
 
-#. Text must be manipulated at the components logical cursor position.
+.. req:: The text buffer must be mutable via system operations
+   :id: FR-TEXT-002
 
-   * No operation can bypass the cursor.
-   * The logical cursor position lies between characters, not on a character.
-   * The logical cursor position may be before the first character.
-   * The logical cursor position may be after the last character.
-   * The logical cursor position must always be between ``[0, len(text)]`` (inclusive).
-     * ``0`` is the position before the first character.
-     * ``len(text)`` is the position after the last character.
-     * The logical cursor position may not be negative.
+.. req:: The text buffer must not be externally mutable
+   :id: FR-TEXT-003
 
-#. The Component must support character insertion.
 
-   * Characters are inserted at the logical cursor position/ index.
-   * Multiple characters may be inserted in a single operation.
-   * Zero characters may be inserted in an operation.
-        This is a valid operation that does nothing.
-   * Inserting a character must insert it without replacing or removing existing characters.
-        Cursor position must remain unchanged, if nothing is inserted.
-   * After insertion, the logical cursor position must advance to immediately after the inserted character(s).
-   * Newline (``\n``) characters may be inserted.
+Cursor Model
+------------
 
-#. The component must support delete operation.
+.. req:: Text manipulation must occur at the logical cursor position
+   :id: FR-CURSOR-001
 
-   * Deletion must remove one character immediately after the logical cursor position. (If present)
-   * No more than one character may be deleted in a single operation.
-   * Newline (``\n``) characters may be deleted.
-   * After deletion, the cursor must remain at the same logical position.
-   * Deleting at the end of the text buffer must not remove any characters.
-   * Deleting an empty text buffer must not remove any characters.
+.. req:: No operation may bypass the logical cursor
+   :id: FR-CURSOR-002
 
-#. The component must support backspace operation.
+.. req:: The logical cursor position lies between characters
+   :id: FR-CURSOR-003
 
-   * Backspace must remove one character immediately before the logical cursor position. (If present)
-   * No more than one character may be removed in a single operation.
-   * Newline (``\n``) characters may be removed.
-   * Backspace at the start of the text buffer must not remove any characters.
-   * After deletion, the cursor must move to the logical position of the removed character. (Move left by one character.)
-   * Deleting an empty text buffer must not remove any characters.
+.. req:: The cursor may be positioned before the first character
+   :id: FR-CURSOR-004
 
-#. The component must not support selection.
-#. The component must not support Copy, Cut, and Paste operations.
-#. The component must not support Undo/Redo operations.
+.. req:: The cursor may be positioned after the last character
+   :id: FR-CURSOR-005
+
+.. req:: The cursor position must be within [0, len(text)]
+   :id: FR-CURSOR-006
+
+
+Insertion
+---------
+
+.. req:: The system must support string insertion
+   :id: FR-INSERT-001
+
+.. req:: Multiple characters may be inserted in a single operation
+   :id: FR-INSERT-002
+
+.. req:: Characters must be inserted at the cursor position
+   :id: FR-INSERT-003
+   :links: FR-CURSOR-001
+
+.. req:: Inserting zero characters must be a valid no-op
+   :id: FR-INSERT-004
+
+.. req:: Insertion must not overwrite existing characters
+   :id: FR-INSERT-005
+
+.. req:: After insertion, the cursor must move after inserted characters
+   :id: FR-INSERT-006
+
+.. req:: Newline characters may be inserted
+   :id: FR-INSERT-007
+
+
+Delete
+------
+
+.. req:: The system must support a delete operation
+   :id: FR-DELETE-001
+
+.. req:: Delete must remove one character after the cursor if present
+   :id: FR-DELETE-002
+   :links: FR-CURSOR-001
+
+.. req:: Delete must not remove more than one character per operation
+   :id: FR-DELETE-003
+
+.. req:: Delete must not change cursor position
+   :id: FR-DELETE-004
+
+.. req:: Deleting at end of buffer must be a no-op
+   :id: FR-DELETE-005
+
+.. req:: Deleting an empty buffer must be a no-op
+   :id: FR-DELETE-006
+
+.. req:: Newline characters may be deleted
+   :id: FR-DELETE-007
+
+
+Backspace
+---------
+
+.. req:: The system must support a backspace operation
+   :id: FR-BACKSPACE-001
+
+.. req:: Backspace must remove one character before the cursor if present
+   :id: FR-BACKSPACE-002
+   :links: FR-CURSOR-001
+
+.. req:: Backspace must not remove more than one character per operation
+   :id: FR-BACKSPACE-003
+
+.. req:: Backspace at start of buffer must be a no-op
+   :id: FR-BACKSPACE-004
+
+.. req:: After backspace, the cursor must move left by one position
+   :id: FR-BACKSPACE-005
+
+.. req:: Backspace on an empty buffer must be a no-op
+   :id: FR-BACKSPACE-006
+
+.. req:: Newline characters may be removed by backspace
+   :id: FR-BACKSPACE-007
+
+
+Out of Scope
+------------
+
+.. req:: The system must not support selection
+   :id: FR-SCOPE-001
+
+.. req:: The system must not support copy, cut, or paste
+   :id: FR-SCOPE-002
+
+.. req:: The system must not support undo or redo
+   :id: FR-SCOPE-003
