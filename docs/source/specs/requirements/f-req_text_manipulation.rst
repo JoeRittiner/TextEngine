@@ -5,29 +5,47 @@
 ------------------------------
 **Priority: High**
 
-The Text Buffer is the conceptual source of truth for document content. It is modeled as a sequence of [...] characters.
+The :term:`Text Buffer` is the conceptual source of truth for document content. It is modeled as a continuous sequence
+of :term:`characters <character>`.
 
-**State Model: The Buffer**
-The buffer represents text as a continuous sequence where positions exist between characters.
+The :term:`buffer <Text Buffer>` defines the observable state of the document. All text manipulation operations modify
+this state.
 
-**State Invariants**
+4.1.2 State Invariants
+----------------------
 
 .. inv:: Empty Buffer Definition
    :id: INV-TEXT-001
 
-   The buffer must always contain at least one logical line; an empty editor contains exactly one empty line.
+   The :term:`buffer <Text Buffer>` must always represent at least one :term:`logical line`.
+   An empty :term:`buffer <Text Buffer>` is defined as a :term:`buffer <Text Buffer>` containing zero
+   :term:`characters <character>`.
 
-4.1.2 Stimulus/Response Sequences
+4.1.3 Preconditions
+-------------------
+
+All operations in this section assume a valid :term:`cursor` position as defined in
+:doc:`Cursor Specification <f-req_cursor_movement>`.
+
+4.1.4 Stimulus/Response Sequences
 ---------------------------------
 
-* **Stimulus:** External system provides a string to :ref:`insert <insertion_specs>`.
-    **Response:** System updates the buffer at the current cursor position and shifts the cursor.
-* **Stimulus:** External system triggers :ref:`delete <delete_specs>`.
-    **Response:** System removes the character right of the cursor. The cursor position does not change.
-* **Stimulus:** External system triggers :ref:`backspace <backspace_specs>`.
-    **Response:** System removes the character preceding the cursor and updates the cursor position.
+* **Stimulus:** External system provides a sequence of :term:`characters <character>` to
+  :ref:`insert <insertion_specs>`.
 
-4.1.3 Functional Requirements
+  **Response:** The system inserts the :term:`characters <character>` at the current :term:`cursor` position and updates
+  the :term:`cursor` position accordingly.
+
+* **Stimulus:** External system triggers :ref:`delete <delete_specs>`.
+
+  **Response:** The system removes the :term:`character` immediately right of the :term:`cursor`, if present.
+
+* **Stimulus:** External system triggers :ref:`backspace <backspace_specs>`.
+
+  **Response:** The system removes the :term:`character` immediately left of the :term:`cursor`, if present, and updates
+  the :term:`cursor` position.
+
+4.1.5 Functional Requirements
 -----------------------------
 
 .. freq:: Text Buffer
@@ -42,7 +60,7 @@ The buffer represents text as a continuous sequence where positions exist betwee
    :id: FR-TEXT-002
    :tags: text
 
-   The text buffer must be mutable via system operations.
+   The :term:`text buffer <Text Buffer>` must only be modified through defined system operations.
 
 .. _insertion_specs:
 
@@ -54,43 +72,53 @@ Insertion
    :id: FR-INSERT-001
    :tags: insert
 
-   The system must support string insertion.
+   The system must support insertion of a sequence of
+:term:`characters <character>`.
 
 .. freq:: Insert at Cursor Position
-   :id: FR-INSERT-002
    :status: Open
+   :id: FR-INSERT-002
    :links: FR-CURSOR-001
    :tags: insert
 
-   Characters must be inserted at the cursor position.
+   :term:`Characters <character>` must be inserted at the current :term:`cursor` position.
 
 .. freq:: Inserting Nothing
    :status: Open
    :id: FR-INSERT-003
    :tags: insert
 
-   Inserting zero characters must be a valid no-op.
+   Inserting zero :term:`characters <character>` must result in a no-op.
 
 .. freq:: No Overwrite
    :status: Open
    :id: FR-INSERT-004
    :tags: insert
 
-   Insertion must not overwrite existing characters.
+   Insertion must not overwrite existing :term:`characters <character>`.
 
 .. freq:: Cursor Update After Insert
    :status: Open
    :id: FR-INSERT-005
    :tags: insert
 
-   After insertion, the cursor must move after inserted characters.
+   After insertion, the :term:`cursor` must be positioned immediately after the inserted :term:`characters <character>`.
 
 .. freq:: Inserting Newline
    :status: Open
    :id: FR-INSERT-006
    :tags: insert
 
-   Newline characters may be inserted.
+   Newline :term:`characters <character>` (``\n``) may be inserted and must introduce a :term:`logical line` boundary.
+
+.. freq:: Insert Atomicity
+   :status: Open
+   :id: FR-INSERT-007
+   :tags: insert
+
+   Inserting a sequence of multiple :term:`characters <character>` must produce the same resulting
+   :term:`buffer <Text Buffer>` state and :term:`cursor` position as inserting each :term:`character` of
+   the sequence sequentially.
 
 .. _delete_specs:
 
@@ -103,39 +131,35 @@ Delete
    :links: FR-CURSOR-001
    :tags: delete
 
-   The system must support a discrete delete operation that targets the character right of the cursor.
+   The system must support a delete operation that targets the :term:`character` immediately right of the
+   :term:`cursor`.
 
 .. freq:: Single Character Deletion
    :status: Open
    :id: FR-DELETE-002
    :links: FR-CURSOR-001
 
-   The delete operation must remove exactly one character immediately right of the cursor position,
-   if such a character is present.
+   The delete operation must remove exactly one :term:`character` immediately right of the :term:`cursor`, if such a
+   :term:`character` exists.
 
 .. freq:: Cursor Position on Delete
    :status: Open
    :id: FR-DELETE-003
-   
-   The delete operation must not change the cursor position.
+
+   The delete operation must not change the :term:`cursor` position.
 
 .. freq:: Delete Boundary Behavior
    :status: Open
    :id: FR-DELETE-004
 
-   If the cursor is positioned at the absolute end of the text buffer, the delete operation must result in a no-op.
-
-.. freq:: Empty Buffer Delete
-   :status: Open
-   :id: FR-DELETE-005
-
-   If the buffer is empty, (i.e. only one empty line) the delete operation must result in a no-op.
+   If no :term:`character` exists to the right of the :term:`cursor`, the delete operation must result in a no-op.
 
 .. freq:: Newline Character Deletion
    :status: Open
-   :id: FR-DELETE-006
+   :id: FR-DELETE-005
 
-   Newline characters can be removed by delete.
+   Deleting a newline :term:`character` must remove the :term:`logical line` boundary and merge the adjacent
+   :term:`logical lines`.
 
 .. _backspace_specs:
 
@@ -147,41 +171,35 @@ Backspace
    :id: FR-BACKSPACE-001
    :links: FR-CURSOR-001
 
-   The system must support a discrete backspace operation that targets the character left of the cursor.
+   The system must support a backspace operation that targets the :term:`character` immediately left of the
+   :term:`cursor`.
 
 .. freq:: Single Character Deletion
    :status: Open
    :id: FR-BACKSPACE-002
    :links: FR-CURSOR-001
 
-   The backspace operation must remove exactly one character immediately left of the cursor position,
-   if such a character is present.
+   The backspace operation must remove exactly one :term:`character` immediately left of the :term:`cursor`, if such a
+   :term:`character` exists.
 
-.. freq:: Cursor Position on backspace
+.. freq:: Cursor Position on Backspace
    :status: Open
    :id: FR-BACKSPACE-003
-   
-   The backspace operation must move the cursor position one character back, if a character is removed by the backspace
-   operation.
 
-.. freq:: backspace Boundary Behavior
+   If a :term:`character` is removed, the :term:`cursor` must move one position to the left.
+
+.. freq:: Backspace Boundary Behavior
    :status: Open
    :id: FR-BACKSPACE-004
 
-   If the cursor is positioned at the absolute start of the text buffer, the backspace operation must result in a no-op.
-
-.. freq:: Empty Buffer Backspace
-   :status: Open
-   :id: FR-BACKSPACE-005
-
-   If the buffer is empty (i.e. only one empty line), the backspace operation must result in a no-op.
+   If no :term:`character` exists to the left of the :term:`cursor`, the backspace operation must result in a no-op.
 
 .. freq:: Newline Character Backspace
    :status: Open
-   :id: FR-BACKSPACE-006
+   :id: FR-BACKSPACE-005
 
-   Newline characters can be removed by backspace.
-
+   Removing a newline :term:`character` via backspace must remove the :term:`logical line` boundary and merge the
+   adjacent :term:`logical lines <logical line>`.
 
 Out of Scope
 ~~~~~~~~~~~~
@@ -194,9 +212,9 @@ Out of Scope
 .. nfreq:: Clipboard Functions
    :id: FR-SCOPE-002
 
-   The system must not support copy, cut, or paste.
+   The system must not support copy, cut, or paste operations.
 
-.. nfreq:: Undo/ Redo
+.. nfreq:: Undo / Redo
    :id: FR-SCOPE-003
 
-    The system must not support undo or redo.
+   The system must not support undo or redo functionality.
