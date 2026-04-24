@@ -19,6 +19,8 @@ a single line of application code is written.
    :maxdepth: 2
    :caption: 1. Specifications & Design
 
+   specs/requirements/index
+
 .. toctree::
    :maxdepth: 2
    :caption: 2. Usage & Tutorials (Doc-Driven)
