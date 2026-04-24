@@ -1,5 +1,5 @@
-Software Requirements Specification: TextEditor
-===============================================
+Requirements Specification
+==========================
 
 1. Introduction
 ---------------
@@ -32,7 +32,7 @@ tracking, and visual wrapping remain deterministic and testable across any runti
 
 1.5 References
 ~~~~~~~~~~~~~~
-* None at this time.
+None at this time.
 
 
 2. Overall Description
@@ -67,6 +67,7 @@ by the underlying programming language. It is strictly agnostic to OS, hardware,
 2.5 Design and Implementation Constraints
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The system has explicitly defined non-responsibilities that constrain its design:
+
 * **User Input:** Does not capture keyboard or mouse events. All "typing" or "clicking" must be translated into API
   calls by the host application.
 * **Rendering & I/O:** Does not draw to the screen, manage windows, or perform file reading/writing.
@@ -106,14 +107,14 @@ The system provides a programmatic API for external systems. External applicatio
 (e.g., ``insert_char()``, ``move_cursor_up()``) and use retrieval interfaces to output the text state and cursor
 position in four distinct modes: Display Mode, Wrapped Mode, Logical Mode, and Raw Mode.
 
-4. System Features (Functional Requirements)
+4. Functional Requirements
 --------------------------------------------
-The functional requirements governing the state model (Text Buffer, Cursor "pipe" logic, Display Windows) and behavioral
-rules are detailed in the following subsystems.
+The functional requirements governing the conceptual state model (Text Buffer, Cursor "pipe" logic, Display Windows)
+and behavioral rules are detailed in the following subsystems.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Feature Specifications
+   :caption: Functional Requirements
 
    f-req_text_manipulation
    f-req_cursor_movement
@@ -139,15 +140,19 @@ mathematically deterministic to prevent lag during rapid host-application input 
 6. Edge Cases & Special Rules
 -----------------------------
 
-6.1 Special Characters Handling
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-* ``\n`` - Newline
-* ``\r`` - Will be either ignored or move the cursor to the start of the line.
-* ``\t`` - Insert four individual spaces.
-* ``\b`` - Backspace (Moves the cursor one position back, effectively deleting the last character).
-* ``\f`` - Form Feed (Moves the cursor to the next page).
-* ``\v`` - Vertical Tab (Moves the cursor vertically).
-* ``\a`` - Alert (Produces a bell sound).
+6.1 Special Characters
+~~~~~~~~~~~~~~~~~~~~~~
+========= =============== ================
+Character Description     Defined Behavior
+========= =============== ================
+``\n``    New Line        Insert a newline
+``\r``    Carriage Return None
+``\t``    Tab             Insert four individual spaces
+``\b``    Backspace       None
+``\f``    Form Feed       None
+``\v``    Vertical Tab    None
+``\a``    Alert           None
+========= =============== ================
 
 Appendix A: Glossary
 --------------------
