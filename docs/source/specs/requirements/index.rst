@@ -1,104 +1,85 @@
-Requirements
-============
+Software Requirements Specification: TextEditor
+===============================================
 
-Introduction
-------------
+1. Introduction
+---------------
 
-Purpose
-~~~~~~~
-
-This document specifies the functional and non-functional requirements for the :term:`TextEditor` component.
-The primary objective is to define the external behavior and state logic of the component as a discrete unit,
+1.1 Purpose
+~~~~~~~~~~~
+This document specifies the functional and non-functional requirements for the :term:`TextEditor` system.
+The primary objective is to define the external behavior and state logic of the system as a discrete unit,
 rather than its internal implementation or architectural patterns.
 
 This specification serves as the foundational "contract" for developers integrating the :term:`TextEditor` into larger
-applications. It ensures that text manipulation, cursor tracking, and visual wrapping remain deterministic and testable
-across any runtime environment.
+applications.
 
-Scope
-~~~~~
+1.2 Document Conventions
+~~~~~~~~~~~~~~~~~~~~~~~~
+This document defines requirements using a strict behavioral model. All functional requirements are prioritized equally
+unless otherwise specified.
 
-The :term:`TextEditor` is defined as a pure logic component. It maintains internal state regarding text content and
-positioning but produces no side effects beyond its own data structures.
+1.3 Intended Audience and Reading Suggestions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This document is intended for software developers, architects, and QA engineers who are integrating the
+:term:`TextEditor` system into host applications or writing test suites against it. Readers should begin with the
+**Overall Description** to understand the system's scope before reviewing the specific **System Features**.
 
-The scope of this specification includes:
+1.4 Product Scope
+~~~~~~~~~~~~~~~~~
+The :term:`TextEditor` is defined as a pure logic system. It maintains internal state regarding text content and
+positioning but produces no side effects beyond its own data structures. It ensures that text manipulation, cursor
+tracking, and visual wrapping remain deterministic and testable across any runtime environment.
 
-* ...
+1.5 References
+~~~~~~~~~~~~~~
+* None at this time.
 
-The scope of this specification does NOT include:
 
-* ...
+2. Overall Description
+-----------------------
 
-The system is defined as a pure logic component with no side effects beyond its internal state.
-It provides a structured representation of text and cursor position that can be consumed by external systems.
-
-The requirements focus on precise, testable behavior of text manipulation, cursor movement, etc. independent of any
-specific runtime environment or application context.
-
-Definitions
-~~~~~~~~~~~
-The following terminology is used throughout this document to ensure clarity.
-
-.. include:: req_glossary.rst
-
-System Overview
----------------
-
-The :term:`TextEditor` is a stateful, pure-logic component designed to provide deterministic text storage,
-cursor tracking, and visual layout calculations. The name "Text Editor" may be slightly misleading:
+2.1 Product Perspective
+~~~~~~~~~~~~~~~~~~~~~~~
+The name "Text Editor" may be slightly misleading (and may be changed in the future):
 it is not a full-featured desktop GUI application, but rather the underlying "engine" that models text editing behavior.
-
-The component operates by maintaining an internal state. External applications programmatically push commands
+The system operates by maintaining an internal state. External applications programmatically push commands
 (e.g., insert text, move cursor) to mutate this state, and subsequently request the resulting layout or cursor position.
 
-**Core Responsibilities:**
-
+2.2 Product Functions
+~~~~~~~~~~~~~~~~~~~~~
+The core responsibilities of the system include:
 * Storage and manipulation of text in a deterministic manner.
 * Tracking of cursor position relative to the text layout.
-* Calculation of :term:`visual lines <visual line>` based on a predefined maximum :term:`display width`.
-* Calculation of the visible :term:`viewport` based on a predefined :term:`display height`.
+* Calculation of :term:`visual lines <visual line>` based on a predefined maximum display width.
+* Calculation of the visible :term:`viewport` based on a predefined display height.
 
-**Explicit Non-Responsibilities:**
+2.3 User Classes and Characteristics
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The primary "users" of this system are **Host Applications** (and their developers).
+These host applications are responsible for translating physical user inputs (keyboard/mouse) into programmatic API
+calls to this system.
 
+2.4 Operating Environment
+~~~~~~~~~~~~~~~~~~~~~~~~~
+As a pure-logic mathematical system, the :term:`TextEditor` operates in any standard runtime environment supported
+by the underlying programming language. It is strictly agnostic to OS, hardware, or windowing managers.
+
+2.5 Design and Implementation Constraints
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The system has explicitly defined non-responsibilities that constrain its design:
 * **User Input:** Does not capture keyboard or mouse events. All "typing" or "clicking" must be translated into API
   calls by the host application.
 * **Rendering & I/O:** Does not draw to the screen, manage windows, or perform file reading/writing.
 * **Selection & Clipboard:** Does not handle text highlighting, selection, or copy/cut/paste operations
   (these must be simulated by the host application if required).
 
-State Model
------------
+2.6 Assumptions and Dependencies
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The internal state of the :term:`TextEditor` consists of the text content, the cursor position, and the parameters
-defining the display boundaries.
-
-Text Buffer
-~~~~~~~~~~~
-The component acts as the source of truth for the document's content. It exclusively supports **UTF-8** character
-encoding.
-
-Cursor
-~~~~~~
-The cursor operates strictly as a "pipe" or "insert" cursor, meaning it mathematically resides *between* characters,
-rather than *on* a character.
-
-For example, in the string "ab", the cursor can be at position 0 (before 'a'), position 1 (between 'a' and 'b'), or
-position 2 (after 'b').
-
-Display Model
-~~~~~~~~~~~~~
-The layout state is governed by two core parameters:
-
-* **Display Width:** A maximum width threshold. Text is not truncated; instead, :term:`logical lines <logical line>`
-  are wrapped into :term:`visual lines <visual line>` when they exceed this width. (Specific visual wrapping rules
-  are defined separately).
-* **Display Height (Window):** A maximum vertical threshold. When the total number of
-  :term:`visual lines <visual line>` exceeds this height, the component tracks a vertical offset to represent the
-  currently visible subset of text.
-
-Invariants
-~~~~~~~~~~
-The component guarantees the following state invariants at all times:
+2.6.1 Invariants
+~~~~~~~~~~~~~~~~
+* An empty editor is assumed to contain exactly one empty line.
+* The cursor is assumed to be strictly bound to existing text boundaries.
 
 * **Minimum Content:** There is always at least one :term:`logical line <logical line>`.
   An "empty" editor contains exactly one empty line.
@@ -107,69 +88,73 @@ The component guarantees the following state invariants at all times:
 * **Cursor Default State:** In an empty editor, the cursor is invariably positioned at origin coordinates:
   window ``(0,0)``, visual ``[0,0]``, and logical index ``0``.
 
-Behavioral Model
-----------------
 
-This section outlines how the component's state mutates in response to external commands and how it yields data.
+3. External Interface Requirements
+-----------------------------------
 
-Editing Operations
-~~~~~~~~~~~~~~~~~~
-The text buffer can be manipulated exclusively at the current cursor location.
-The primary operations are text insertion and text deletion. These operations permanently mutate the internal state.
+3.1 User Interfaces
+~~~~~~~~~~~~~~~~~~~
+None. The system does not have a GUI.
 
-Cursor Movement
-~~~~~~~~~~~~~~~
-The cursor can be commanded to move incrementally (Left, Right, Up, Down) or jump to boundaries (Home, End).
-
-Crucially, vertical cursor movement (Up/Down) operates entirely on the wrapped :term:`visual lines <visual line>`,
-rather than the underlying :term:`logical lines <logical line>`.
-
-Scrolling Behavior
-~~~~~~~~~~~~~~~~~~
-The display window's vertical offset updates *only* to keep the cursor visible. If a cursor movement would cause the
-cursor to exit the bounds of the current :term:`display height`, the window offset is recalculated to bring the cursor
-back into view with minimal scrolling. Scrolling is strictly cursor-driven.
-
-Output Behavior / Modes
+3.2 Hardware Interfaces
 ~~~~~~~~~~~~~~~~~~~~~~~
-Because the component does not render text itself, it provides a retrieval interface to output the text state in four
-distinct modes:
+None.
 
-* **Display Mode:** Returns only the :term:`visual lines <visual line>` that currently fit within the
-  :term:`display height` window.
-* **Wrapped Mode:** Returns all :term:`visual lines <visual line>` from the entire document, ignoring the display height
-  constraint.
-* **Logical Mode:** Returns all :term:`logical lines <logical line>` from the entire document.
-* **Raw Mode:** Returns the raw, unformatted text string as a continuous string.
+3.3 Software Interfaces
+~~~~~~~~~~~~~~~~~~~~~~~
+The system provides a programmatic API for external systems. External applications push commands to mutate state
+(e.g., ``insert_char()``, ``move_cursor_up()``) and use retrieval interfaces to output the text state and cursor
+position in four distinct modes: Display Mode, Wrapped Mode, Logical Mode, and Raw Mode.
 
-*Note: Newline characters (`\n`) are stripped and not returned in Display or Wrapped modes.
-They are only retained in Raw mode.*
-
-Cursor Reporting
-~~~~~~~~~~~~~~~~
-The component provides methods to retrieve the exact location of the cursor in different contextual coordinate systems:
-
-* **Display Position:** Returned as ``(x, y)``, representing the cursor's coordinates relative to the visible window.
-* **Visual Position:** Returned as ``[row, char]``, representing the cursor's location within the completely wrapped
-  text layout (absolute visual row).
-* **Logical Position:** Returned as an ``index`` integer, representing the absolute character offset in the raw
-  underlying string.
-
-Functional Requirements
------------------------
+4. System Features (Functional Requirements)
+--------------------------------------------
+The functional requirements governing the state model (Text Buffer, Cursor "pipe" logic, Display Windows) and behavioral
+rules are detailed in the following subsystems.
 
 .. toctree::
    :maxdepth: 2
+   :caption: Feature Specifications
 
    f-req_text_manipulation
+   f-req_cursor_movement
+   f-req_output_modes
+   f-req_state_access
 
-Text Manipulation
-~~~~~~~~~~~~~~~~~
 
-See :doc:`f-req_text_manipulation`
+5. Other Nonfunctional Requirements
+-----------------------------------
 
-.. needtable::
-   :types: req
-   :columns: title;id
-   :style: table
+5.1 Performance Requirements
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The system must ensure that text manipulation, cursor tracking, and visual wrapping remain highly performant and
+mathematically deterministic to prevent lag during rapid host-application input loops.
 
+5.2 Software Quality Attributes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+* **Testability:** Because the system produces no side effects beyond its internal state, it must be 100% unit-testable.
+* **Reliability:** State invariants must be guaranteed at all times
+  (e.g., the cursor can never move into negative indices or beyond the absolute end of the text buffer).
+
+
+6. Edge Cases & Special Rules
+-----------------------------
+
+6.1 Special Characters Handling
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+* ``\n`` - Newline
+* ``\r`` - Will be either ignored or move the cursor to the start of the line.
+* ``\t`` - Insert four individual spaces.
+* ``\b`` - Backspace (Moves the cursor one position back, effectively deleting the last character).
+* ``\f`` - Form Feed (Moves the cursor to the next page).
+* ``\v`` - Vertical Tab (Moves the cursor vertically).
+* ``\a`` - Alert (Produces a bell sound).
+
+Appendix A: Glossary
+--------------------
+.. include:: req_glossary.rst
+
+Indices and tables
+------------------
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
