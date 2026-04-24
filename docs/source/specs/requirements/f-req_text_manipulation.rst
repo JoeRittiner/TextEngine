@@ -13,29 +13,6 @@ Buffer
 .. req:: The text buffer must not be externally mutable
    :id: FR-TEXT-003
 
-
-Cursor Model
-------------
-
-.. req:: Text manipulation must occur at the logical cursor position
-   :id: FR-CURSOR-001
-
-.. req:: No operation may bypass the logical cursor
-   :id: FR-CURSOR-002
-
-.. req:: The logical cursor position lies between characters
-   :id: FR-CURSOR-003
-
-.. req:: The cursor may be positioned before the first character
-   :id: FR-CURSOR-004
-
-.. req:: The cursor may be positioned after the last character
-   :id: FR-CURSOR-005
-
-.. req:: The cursor position must be within [0, len(text)]
-   :id: FR-CURSOR-006
-
-
 Insertion
 ---------
 

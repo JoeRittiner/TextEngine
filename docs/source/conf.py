@@ -36,8 +36,8 @@ needs_id_regex = r"^[A-Z0-9-]{3,}"
 needs_id_length = 3
 
 needs_types = [
-    dict(directive="req", title="Requirement", prefix="FR-", style="node"),
-    dict(directive="freq_text", title="Text Manipulation", prefix="FR-TEXT-", style="node"),
-    dict(directive="nfreq", title="Requirement", prefix="NFR-", style="node"),
-    dict(directive="nreq", title="Requirement", prefix="NR-", style="node"),
+    dict(directive="inv", title="Invariant", prefix="INV-", style="node"),
+    dict(directive="freq", title="Requirement", prefix="FR-", style="node"),
+    dict(directive="nfreq", title="Non-Functional Requirement", prefix="NFR-", style="node"),
+    dict(directive="nreq", title="Non-Requirement", prefix="NR-", style="node"),
 ]
