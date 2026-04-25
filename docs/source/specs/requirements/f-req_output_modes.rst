@@ -33,8 +33,8 @@ These modes allow consumers to view the :term:`text buffer` as a raw string, a c
    :tags: mode, state
 
    For **Display Mode**, the output is a function of both the :term:`text buffer` state and the current :term:`viewport`
-   range. The output only remains identical if both the buffer content and the window boundaries (``window_start``) are
-   unchanged.
+   range. The output only remains identical if both the buffer content and the :term:`window` boundaries
+   (``window_start``) are unchanged.
 
 
 4.5.3 Preconditions
@@ -114,7 +114,7 @@ Display Mode
    :tags: display mode, mode
 
    The system must provide an interface to return only the subset of :term:`visual lines <visual line>` currently
-   visible within the :term:`viewport`.
+   visible within the :term:`window`.
 
    The number of lines returned must not exceed the ``display_height``, and the content must correspond to the range
    defined by ``window_start``.

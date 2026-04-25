@@ -30,7 +30,8 @@ Glossary
       index relative to the start of that line.
 
    Display Width
-      A system-wide constant defining the maximum number of :term:`characters <character>` permitted in a single :term:`Visual Line`.
+      A system-wide constant defining the maximum number of :term:`characters <character>` permitted in a single
+      :term:`Visual Line`.
 
    Visual Line
       A segment of a :term:`Logical Line` as it appears after :doc:`wrapping <f-req_text_wrapping>`.
@@ -41,24 +42,29 @@ Glossary
       A coordinate pair ``[v_row, v_col]`` where ``v_row`` is the zero-based :term:`Visual Line` index
       (calculated across the entire document) and v_col is the index relative to the start of that visual segment.
 
+   Window
+      A rectangular region of the screen that is used to display text limited by :term:`Display Height`.
+
+      The window contains a :term:`Viewport` padded by :term:`ScrollOff` lines.
+
    Display Height
       A system-wide constant defining the maximum number of :term:`Visual Lines <Visual Line>` that can be rendered in
-      the window simultaneously.
+      the  :term:`window` simultaneously.
 
    Window Start
-      The index of the first :term:`Visual Line` currently rendered at the top of the window.
+      The index of the first :term:`Visual Line` currently rendered at the top of the  :term:`window`.
 
    Display Line
-      A :term:`Visual Line` that is currently visible within the window boundaries
+      A :term:`Visual Line` that is currently visible within the  :term:`window` boundaries
       (i.e., its index is within the range ``[window_start, window_start + display_height]``).
 
    ScrollOff
       The minimum number of :term:`Visual Lines <Visual Line>` that must remain visible between the :term:`Cursor`
-      and the top/bottom edges of the window. This creates a "margin" that triggers scrolling before the cursor hits
+      and the top/bottom edges of the  :term:`window`. This creates a "margin" that triggers scrolling before the cursor hits
       the absolute edge of the display.
 
    Viewport
-      The interior subset of the window where the :term:`Cursor` is allowed to move without triggering a scroll.
+      The interior subset of the  :term:`window` where the :term:`Cursor` is allowed to move without triggering a scroll.
 
          * The top boundary is ``window_start + scrolloff``.
          * The bottom boundary is ``window_start + display_height - scrolloff``.
@@ -67,10 +73,10 @@ Glossary
       The vertical capacity of the :term:`Viewport`, calculated as: ``display_height - (2 * scrolloff)``.
 
    Window Coordinate
-      A coordinate pair ``[x, y]`` representing the :term:`Cursor`'s position relative to the visible window.
+      A coordinate pair ``[x, y]`` representing the :term:`Cursor`'s position relative to the visible  :term:`window`.
 
          * ``x`` is equivalent to the :term:`Visual Coordinate` ``v_col``.
-         * ``y`` is the vertical offset from the top of the window (``v_row - window_start``).
+         * ``y`` is the vertical offset from the top of the  :term:`window` (``v_row - window_start``).
 
    Cursor
       A marker representing the current insertion point. It bijectively maps to an :term:`Absolute Index`,
