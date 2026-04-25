@@ -106,7 +106,7 @@ Cursor Position & Coordinates
    :id: FR-CURSOR-002
    :tags: cursor, coordinates
 
-   The system must provide the :term:`cursor` as a Logical Coordinate ``[row, col]``.
+   The system must provide an interface to return the :term:`cursor` as a Logical Coordinate ``[row, col]``.
    A ``col`` value equal to the :term:`logical line` length represents the position immediately after the last
    character (before the newline delimiter).
 
@@ -115,8 +115,8 @@ Cursor Position & Coordinates
    :id: FR-CURSOR-003
    :tags: cursor, coordinates
 
-   The system must provide the :term:`cursor` as a Visual Coordinate ``[v_row, v_col]`` representing its location across
-   all wrapped :term:`visual lines <visual line>`.
+   The system must provide an interface to return the :term:`cursor` as a Visual Coordinate ``[v_row, v_col]``
+   representing its location across all wrapped :term:`visual lines <visual line>`.
    A ``v_col`` value equal to the :term:`visual line` length represents the position immediately after the last
    character on that visual segment.
 
@@ -125,8 +125,8 @@ Cursor Position & Coordinates
    :id: FR-CURSOR-004
    :tags: cursor, coordinates
 
-   The system must provide the :term:`cursor` as a Window Coordinate ``[x, y]`` representing its location within the
-   visible :term:`viewport`.
+   The system must provide an interface to return the :term:`cursor` as a Window Coordinate ``[x, y]`` representing its
+   location within the visible :term:`viewport`.
    An ``x`` value equal to ``display_width`` represents a position resting at the extreme right edge of the window.
 
 Edge Case: Boundary wrapping
