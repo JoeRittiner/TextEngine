@@ -94,7 +94,7 @@ Insertion
 .. freq:: Inserting Nothing
    :status: Open
    :id: FR-TEXT-013
-   :tags: insert
+   :tags: insert, no-op
 
    Inserting zero :term:`characters <character>` must result in a no-op.
 
@@ -162,7 +162,7 @@ Delete
 .. freq:: Delete Boundary Behavior
    :status: Open
    :id: FR-TEXT-024
-   :tags: delete
+   :tags: delete, no-op
 
    If no :term:`character` exists to the right of the :term:`cursor`, the delete operation must result in a no-op.
 

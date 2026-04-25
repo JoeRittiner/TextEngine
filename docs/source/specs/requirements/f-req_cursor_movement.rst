@@ -241,7 +241,7 @@ Boundary Behaviors
 .. freq:: Inoperative Extents
    :status: Open
    :id: FR-CURSOR-051
-   :tags: movement, boundary
+   :tags: movement, boundary, no-op
 
    Moving ``left`` at the absolute start of the text, or moving ``right`` at the absolute end of the text,
    must not alter the :term:`cursor` (No-Op).
