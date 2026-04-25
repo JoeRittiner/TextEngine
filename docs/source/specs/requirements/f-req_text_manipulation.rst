@@ -79,8 +79,7 @@ Insertion
    :id: FR-TEXT-011
    :tags: insert
 
-   The system must support insertion of a sequence of
-:term:`characters <character>`.
+   The system must support insertion of a sequence of :term:`characters <character>`.
 
 .. freq:: Insert at Cursor Position
    :status: Open
@@ -166,7 +165,7 @@ Delete
    :id: FR-TEXT-025
 
    Deleting a newline :term:`character` must remove the :term:`logical line` boundary and merge the adjacent
-   :term:`logical lines`.
+   :term:`logical lines <logical line>`.
 
 .. _backspace_specs:
 

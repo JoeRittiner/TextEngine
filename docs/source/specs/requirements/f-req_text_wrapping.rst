@@ -14,7 +14,7 @@ This mechanism determines the mapping between the Absolute Index and Visual Coor
 :doc:`Cursor Specification <f-req_cursor_movement>`.
 
 .. note::
-   The current implementation uses "Character Wrapping" (breaking at the exact :term:`display width boundary`).
+   The current implementation uses "Character Wrapping" (breaking at the exact :term:`display width` boundary).
    Future iterations may introduce "Word Wrapping" logic.
 
 4.3.2 State Invariants

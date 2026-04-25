@@ -40,7 +40,7 @@ The visible window range is automatically updated in response to :term:`cursor` 
    :id: INV-VIEW-003
    :tags: viewport, boundaries
 
-   The visible window is defined by a ``window_start`` index (representing the first visible :term:`visual line` index).
+   The visible window is defined by a :term:`window start` index (representing the first visible :term:`visual line` index).
    The window must always be contained within the available :term:`visual lines <visual line>`.
    The valid range is:
 
@@ -70,16 +70,16 @@ The system requires an initialized :term:`text buffer` that has been successfull
   **Response:** The system requires no scrolling action; the window remains unchanged.
 
 * **Stimulus:** The :term:`cursor` is moved to a position outside the current :term:`viewport`
-  (into the scrolloff region or beyond).
+  (into the :term:`scrollOff` region or beyond).
 
-  **Response:** The system adjusts ``window_start`` by the minimal amount required to include the new :term:`cursor`
-  position within the :term:`viewport` (respecting document boundaries).
+  **Response:** The system adjusts the :term:`window start` by the minimal amount required to include the new
+  :term:`cursor` position within the :term:`viewport` (respecting document boundaries).
 
 * **Stimulus:** Text is deleted, reducing the total number of :term:`visual lines <visual line>` such that the current
-  ``window_start`` violates :need:`INV-VIEW-003`.
+  :term:`window start` violates :need:`INV-VIEW-003`.
 
-  **Response:** The system automatically shifts ``window_start`` upwards (decreasing the value) until the window bounds
-  are valid again.
+  **Response:** The system automatically shifts the :term:`window start` upwards (decreasing the value) until the window
+  bounds are valid again.
 
 4.4.5 Functional Requirements
 -----------------------------
@@ -97,7 +97,7 @@ The system requires an initialized :term:`text buffer` that has been successfull
    :id: FR-VIEW-002
    :tags: viewport, scrolling
 
-   When adjusting the window to satisfy :need:`FR-VIEW-001`, the system must change the ``window_start`` index by the
+   When adjusting the window to satisfy :need:`FR-VIEW-001`, the system must change the :term:`window start` index by the
    absolute minimum amount required to bring the target :term:`visual line` back into the :term:`viewport`.
 
 .. freq:: Non-Destructive Scrolling
@@ -105,7 +105,7 @@ The system requires an initialized :term:`text buffer` that has been successfull
    :tags: viewport, scrolling
    :links: FR-CURSOR-004
 
-   Scrolling operations must strictly adjust the ``window_start`` index. They must be a purely visual mechanism and
+   Scrolling operations must strictly adjust the :term:`window start` index. They must be a purely visual mechanism and
    must not change the Absolute Index, Logical or Visual Coordinates of the :term:`cursor`,
    nor modify the :term:`text buffer`.
 

@@ -4,77 +4,77 @@ Glossary
 .. glossary::
 
    Character
-      A character is defined as a Unicode grapheme cluster (i.e. the smallest user-perceived unit of text).
+      The smallest user-perceived unit of text, defined as a single Unicode grapheme cluster.
 
 
    Text Buffer
-      A Text Buffer is a continuous sequence of :term:`characters <character>`.
+      A continuous, ordered sequence of :term:`characters <character>`.
+      It serves as the primary data source for all system operations.
 
-      .. note:: A Text Buffer is a conceptual construct and does not necessarily represent any internal data structure
-                or system components.
+      .. note:: The buffer is a conceptual construct; requirements do not dictate its internal implementation
+         (e.g., Gap Buffer, Rope, or String).
 
-
-   Cursor
-      The cursor is a marker that represents the current position of the user's input within the :term:`Text Buffer`.
-
-      .. note:: The cursor is a conceptual construct and does not necessarily represent any internal data structure
-                or system components.
-
+   Absolute Index
+      A zero-based integer representing a specific position within the :term:`Text Buffer`,
+      ranging from 0 to len(text). It is the "source of truth" for all text manipulation.
 
    Logical Line
-      Logical lines are derived by splitting the :term:`Text Buffer` at newline characters (``\n``).
-      A newline character defines a logical line boundary.
+      A segment of text within the :term:`Text Buffer` delimited by newline characters (``\n``).
 
-      Logical lines are independent of screen width.
+         * Logical lines are independent of :term:`Display Width`.
+         * An empty buffer contains exactly one empty logical line.
+         * A buffer containing only ``\n`` contains two empty logical lines.
 
-      Examples:
-         * ``""`` represents one empty logical line.
-         * ``"\n"`` represents two empty logical lines.
-         * ``"This is a very long line that may wrap."`` represents one logical line.
-         * ``"\nThis is a line.\nThis is another line.\n"`` represents _four_ logical lines.
-
+   Logical Coordinate
+      A coordinate pair ``[row, col]`` where ``row`` is the zero-based :term:`Logical Line` index and ``col`` is the
+      index relative to the start of that line.
 
    Display Width
-      The number of :term:`characters <character>` that can be shown in a single :term:`display line`.
+      A system-wide constant defining the maximum number of :term:`characters <character>` permitted in a single :term:`Visual Line`.
 
    Visual Line
-      A subset of a :term:`logical line` that fits within the :term:`display width`.
+      A segment of a :term:`Logical Line` as it appears after :doc:`wrapping <f-req_text_wrapping>`.
 
-      Example with ``display_width = 15``::
+         * If a :term:`Logical Line` length exceeds the :term:`Display Width`, it is split into multiple visual lines.
 
-
-         ""
-         "This is a line."
-         "This is another"
-         " line."
-         ""
-
+   Visual Coordinate
+      A coordinate pair ``[v_row, v_col]`` where ``v_row`` is the zero-based :term:`Visual Line` index
+      (calculated across the entire document) and v_col is the index relative to the start of that visual segment.
 
    Display Height
-      The number of :term:`visual lines <visual line>` that can be shown at once.
+      A system-wide constant defining the maximum number of :term:`Visual Lines <Visual Line>` that can be rendered in
+      the window simultaneously.
 
+   Window Start
+      The index of the first :term:`Visual Line` currently rendered at the top of the window.
 
    Display Line
-      A :term:`visual line` that is currently visible in the window.
+      A :term:`Visual Line` that is currently visible within the window boundaries
+      (i.e., its index is within the range ``[window_start, window_start + display_height]``).
 
-
-   Scrolloff
-      The minimum number of :term:`visual lines <visual line>` that must remain visible above and below the cursor,
-      unless near the start or end of the file.
-
+   ScrollOff
+      The minimum number of :term:`Visual Lines <Visual Line>` that must remain visible between the :term:`Cursor`
+      and the top/bottom edges of the window. This creates a "margin" that triggers scrolling before the cursor hits
+      the absolute edge of the display.
 
    Viewport
-      The range of :term:`visual lines <visual line>` where the cursor is allowed to move without scrolling.
+      The interior subset of the window where the :term:`Cursor` is allowed to move without triggering a scroll.
 
-      If the cursor moves inside the :term:`viewport`, no scrolling occurs.
-      If the cursor leaves the :term:`viewport`, the window scrolls to bring it back.
-
+         * The top boundary is ``window_start + scrolloff``.
+         * The bottom boundary is ``window_start + display_height - scrolloff``.
 
    Viewport Height
-      Calculated as: ``display_height - 2 * scrolloff``.
+      The vertical capacity of the :term:`Viewport`, calculated as: ``display_height - (2 * scrolloff)``.
 
-      Example with ``display_height = 20`` and ``scrolloff = 3``::
+   Window Coordinate
+      A coordinate pair ``[x, y]`` representing the :term:`Cursor`'s position relative to the visible window.
 
-         [3 lines top margin]
-         [14 line viewport]
-         [3 lines bottom margin]
+         * ``x`` is equivalent to the :term:`Visual Coordinate` ``v_col``.
+         * ``y`` is the vertical offset from the top of the window (``v_row - window_start``).
+
+   Cursor
+      A marker representing the current insertion point. It bijectively maps to an :term:`Absolute Index`,
+      a :term:`Logical Coordinate`, a :term:`Visual Coordinate`, and a :term:`Window Coordinate`.
+
+   TextEditor
+      The System.

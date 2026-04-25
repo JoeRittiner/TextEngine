@@ -123,6 +123,7 @@ and behavioral rules are detailed in the following subsystems.
    f-req_text_wrapping
    f-req_viewport
    f-req_output_modes
+   req_glossary
 
 
 5. Other Nonfunctional Requirements
@@ -156,10 +157,6 @@ Character Description     Defined Behavior
 ``\v``    Vertical Tab    None
 ``\a``    Alert           None
 ========= =============== ================
-
-Appendix A: Glossary
---------------------
-.. include:: req_glossary.rst
 
 Indices and tables
 ------------------
