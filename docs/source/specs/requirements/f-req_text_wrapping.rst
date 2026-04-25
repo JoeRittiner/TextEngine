@@ -81,10 +81,13 @@ All wrapping logic assumes a valid :term:`text buffer` as defined in
 .. freq:: Break Logic (Character-Based)
    :id: FR-WRAP-003
    :tags: wrap
+   :links: FR-CURSOR-010
 
    A :term:`logical line` must be split into :term:`visual lines <visual line>` such that:
       * Each :term:`visual line` (except potentially the last one) has a length exactly equal to the :term:`display width`.
-      * The final :term:`visual line` of a :term:`logical line` has a length of ``logical_line_length % display_width``.
+      * The final :term:`visual line` of a :term:`logical line` has a length of ``display_width`` if
+        ``logical_line_length % display_width == 0``. Otherwise, it has a length of
+        ``logical_line_length % display_width``. (This behavior reflects :need:`FR-CURSOR-010`.)
 
 .. freq:: Line Isolation
    :id: FR-WRAP-004
@@ -98,7 +101,7 @@ All wrapping logic assumes a valid :term:`text buffer` as defined in
    :tags: wrap
 
    A :term:`logical line` with zero characters (including and excluding newlines) must still result in exactly one
-   :term:`visual line` with a length of zero to provide a valid :term:`cursor` position.
+   :term:`visual line` with a length of zero.
 
 
 Out of Scope
