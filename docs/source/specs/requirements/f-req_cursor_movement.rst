@@ -1,20 +1,27 @@
-4.1 Cursor & Movement
+4.2 Cursor & Movement
 =====================
 
-4.1.1 Description
------------------
+4.2.1 Description and Priority
+------------------------------
 
 .. Provide a short description of the feature and indicate whether it is of High, Medium, or Low priority. You could
    also include specific priority component ratings, such as benefit, penalty, cost, and risk (each rated on a relative
    scale from a low of 1 to a high of 9).
 
-4.1.2 Stimulus/Response Sequences
+4.2.2 State Invariants
+----------------------
+
+
+4.2.3 Preconditions
+-------------------
+
+4.2.4 Stimulus/Response Sequences
 ---------------------------------
 
 .. List the sequences of user actions and system responses that stimulate the behavior defined for this feature.
    These will correspond to the dialog elements associated with use cases.
 
-4.1.3 Functional Requirements
+4.2.5 Functional Requirements
 -----------------------------
 
 .. Itemize the detailed functional requirements associated with this feature. These are the software capabilities that
