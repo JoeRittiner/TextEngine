@@ -118,7 +118,7 @@ Insertion
    :id: FR-TEXT-016
    :tags: insert
 
-   Newline :term:`characters <character>` (``\n``) may be inserted and must introduce a :term:`logical line` boundary.
+   Newline :term:`characters <character>` (``\n``) may be inserted and must introduce a new :term:`logical line`.
 
 .. freq:: Insert Atomicity
    :status: Open
@@ -171,8 +171,7 @@ Delete
    :id: FR-TEXT-025
    :tags: delete
 
-   Deleting a newline :term:`character` must remove the :term:`logical line` boundary and merge the adjacent
-   :term:`logical lines <logical line>`.
+   Deleting a newline :term:`character` must merge the two adjacent :term:`logical lines <logical line>`.
 
 .. _backspace_specs:
 
@@ -217,8 +216,7 @@ Backspace
    :id: FR-TEXT-035
    :tags: backspace
 
-   Removing a newline :term:`character` via backspace must remove the :term:`logical line` boundary and merge the
-   adjacent :term:`logical lines <logical line>`.
+   Removing a newline character via backspace must merge the two adjacent :term:`logical lines <logical line>`.
 
 Out of Scope
 ~~~~~~~~~~~~

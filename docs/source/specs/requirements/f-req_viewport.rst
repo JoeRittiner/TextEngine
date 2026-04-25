@@ -52,7 +52,7 @@ The visible window range is automatically updated in response to :term:`cursor` 
 
    The :term:`viewport` is the subset of the window excluding the top and bottom ``scrolloff`` lines.
 
-   The :term:`viewport height` is strictly ``display_height - (2 * scrolloff)``.
+   The :term:`viewport height` is strictly ``display_height - (2 * scrolloff)`` and positive.
 
    The :term:`viewport` must always be fully contained within the window.
 
@@ -91,7 +91,7 @@ The system requires an initialized :term:`text buffer` that has been successfull
    The system must enforce that the :term:`cursor` remains within the :term:`viewport` whenever mathematically possible.
    This constraint must only be relaxed (allowing the :term:`cursor` into the scrolloff region) when the document
    boundaries prevent the window from scrolling further
-   (i.e., when ``window_start == 0`` or ``window_start == total_visual_lines - display_height``).
+   (i.e., when ``window_start == 0`` or ``window_start == max(0, len(visual_lines) - display_height)``).
 
 .. freq:: Minimal Scroll Adjustment
    :id: FR-VIEW-002

@@ -85,7 +85,7 @@ All wrapping logic assumes a valid :term:`text buffer` as defined in
 
    A :term:`logical line` must be split into :term:`visual lines <visual line>` such that:
       * Each :term:`visual line` (except potentially the last one) has a length exactly equal to the :term:`display width`.
-      * The final :term:`visual line` of a :term:`logical line` has a length of ``display_width`` if
+      * The final :term:`visual line` of a non-empty :term:`logical line` has a length of ``display_width`` if
         ``logical_line_length % display_width == 0``. Otherwise, it has a length of
         ``logical_line_length % display_width``. (This behavior reflects :need:`FR-CURSOR-010`.)
 

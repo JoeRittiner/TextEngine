@@ -136,6 +136,7 @@ Edge Case: Boundary wrapping
    :status: Open
    :id: FR-CURSOR-010
    :tags: cursor, boundary, rendering
+   :links: FR-WRAP-003
 
    When a :term:`cursor` is positioned at the exact boundary of a wrapped :term:`logical line` (where the logical
    column is a multiple of ``display_width``), the valid Visual Coordinate must be represented as resting at the end of
@@ -160,8 +161,9 @@ Edge Case: Boundary wrapping
 
    Deleting a newline character (via delete) must keep the :term:`cursor` indices unchanged.
 
-   Deleting a newline character (via backspace) when the :term:`cursor` is at the start of a line (``[v_row, 0]``) must
-   move the :term:`cursor` to the end of the previous line.
+   Deleting a newline character (via backspace) when the :term:`cursor` is at the start of a :term:`logical line`
+   (``[v_row, 0]``) must move the :term:`cursor` to the end of the previous :term:`logical line`. (Now merged into
+   one :term:`logical line`.)
 
 Cursor Movement
 ~~~~~~~~~~~~~~~
@@ -172,8 +174,9 @@ Cursor Movement
    :tags: movement
    :links: FR-CURSOR-052, FR-CURSOR-053
 
-   The :term:`cursor` must support basic movement: ``up``, ``down``, ``left``, and ``right``,
-   as well as boundary jumps to the ``home`` and ``end`` of the :term:`text buffer`.
+   The :term:`cursor` must support basic movement: ``up``, ``down``, (see :ref:`vertical-movement`)
+   ``left``, and ``right``, (see :ref:`horizontal-movement`) as well as boundary jumps to the ``home`` and ``end`` of
+   the :term:`text buffer`. (See :ref:`boundary-behaviors`)
 
 .. freq:: Non-Destructive Movement
    :status: Open
@@ -181,6 +184,8 @@ Cursor Movement
    :tags: movement
 
    Changing the :term:`cursor` must strictly be a navigation operation and must not modify the :term:`text buffer`.
+
+.. _vertical-movement:
 
 Vertical Movement
 ~~~~~~~~~~~~~~~~~
@@ -202,6 +207,8 @@ Vertical Movement
    If the target :term:`visual line` is shorter than the current ``v_col``, the system must truncate the new position
    to the end of the target :term:`visual line` (its maximum valid ``v_col``).
 
+.. _horizontal-movement:
+
 Horizontal Movement
 ~~~~~~~~~~~~~~~~~~~
 
@@ -211,9 +218,11 @@ Horizontal Movement
    :tags: movement, horizontal
    :links: INV-CURSOR-003
 
-   Moving the :term:`cursor` ``left`` or ``right`` must strictly decrement or increment the Absolute Index by exactly 1,
-   respectively. By definition of coordinate synchronization, this inherently handles all appropriate wrapping across
-   :term:`visual lines <visual line>` and :term:`logical lines <logical line>`.
+   Moving the :term:`cursor` ``left`` or ``right`` must strictly decrement or increment the :term:`Absolute Index`
+   by exactly 1, respectively. By definition of :need:`INV-CURSOR-003`, this inherently handles all appropriate
+   wrapping across :term:`visual lines <visual line>` and :term:`logical lines <logical line>`.
+
+.. _boundary-behaviors:
 
 Boundary Behaviors
 ~~~~~~~~~~~~~~~~~~
