@@ -51,7 +51,7 @@ All wrapping logic assumes a valid :term:`text buffer` as defined in
 :doc:`Text Buffer Specification <f-req_text_manipulation>`. Wrapping is applied automatically whenever the
 :term:`text buffer` state changes or the system is initialized.
 
-4.4.2 Stimulus/Response Sequences
+4.3.4 Stimulus/Response Sequences
 ---------------------------------
 
 * **Stimulus:** The :term:`text buffer` is modified (insertion, deletion, or initialization).
@@ -59,7 +59,7 @@ All wrapping logic assumes a valid :term:`text buffer` as defined in
   **Response:** The system recalculates the break points for all affected :term:`logical lines <logical line>`
   and updates the total visual line count and :term:`cursor` Visual Coordinates.
 
-4.5.3 Functional Requirements
+4.3.5 Functional Requirements
 -----------------------------
 
 .. freq:: Non-Destructive Wrapping
