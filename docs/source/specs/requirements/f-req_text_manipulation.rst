@@ -21,6 +21,13 @@ this state.
    An empty :term:`buffer <Text Buffer>` is defined as a :term:`buffer <Text Buffer>` containing zero
    :term:`characters <character>`.
 
+.. inv:: Left-to-right Script
+   :id: INV-TEXT-002
+
+   The :term:`buffer <Text Buffer>` must be processed in a left-to-right manner. Therefore a :term:`character`
+   "in front of" the cursor is visually to the right of the cursor. A :term:`character` "behind" the cursor is visually
+   to the left of the cursor.
+
 4.1.3 Preconditions
 -------------------
 
