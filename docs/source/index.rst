@@ -9,6 +9,12 @@ cursor coordinates, and calculating visual line wrapping and viewport boundaries
 tool for generating visual frames (e.g., via Pillow) rather than interacting directly with a user interface or
 file system.
 
+Project Goal
+------------
+The goal of this personal project is to learn and practice clean documentation, test-first development, and a
+professional project workflow and structure. The focus is on the engineering process surrounding the code rather than
+on feature completeness.
+
 Philosophy
 ----------
 This project is built using a **Specification-First**, **Documentation-Driven**, and **Test-Driven** methodology.
