@@ -213,15 +213,18 @@ Out of Scope
 
 .. nreq:: Text Selection
    :id: NR-Text-101
+   :tags: out-of-scope
 
    The system must not support text selection.
 
 .. nreq:: Clipboard Functions
    :id: NR-TEXT-102
+   :tags: out-of-scope
 
    The system must not support copy, cut, or paste operations.
 
 .. nreq:: Undo / Redo
    :id: NR-TEXT-103
+   :tags: out-of-scope
 
    The system must not support undo or redo functionality.

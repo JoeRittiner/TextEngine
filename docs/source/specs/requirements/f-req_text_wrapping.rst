@@ -63,7 +63,7 @@ All wrapping logic assumes a valid :term:`text buffer` as defined in
 -----------------------------
 
 .. freq:: Non-Destructive Wrapping
-   :id: FREQ-WRAP-001
+   :id: FR-WRAP-001
    :tags: wrap
 
    Wrapping operations must not alter the contents of the :term:`text buffer`.
@@ -72,14 +72,14 @@ All wrapping logic assumes a valid :term:`text buffer` as defined in
    original :term:`logical line`.
 
 .. freq:: Full Content Visibility
-   :id: FREQ-WRAP-002
+   :id: FR-WRAP-002
    :tags: wrap
 
    The system must not truncate or omit characters from the :term:`visual lines <visual line>`.
    Every character in the :term:`text buffer` must be assigned to exactly one :term:`visual line`.
 
 .. freq:: Break Logic (Character-Based)
-   :id: FREQ-WRAP-003
+   :id: FR-WRAP-003
    :tags: wrap
 
    A :term:`logical line` must be split into :term:`visual lines <visual line>` such that:
@@ -87,14 +87,14 @@ All wrapping logic assumes a valid :term:`text buffer` as defined in
       * The final :term:`visual line` of a :term:`logical line` has a length of ``logical_line_length % display_width``.
 
 .. freq:: Line Isolation
-   :id: FREQ-WRAP-004
+   :id: FR-WRAP-004
    :tags: wrap
 
    Wrapping must be performed on a per-line basis. The system must never combine characters from two different
    :term:`logical lines <logical line>` into a single :term:`visual line`.
 
 .. freq:: Empty Line Handling
-   :id: FREQ-WRAP-005
+   :id: FR-WRAP-005
    :tags: wrap
 
    A :term:`logical line` with zero characters (including and excluding newlines) must still result in exactly one
@@ -105,7 +105,7 @@ Out of Scope
 ~~~~~~~~~~~~
 
 .. freq:: Character Boundary Flexibility
-   :id: FREQ-WRAP-101
+   :id: NR-WRAP-101
    :tags: wrap, out-of-scope
 
    Wrapping may occur at any character boundary. Word boundaries do not need to be preserved.

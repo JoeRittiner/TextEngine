@@ -238,7 +238,7 @@ Out of Scope
 ~~~~~~~~~~~~
 
 .. nreq:: Desired Column Retention
-   :id: NR-SCOPE-CURSOR-101
+   :id: NR-CURSOR-101
    :tags: out-of-scope, movement
 
    The system is currently not required to support a "Desired Column" or "Sticky Ghost Cursor" feature (the ability to
