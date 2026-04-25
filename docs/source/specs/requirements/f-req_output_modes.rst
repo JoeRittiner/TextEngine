@@ -117,7 +117,7 @@ Display Mode
    visible within the :term:`viewport`.
 
    The number of lines returned must not exceed the ``display_height``, and the content must correspond to the range
-   defined by ``window_start`` (as specified in :need:`FR-VIEW-004`).
+   defined by ``window_start``.
 
 .. freq:: Display-to-Logical Mapping
    :status: Open
