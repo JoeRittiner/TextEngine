@@ -63,6 +63,7 @@ All wrapping logic assumes a valid :term:`text buffer` as defined in
 -----------------------------
 
 .. freq:: Non-Destructive Wrapping
+   :status: Open
    :id: FR-WRAP-001
    :tags: wrap
 
@@ -72,6 +73,7 @@ All wrapping logic assumes a valid :term:`text buffer` as defined in
    original :term:`logical line`.
 
 .. freq:: Full Content Visibility
+   :status: Open
    :id: FR-WRAP-002
    :tags: wrap
 
@@ -79,6 +81,7 @@ All wrapping logic assumes a valid :term:`text buffer` as defined in
    Every character in the :term:`text buffer` must be assigned to exactly one :term:`visual line`.
 
 .. freq:: Break Logic (Character-Based)
+   :status: Open
    :id: FR-WRAP-003
    :tags: wrap
    :links: FR-CURSOR-010
@@ -90,6 +93,7 @@ All wrapping logic assumes a valid :term:`text buffer` as defined in
         ``logical_line_length % display_width``. (This behavior reflects :need:`FR-CURSOR-010`.)
 
 .. freq:: Line Isolation
+   :status: Open
    :id: FR-WRAP-004
    :tags: wrap
 
@@ -97,6 +101,7 @@ All wrapping logic assumes a valid :term:`text buffer` as defined in
    :term:`logical lines <logical line>` into a single :term:`visual line`.
 
 .. freq:: Empty Line Handling
+   :status: Open
    :id: FR-WRAP-005
    :tags: wrap
 
@@ -107,7 +112,7 @@ All wrapping logic assumes a valid :term:`text buffer` as defined in
 Out of Scope
 ~~~~~~~~~~~~
 
-.. freq:: Character Boundary Flexibility
+.. nreq:: Character Boundary Flexibility
    :id: NR-WRAP-101
    :tags: wrap, out-of-scope
 

@@ -25,6 +25,7 @@ corresponding to the four :doc:`output modes <f-req_output_modes>`:
 
 .. inv:: Valid Coordinate Ranges
    :id: INV-CURSOR-001
+   :links: INV-WRAP-001, INV-VIEW-001
 
    The :term:`cursor` must always refer to a valid logical and visual position within the bounds of the
    :term:`text buffer`.
@@ -172,7 +173,6 @@ Cursor Movement
    :status: Open
    :id: FR-CURSOR-020
    :tags: movement
-   :links: FR-CURSOR-052, FR-CURSOR-053
 
    The :term:`cursor` must support basic movement: ``up``, ``down``, (see :ref:`vertical-movement`)
    ``left``, and ``right``, (see :ref:`horizontal-movement`) as well as boundary jumps to the ``home`` and ``end`` of
@@ -202,6 +202,7 @@ Vertical Movement
    :status: Open
    :id: FR-CURSOR-031
    :tags: movement, vertical
+   :links: NR-CURSOR-101
 
    When moving vertically, the system must attempt to preserve the current visual column (``v_col``).
    If the target :term:`visual line` is shorter than the current ``v_col``, the system must truncate the new position

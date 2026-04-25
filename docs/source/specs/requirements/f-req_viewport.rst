@@ -85,6 +85,7 @@ The system requires an initialized :term:`text buffer` that has been successfull
 -----------------------------
 
 .. freq:: Cursor Constraint & Scrolloff
+   :status: Open
    :id: FR-VIEW-001
    :tags: viewport, scrolloff
 
@@ -94,13 +95,16 @@ The system requires an initialized :term:`text buffer` that has been successfull
    (i.e., when ``window_start == 0`` or ``window_start == max(0, len(visual_lines) - display_height)``).
 
 .. freq:: Minimal Scroll Adjustment
+   :status: Open
    :id: FR-VIEW-002
    :tags: viewport, scrolling
+   :links: FR-VIEW-001
 
    When adjusting the window to satisfy :need:`FR-VIEW-001`, the system must change the :term:`window start` index by the
    absolute minimum amount required to bring the target :term:`visual line` back into the :term:`viewport`.
 
 .. freq:: Non-Destructive Scrolling
+   :status: Open
    :id: FR-VIEW-003
    :tags: viewport, scrolling
    :links: FR-CURSOR-004

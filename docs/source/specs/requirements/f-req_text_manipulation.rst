@@ -222,7 +222,7 @@ Out of Scope
 ~~~~~~~~~~~~
 
 .. nreq:: Text Selection
-   :id: NR-Text-101
+   :id: NR-TEXT-101
    :tags: out-of-scope
 
    The system must not support text selection.

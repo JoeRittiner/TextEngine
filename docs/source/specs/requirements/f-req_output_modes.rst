@@ -101,7 +101,6 @@ Wrapped Mode
    :status: Open
    :id: FR-MODE-022
    :tags: wrapped mode, mode
-   :links: FR-CURSOR-010
 
    The output for Wrapped Mode must include metadata or a structural representation indicating which
    :term:`visual lines <visual line>` belong to which :term:`logical line`.
