@@ -218,6 +218,60 @@ Backspace
 
    Removing a newline character via backspace must merge the two adjacent :term:`logical lines <logical line>`.
 
+Special Characters
+~~~~~~~~~~~~~~~~~~
+
+Special characters as defined in :ref:`req_special_characters` are required to be handled as follows:
+
+.. freq:: New Line Character
+   :status: Open
+   :id: FR-TEXT-041
+   :tags: special
+
+   The system must support the newline character (``\n``) as a :term:`character`.
+
+.. freq:: Carriage Return
+   :status: Open
+   :id: FR-TEXT-042
+   :tags: special, no-op
+
+   The system must ignore the carriage return character (``\r``). (No-op)
+
+.. freq:: Tab
+   :status: Open
+   :id: FR-TEXT-043
+   :tags: special
+
+   The system must support the tab character (``\t``) by replacing it with 4 spaces.
+
+.. freq:: Backspace Character
+   :status: Open
+   :id: FR-TEXT-044
+   :tags: special, no-op
+
+   The system must ignore the backspace character (``\b``). (No-op)
+
+.. freq:: Form Feed
+   :status: Open
+   :id: FR-TEXT-045
+   :tags: special, no-op
+
+   The system must ignore the form feed character (``\f``). (No-op)
+
+.. freq:: Vertical Tab
+   :status: Open
+   :id: FR-TEXT-046
+   :tags: special, no-op
+
+   The system must ignore the vertical tab character (``\v``). (No-op)
+
+.. freq:: Alert
+   :status: Open
+   :id: FR-TEXT-047
+   :tags: special, no-op
+
+   The system must ignore the alert character (``\a``). (No-op)
+
 Out of Scope
 ~~~~~~~~~~~~
 
