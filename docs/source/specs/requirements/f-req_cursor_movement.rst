@@ -156,7 +156,7 @@ Edge Case: Boundary wrapping
    :status: Open
    :id: FR-CURSOR-012
    :tags: cursor, boundary, delete
-   :links: FR-DELETE-005, FR-BACKSPACE-005
+   :links: FR-TEXT-025, FR-TEXT-035
 
    Deleting a newline character (via delete) must keep the :term:`cursor` indices unchanged.
 
@@ -237,8 +237,8 @@ Boundary Behaviors
 Out of Scope
 ~~~~~~~~~~~~
 
-.. nfreq:: Desired Column Retention
-   :id: FR-SCOPE-CURSOR-001
+.. nreq:: Desired Column Retention
+   :id: NR-SCOPE-CURSOR-101
    :tags: out-of-scope, movement
 
    The system is currently not required to support a "Desired Column" or "Sticky Ghost Cursor" feature (the ability to

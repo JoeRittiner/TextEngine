@@ -69,7 +69,7 @@ Insertion
 
 .. freq:: Insert Operation Support
    :status: Open
-   :id: FR-INSERT-001
+   :id: FR-TEXT-011
    :tags: insert
 
    The system must support insertion of a sequence of
@@ -77,7 +77,7 @@ Insertion
 
 .. freq:: Insert at Cursor Position
    :status: Open
-   :id: FR-INSERT-002
+   :id: FR-TEXT-012
    :links: FR-CURSOR-001
    :tags: insert
 
@@ -85,35 +85,35 @@ Insertion
 
 .. freq:: Inserting Nothing
    :status: Open
-   :id: FR-INSERT-003
+   :id: FR-TEXT-013
    :tags: insert
 
    Inserting zero :term:`characters <character>` must result in a no-op.
 
 .. freq:: No Overwrite
    :status: Open
-   :id: FR-INSERT-004
+   :id: FR-TEXT-014
    :tags: insert
 
    Insertion must not overwrite existing :term:`characters <character>`.
 
 .. freq:: Cursor Update After Insert
    :status: Open
-   :id: FR-INSERT-005
+   :id: FR-TEXT-015
    :tags: insert
 
    After insertion, the :term:`cursor` must be positioned immediately after the inserted :term:`characters <character>`.
 
 .. freq:: Inserting Newline
    :status: Open
-   :id: FR-INSERT-006
+   :id: FR-TEXT-016
    :tags: insert
 
    Newline :term:`characters <character>` (``\n``) may be inserted and must introduce a :term:`logical line` boundary.
 
 .. freq:: Insert Atomicity
    :status: Open
-   :id: FR-INSERT-007
+   :id: FR-TEXT-017
    :tags: insert
 
    Inserting a sequence of multiple :term:`characters <character>` must produce the same resulting
@@ -127,7 +127,7 @@ Delete
 
 .. freq:: Delete Operation Support
    :status: Open
-   :id: FR-DELETE-001
+   :id: FR-TEXT-021
    :links: FR-CURSOR-001
    :tags: delete
 
@@ -136,7 +136,7 @@ Delete
 
 .. freq:: Single Character Deletion
    :status: Open
-   :id: FR-DELETE-002
+   :id: FR-TEXT-022
    :links: FR-CURSOR-001
 
    The delete operation must remove exactly one :term:`character` immediately right of the :term:`cursor`, if such a
@@ -144,19 +144,19 @@ Delete
 
 .. freq:: Cursor Position on Delete
    :status: Open
-   :id: FR-DELETE-003
+   :id: FR-TEXT-023
 
    The delete operation must not change the :term:`cursor` position.
 
 .. freq:: Delete Boundary Behavior
    :status: Open
-   :id: FR-DELETE-004
+   :id: FR-TEXT-024
 
    If no :term:`character` exists to the right of the :term:`cursor`, the delete operation must result in a no-op.
 
 .. freq:: Newline Character Deletion
    :status: Open
-   :id: FR-DELETE-005
+   :id: FR-TEXT-025
 
    Deleting a newline :term:`character` must remove the :term:`logical line` boundary and merge the adjacent
    :term:`logical lines`.
@@ -168,7 +168,7 @@ Backspace
 
 .. freq:: Backspace Operation Support
    :status: Open
-   :id: FR-BACKSPACE-001
+   :id: FR-TEXT-031
    :links: FR-CURSOR-001
 
    The system must support a backspace operation that targets the :term:`character` immediately left of the
@@ -176,7 +176,7 @@ Backspace
 
 .. freq:: Single Character Deletion
    :status: Open
-   :id: FR-BACKSPACE-002
+   :id: FR-TEXT-032
    :links: FR-CURSOR-001
 
    The backspace operation must remove exactly one :term:`character` immediately left of the :term:`cursor`, if such a
@@ -184,19 +184,19 @@ Backspace
 
 .. freq:: Cursor Position on Backspace
    :status: Open
-   :id: FR-BACKSPACE-003
+   :id: FR-TEXT-033
 
    If a :term:`character` is removed, the :term:`cursor` must move one position to the left.
 
 .. freq:: Backspace Boundary Behavior
    :status: Open
-   :id: FR-BACKSPACE-004
+   :id: FR-TEXT-034
 
    If no :term:`character` exists to the left of the :term:`cursor`, the backspace operation must result in a no-op.
 
 .. freq:: Newline Character Backspace
    :status: Open
-   :id: FR-BACKSPACE-005
+   :id: FR-TEXT-035
 
    Removing a newline :term:`character` via backspace must remove the :term:`logical line` boundary and merge the
    adjacent :term:`logical lines <logical line>`.
@@ -204,17 +204,17 @@ Backspace
 Out of Scope
 ~~~~~~~~~~~~
 
-.. nfreq:: Text Selection
-   :id: FR-SCOPE-001
+.. nreq:: Text Selection
+   :id: NR-Text-101
 
    The system must not support text selection.
 
-.. nfreq:: Clipboard Functions
-   :id: FR-SCOPE-002
+.. nreq:: Clipboard Functions
+   :id: NR-TEXT-102
 
    The system must not support copy, cut, or paste operations.
 
-.. nfreq:: Undo / Redo
-   :id: FR-SCOPE-003
+.. nreq:: Undo / Redo
+   :id: NR-TEXT-103
 
    The system must not support undo or redo functionality.
