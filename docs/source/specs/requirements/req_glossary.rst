@@ -34,8 +34,11 @@ Glossary
          * ``"\nThis is a line.\nThis is another line.\n"`` represents _four_ logical lines.
 
 
+   Display Width
+      The number of :term:`characters <character>` that can be shown in a single :term:`display line`.
+
    Visual Line
-      A subset of a :term:`logical line` that fits within the display width.
+      A subset of a :term:`logical line` that fits within the :term:`display width`.
 
       Example with ``display_width = 15``::
 
