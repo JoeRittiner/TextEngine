@@ -40,7 +40,7 @@ corresponding to the four :doc:`output modes <f-req_output_modes>`:
         * ``0 <= v_row < num_visual_lines``
         * ``0 <= v_col <= len(visual_line)``
    * **Window Coordinate**:
-        * ``0 <= y < viewport_height``
+        * ``0 <= y < display_height``
         * ``0 <= x <= display_width``
 
 .. inv:: Inter-Character Positioning
