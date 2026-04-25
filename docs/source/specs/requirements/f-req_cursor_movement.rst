@@ -170,9 +170,10 @@ Cursor Movement
    :status: Open
    :id: FR-CURSOR-020
    :tags: movement
+   :links: FR-CURSOR-052, FR-CURSOR-053
 
    The :term:`cursor` must support basic movement: ``up``, ``down``, ``left``, and ``right``,
-   as well as boundary jumps to the ``start`` and ``end`` of the :term:`text buffer`.
+   as well as boundary jumps to the ``home`` and ``end`` of the :term:`text buffer`.
 
 .. freq:: Non-Destructive Movement
    :status: Open
@@ -233,6 +234,24 @@ Boundary Behaviors
 
    Moving ``left`` at the absolute start of the text, or moving ``right`` at the absolute end of the text,
    must not alter the :term:`cursor` (No-Op).
+
+.. freq:: Move Home
+   :status: Open
+   :id: FR-CURSOR-052
+   :tags: movement, boundary
+
+   Moving ``home`` must relocate the :term:`cursor` to the start of the :term:`text buffer`.
+
+   Equivalent to setting the :term:`absolute index` to 0.
+
+.. freq:: Move End
+   :status: Open
+   :id: FR-CURSOR-053
+   :tags: movement, boundary
+
+   Moving ``end`` must relocate the :term:`cursor` to the end of the :term:`text buffer`.
+
+   Equivalent to setting the :term:`absolute index` to the length of the :term:`text buffer`.
 
 Out of Scope
 ~~~~~~~~~~~~
