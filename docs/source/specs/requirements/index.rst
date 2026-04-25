@@ -119,6 +119,7 @@ and behavioral rules are detailed in the following subsystems.
    f-req_text_manipulation
    f-req_cursor_movement
    f-req_text_wrapping
+   f-req_viewport
    f-req_output_modes
    f-req_state_access
 
