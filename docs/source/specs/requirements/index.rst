@@ -101,6 +101,8 @@ None. The system does not have a GUI.
 ~~~~~~~~~~~~~~~~~~~~~~~
 None.
 
+.. _req_software_interfaces:
+
 3.3 Software Interfaces
 ~~~~~~~~~~~~~~~~~~~~~~~
 The system provides a programmatic API for external systems. External applications push commands to mutate state
@@ -121,7 +123,6 @@ and behavioral rules are detailed in the following subsystems.
    f-req_text_wrapping
    f-req_viewport
    f-req_output_modes
-   f-req_state_access
 
 
 5. Other Nonfunctional Requirements
