@@ -16,6 +16,7 @@ this state.
 
 .. inv:: Empty Buffer Definition
    :id: INV-TEXT-001
+   :tags: buffer
 
    The :term:`buffer <Text Buffer>` must always represent at least one :term:`logical line`.
    An empty :term:`buffer <Text Buffer>` is defined as a :term:`buffer <Text Buffer>` containing zero
@@ -23,6 +24,7 @@ this state.
 
 .. inv:: Left-to-right Script
    :id: INV-TEXT-002
+   :tags: buffer
 
    The :term:`buffer <Text Buffer>` must be processed in a left-to-right manner. Therefore a :term:`character`
    "in front of" the cursor is visually to the right of the cursor. A :term:`character` "behind" the cursor is visually
@@ -135,8 +137,8 @@ Delete
 .. freq:: Delete Operation Support
    :status: Open
    :id: FR-TEXT-021
-   :links: FR-CURSOR-001
    :tags: delete
+   :links: FR-CURSOR-001
 
    The system must support a delete operation that targets the :term:`character` immediately right of the
    :term:`cursor`.
@@ -144,6 +146,7 @@ Delete
 .. freq:: Single Character Deletion
    :status: Open
    :id: FR-TEXT-022
+   :tags: delete
    :links: FR-CURSOR-001
 
    The delete operation must remove exactly one :term:`character` immediately right of the :term:`cursor`, if such a
@@ -159,12 +162,14 @@ Delete
 .. freq:: Delete Boundary Behavior
    :status: Open
    :id: FR-TEXT-024
+   :tags: delete
 
    If no :term:`character` exists to the right of the :term:`cursor`, the delete operation must result in a no-op.
 
 .. freq:: Newline Character Deletion
    :status: Open
    :id: FR-TEXT-025
+   :tags: delete
 
    Deleting a newline :term:`character` must remove the :term:`logical line` boundary and merge the adjacent
    :term:`logical lines <logical line>`.
@@ -177,6 +182,7 @@ Backspace
 .. freq:: Backspace Operation Support
    :status: Open
    :id: FR-TEXT-031
+   :tags: backspace
    :links: FR-CURSOR-001
 
    The system must support a backspace operation that targets the :term:`character` immediately left of the
@@ -185,6 +191,7 @@ Backspace
 .. freq:: Single Character Deletion
    :status: Open
    :id: FR-TEXT-032
+   :tags: backspace
    :links: FR-CURSOR-001
 
    The backspace operation must remove exactly one :term:`character` immediately left of the :term:`cursor`, if such a
@@ -193,6 +200,7 @@ Backspace
 .. freq:: Cursor Position on Backspace
    :status: Open
    :id: FR-TEXT-033
+   :tags: backspace
    :links: FR-CURSOR-001
 
    If a :term:`character` is removed, the :term:`cursor` must move one position to the left.
@@ -200,12 +208,14 @@ Backspace
 .. freq:: Backspace Boundary Behavior
    :status: Open
    :id: FR-TEXT-034
+   :tags: backspace
 
    If no :term:`character` exists to the left of the :term:`cursor`, the backspace operation must result in a no-op.
 
 .. freq:: Newline Character Backspace
    :status: Open
    :id: FR-TEXT-035
+   :tags: backspace
 
    Removing a newline :term:`character` via backspace must remove the :term:`logical line` boundary and merge the
    adjacent :term:`logical lines <logical line>`.
