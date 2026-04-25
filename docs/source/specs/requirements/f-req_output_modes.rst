@@ -112,6 +112,7 @@ Display Mode
    :status: Open
    :id: FR-MODE-031
    :tags: display mode, mode
+   :links: INV-VIEW-001, INV-VIEW-003
 
    The system must provide an interface to return only the subset of :term:`visual lines <visual line>` currently
    visible within the :term:`window`.

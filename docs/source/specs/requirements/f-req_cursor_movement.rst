@@ -209,6 +209,7 @@ Horizontal Movement
    :status: Open
    :id: FR-CURSOR-040
    :tags: movement, horizontal
+   :links: INV-CURSOR-003
 
    Moving the :term:`cursor` ``left`` or ``right`` must strictly decrement or increment the Absolute Index by exactly 1,
    respectively. By definition of coordinate synchronization, this inherently handles all appropriate wrapping across

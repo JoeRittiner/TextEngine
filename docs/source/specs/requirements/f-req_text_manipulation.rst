@@ -107,6 +107,7 @@ Insertion
    :status: Open
    :id: FR-TEXT-015
    :tags: insert
+   :links: FR-CURSOR-001
 
    After insertion, the :term:`cursor` must be positioned immediately after the inserted :term:`characters <character>`.
 
@@ -151,6 +152,7 @@ Delete
 .. freq:: Cursor Position on Delete
    :status: Open
    :id: FR-TEXT-023
+   :links: FR-CURSOR-001
 
    The delete operation must not change the :term:`cursor` position.
 
@@ -191,6 +193,7 @@ Backspace
 .. freq:: Cursor Position on Backspace
    :status: Open
    :id: FR-TEXT-033
+   :links: FR-CURSOR-001
 
    If a :term:`character` is removed, the :term:`cursor` must move one position to the left.
 
