@@ -72,9 +72,12 @@ The system has explicitly defined non-responsibilities that constrain its design
 
 * **User Input:** Does not capture keyboard or mouse events. All "typing" or "clicking" must be translated into API
   calls by the host application.
+  (:need:`NR-CURSOR-102`)
 * **Rendering & I/O:** Does not draw to the screen, manage windows, or perform file reading/writing.
+  (:need:`NR-MODE-101`)
 * **Selection & Clipboard:** Does not handle text highlighting, selection, or copy/cut/paste operations
   (these must be simulated by the host application if required).
+  (:need:`NR-TEXT-102`)
 
 2.6 Assumptions and Dependencies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

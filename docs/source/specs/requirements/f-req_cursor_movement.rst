@@ -264,8 +264,8 @@ Boundary Behaviors
 
    Equivalent to setting the :term:`absolute index` to the length of the :term:`text buffer`.
 
-Out of Scope
-~~~~~~~~~~~~
+4.2.6 Out of Scope
+------------------
 
 .. nreq:: Desired Column Retention
    :id: NR-CURSOR-101
@@ -273,3 +273,10 @@ Out of Scope
 
    The system is currently not required to support a "Desired Column" or "Sticky Ghost Cursor" feature (the ability to
    memorize the furthest ``v_col`` position when navigating vertically across shorter intermediate lines).
+
+.. nreq:: User Input
+   :id: NR-CURSOR-102
+   :tags: out-of-scope, movement
+
+   The system does not capture keyboard or mouse events
+   All "typing" or "clicking" must be translated into API calls by the host application.

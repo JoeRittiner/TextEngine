@@ -272,8 +272,8 @@ Special characters as defined in :ref:`req_special_characters` are required to b
 
    The system must ignore the alert character (``\a``). (No-op)
 
-Out of Scope
-~~~~~~~~~~~~
+4.2.6 Out of Scope
+------------------
 
 .. nreq:: Text Selection
    :id: NR-TEXT-101

@@ -127,3 +127,12 @@ Display Mode
 
    The output for Display Mode must include metadata indicating which :term:`display lines <display line>` belong to
    which :term:`logical line`.
+
+4.2.6 Out of Scope
+------------------
+
+.. nfreq:: Rendering & I/O
+   :id: NR-MODE-101
+   :tags: out-of-scope
+
+   The system does not handle any rendering or GUI operations.
