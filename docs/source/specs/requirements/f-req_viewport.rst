@@ -107,7 +107,7 @@ The system requires an initialized :term:`text buffer` that has been successfull
    :status: Open
    :id: FR-VIEW-003
    :tags: viewport, scrolling
-   :links: FR-CURSOR-004
+   :links: FR-CURSOR-005
 
    Scrolling operations must strictly adjust the :term:`window start` index. They must be a purely visual mechanism and
    must not change the Absolute Index, Logical or Visual Coordinates of the :term:`cursor`,

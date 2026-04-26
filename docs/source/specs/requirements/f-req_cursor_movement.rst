@@ -102,9 +102,19 @@ Cursor Position & Coordinates
 
    The system must maintain a mutable :term:`cursor`. No text manipulation operation may bypass the :term:`cursor`.
 
-.. freq:: Logical Coordinate Representation
+.. freq:: Absolute Position Representation
    :status: Open
    :id: FR-CURSOR-002
+   :tags: cursor, position
+   :links: INV-CURSOR-001
+
+   The system must provide an interface to return the :term:`cursor` as an Absolute integer Index`.
+   A ``index`` value equal to ``len(text)`` represents the position immediately after the last character in the
+   :term:`text buffer`.
+
+.. freq:: Logical Coordinate Representation
+   :status: Open
+   :id: FR-CURSOR-003
    :tags: cursor, coordinates
 
    The system must provide an interface to return the :term:`cursor` as a Logical Coordinate ``[row, col]``.
@@ -113,7 +123,7 @@ Cursor Position & Coordinates
 
 .. freq:: Visual Coordinate Representation
    :status: Open
-   :id: FR-CURSOR-003
+   :id: FR-CURSOR-004
    :tags: cursor, coordinates
 
    The system must provide an interface to return the :term:`cursor` as a Visual Coordinate ``[v_row, v_col]``
@@ -123,7 +133,7 @@ Cursor Position & Coordinates
 
 .. freq:: Window Coordinate Representation
    :status: Open
-   :id: FR-CURSOR-004
+   :id: FR-CURSOR-005
    :tags: cursor, coordinates
 
    The system must provide an interface to return the :term:`cursor` as a Window Coordinate ``[x, y]`` representing its
