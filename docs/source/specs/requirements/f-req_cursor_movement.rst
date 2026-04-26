@@ -116,6 +116,7 @@ Cursor Position & Coordinates
    :status: Open
    :id: FR-CURSOR-003
    :tags: cursor, coordinates
+   :links: INV-CURSOR-001
 
    The system must provide an interface to return the :term:`cursor` as a Logical Coordinate ``[row, col]``.
    A ``col`` value equal to the :term:`logical line` length represents the position immediately after the last
@@ -125,6 +126,7 @@ Cursor Position & Coordinates
    :status: Open
    :id: FR-CURSOR-004
    :tags: cursor, coordinates
+   :links: INV-CURSOR-001
 
    The system must provide an interface to return the :term:`cursor` as a Visual Coordinate ``[v_row, v_col]``
    representing its location across all wrapped :term:`visual lines <visual line>`.
@@ -135,6 +137,7 @@ Cursor Position & Coordinates
    :status: Open
    :id: FR-CURSOR-005
    :tags: cursor, coordinates
+   :links: INV-CURSOR-001
 
    The system must provide an interface to return the :term:`cursor` as a Window Coordinate ``[x, y]`` representing its
    location within the visible :term:`viewport`.
