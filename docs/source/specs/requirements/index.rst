@@ -22,7 +22,8 @@ unless otherwise specified.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 This document is intended for software developers, architects, and QA engineers who are integrating the
 :term:`TextEditor` system into host applications or writing test suites against it. Readers should begin with the
-**Overall Description** to understand the system's scope before reviewing the specific **System Features**.
+:ref:`req_overall_description` to understand the system's scope before reviewing the specific
+:ref:`req_functional_requirements`.
 
 1.4 Product Scope
 ~~~~~~~~~~~~~~~~~
@@ -34,6 +35,7 @@ tracking, and visual wrapping remain deterministic and testable across any runti
 ~~~~~~~~~~~~~~
 None at this time.
 
+.. _req_overall_description:
 
 2. Overall Description
 -----------------------
@@ -109,8 +111,10 @@ The system provides a programmatic API for external systems. External applicatio
 (e.g., ``insert_char()``, ``move_cursor_up()``) and use retrieval interfaces to output the text state and cursor
 position in four distinct modes: Display Mode, Wrapped Mode, Logical Mode, and Raw Mode.
 
+.. _req_functional_requirements:
+
 4. Functional Requirements
---------------------------------------------
+--------------------------
 The functional requirements governing the conceptual state model (Text Buffer, Cursor "pipe" logic, Display Windows)
 and behavioral rules are detailed in the following subsystems.
 
