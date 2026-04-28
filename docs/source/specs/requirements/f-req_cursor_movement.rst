@@ -39,10 +39,10 @@ corresponding to the four :doc:`output modes <f-req_output_modes>`:
         * ``0 <= col <= len(logical_line)``
    * **Visual Coordinate**:
         * ``0 <= v_row < num_visual_lines``
-        * ``0 <= v_col <= len(visual_line)``
+        * ``0 <= v_col <= len(visual_line) <= display_width``
    * **Window Coordinate**:
         * ``0 <= y < display_height``
-        * ``0 <= x <= display_width``
+        * ``0 <= x <= len(visual_line) <= display_width``
 
 .. inv:: Inter-Character Positioning
    :id: INV-CURSOR-002
@@ -155,21 +155,25 @@ Edge Case: Boundary wrapping
    :status: Open
    :id: FR-CURSOR-010
    :tags: cursor, boundary, rendering
-   :links: FR-WRAP-003
+   :links: FR-WRAP-003, INV-CURSOR-001
 
-   When a :term:`cursor` is positioned at the exact boundary of a wrapped :term:`logical line` (where the logical
-   column is a multiple of ``display_width``), the valid Visual Coordinate must be represented as resting at the end of
-   the current :term:`visual line` (``[v_row, display_width]``), rather than the start of the next line
-   (``[v_row + 1, 0]``).
-   The system must normalize any programmatic input of ``[v_row + 1, 0]`` for a wrapped boundary to
-   ``[v_row, display_width]``.
+   When the :term:`cursor` is positioned at the exact boundary of a wrapped :term:`logical line`
+   ([``row, N * display_width``]), the :term:`Visual Coordinate` must be represented as resting at the start of
+   the next :term:`visual line` (``[v_row, 0]``).
+   The system must normalize any input of ``[v_row, display_width]`` to ``[v_row + 1, 0]``.
+
+   **Exception:**
+   When the :term:`cursor` is positioned at the end of a :term:`logical line`, whose final :term:`visual line` is
+   exactly ``display_width`` :term:`characters <character>` long, (:need:`[[id]] <FR-WRAP-003>`) the
+   :term:`Visual Coordinate` must be represented as `[v_row, display_width]` instead. Since the :term:`visual line`
+   `v_row+1` doesn't exist.
 
 .. freq:: Newline Insertion at Boundary
    :status: Open
    :id: FR-CURSOR-011
    :tags: cursor, boundary, insert
 
-   Inserting a newline character when the :term:`cursor` is at a wrapped boundary (``[v_row, display_width]``) must move
+   Inserting a newline character when the :term:`cursor` is at a wrapped boundary (``[v_row + 1, 0]``) must move
    the :term:`cursor` to the start of the newly created :term:`logical line` (``[row + 1, 0]``, ``[v_row + 1, 0]``).
 
 .. freq:: Newline Deletion at Boundary
