@@ -5,17 +5,17 @@
 ------------------------------
 **Priority: Low**
 
-The window defines the total visible height, limiting the maximum number of :term:`visual lines <visual line>` that
-can be displayed at once.
+The :term:`window` defines the total visible height, limiting the maximum number of :term:`visual lines <visual line>`
+that can be displayed at once.
 
-The :term:`viewport` acts as a virtual boundary within that window. It constraints where the :term:`cursor` can move
-before triggering a scroll.
+The :term:`viewport` acts as a virtual boundary within that :term:`window`. It constraints where the :term:`cursor` can
+move before triggering a scroll.
 
 :term:`ScrollOff` defines the margin: the number of :term:`visual lines <visual line>` that must remain visible above
-and below the :term:`cursor`. The :term:`cursor` is only allowed to enter the scrollOff margins if it is near the
-absolute start or end of the document where scrolling further is impossible.
+and below the :term:`cursor`. The :term:`cursor` is only allowed to enter the :term:`scrollOff` margins if it is near
+the absolute start or end of the :term:`text buffer` where scrolling further is impossible.
 
-The visible window range is automatically updated in response to :term:`cursor` movement and text manipulation.
+The visible :term:`window` range is automatically updated in response to :term:`cursor` movement and text manipulation.
 
 4.4.2 State Invariants
 ----------------------
@@ -24,24 +24,26 @@ The visible window range is automatically updated in response to :term:`cursor` 
    :id: INV-VIEW-001
    :tags: viewport, state
 
-   A positive integer ``display_height`` must be defined at system initialization. It dictates the maximum number of
+   A positive integer :term:`display height` must be defined at system initialization. It dictates the maximum number of
    :term:`visual lines <visual line>` the system can render at any given time.
 
-   **Note:** If dynamic resizing is needed by a user, the system must be re-initialized with a new ``display_height``.
+   **Note:** If dynamic resizing is needed by a user, the system must be re-initialized with a new
+   :term:`display height`.
 
 .. inv:: ScrollOff Constraint
    :id: INV-VIEW-002
    :tags: viewport, scrolloff
 
-   A non-negative integer ``scrolloff`` must be defined. To ensure a valid :term:`viewport` exists,
+   A non-negative integer :term:`scrollOff` must be defined. To ensure a valid :term:`viewport` exists,
    the condition ``2 * scrolloff < display_height`` must strictly hold true.
 
 .. inv:: Window Bounds
    :id: INV-VIEW-003
    :tags: viewport, boundaries
 
-   The visible window is defined by a :term:`window start` index (representing the first visible :term:`visual line` index).
-   The window must always be contained within the available :term:`visual lines <visual line>`.
+   The visible :term:`window` is defined by a :term:`window start` index (representing the first visible
+   :term:`visual line` index).
+   The :term:`window` must always be contained within the available :term:`visual lines <visual line>`.
    The valid range is:
 
       ``0 <= window_start <= max(0, num_visual_lines - display_height)``.
@@ -50,11 +52,11 @@ The visible window range is automatically updated in response to :term:`cursor` 
    :id: INV-VIEW-004
    :tags: viewport, boundaries
 
-   The :term:`viewport` is the subset of the window excluding the top and bottom ``scrolloff`` lines.
+   The :term:`viewport` is the subset of the :term:`window` excluding the top and bottom :term:`scrollOff` lines.
 
    The :term:`viewport height` is strictly ``display_height - (2 * scrolloff)`` and positive.
 
-   The :term:`viewport` must always be fully contained within the window.
+   The :term:`viewport` must always be fully contained within the :term:`window`.
 
 4.4.3 Preconditions
 -------------------
@@ -67,19 +69,19 @@ The system requires an initialized :term:`text buffer` that has been successfull
 
 * **Stimulus:** The :term:`cursor` is moved to a new position within the bounds of the current :term:`viewport`.
 
-  **Response:** The system requires no scrolling action; the window remains unchanged.
+  **Response:** The system requires no scrolling action; the :term:`window` remains unchanged.
 
 * **Stimulus:** The :term:`cursor` is moved to a position outside the current :term:`viewport`
   (into the :term:`scrollOff` region or beyond).
 
   **Response:** The system adjusts the :term:`window start` by the minimal amount required to include the new
-  :term:`cursor` position within the :term:`viewport` (respecting document boundaries).
+  :term:`cursor` position within the :term:`viewport`.
 
 * **Stimulus:** Text is deleted, reducing the total number of :term:`visual lines <visual line>` such that the current
   :term:`window start` violates :need:`INV-VIEW-003`.
 
-  **Response:** The system automatically shifts the :term:`window start` upwards (decreasing the value) until the window
-  bounds are valid again.
+  **Response:** The system automatically shifts the :term:`window start` upwards (decreasing the value) until the
+  :term:`window` bounds are valid again.
 
 4.4.5 Functional Requirements
 -----------------------------
@@ -90,8 +92,10 @@ The system requires an initialized :term:`text buffer` that has been successfull
    :tags: viewport, scrolloff
 
    The system must enforce that the :term:`cursor` remains within the :term:`viewport` whenever mathematically possible.
-   This constraint must only be relaxed (allowing the :term:`cursor` into the scrolloff region) when the document
-   boundaries prevent the window from scrolling further
+
+   This constraint must only be relaxed (allowing the :term:`cursor` into the :term:`scrollOff` region) when the
+   :term:`window start` has reached the absolute start or end of the :term:`text buffer` and prevent the :term:`window`
+   from scrolling further
    (i.e., when ``window_start == 0`` or ``window_start == max(0, len(visual_lines) - display_height)``).
 
 .. freq:: Minimal Scroll Adjustment
@@ -100,8 +104,8 @@ The system requires an initialized :term:`text buffer` that has been successfull
    :tags: viewport, scrolling
    :links: FR-VIEW-001
 
-   When adjusting the window to satisfy :need:`FR-VIEW-001`, the system must change the :term:`window start` index by the
-   absolute minimum amount required to bring the target :term:`visual line` back into the :term:`viewport`.
+   When adjusting the :term:`window` to satisfy :need:`FR-VIEW-001`, the system must change the :term:`window start`
+   index by the absolute minimum amount required to bring the target :term:`visual line` back into the :term:`viewport`.
 
 .. freq:: Non-Destructive Scrolling
    :status: Open
@@ -110,7 +114,8 @@ The system requires an initialized :term:`text buffer` that has been successfull
    :links: FR-CURSOR-005
 
    Scrolling operations must strictly adjust the :term:`window start` index. They must be a purely visual mechanism and
-   must not change the Absolute Index, Logical or Visual Coordinates of the :term:`cursor`,
+   must not change the :term:`Absolute Index`, :term:`Logical <Logical Coordinate>`, or
+   :term:`Visual Coordinates <Visual Coordinate>` of the :term:`cursor`,
    nor modify the :term:`text buffer`.
 
-   Scrolling operations may adjust the Window Coordinate ``[x, y]`` of the :term:`cursor`.
+   Scrolling operations may adjust the :term:`Window Coordinate` ``[x, y]`` of the :term:`cursor`.

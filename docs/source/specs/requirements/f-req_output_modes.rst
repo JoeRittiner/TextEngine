@@ -9,7 +9,8 @@ The system must provide four distinct output modes to support different levels o
 **Display**, **Wrapped**, **Logical**, and **Raw**. See :ref:`req_software_interfaces`.
 
 These modes allow consumers to view the :term:`text buffer` as a raw string, a collection of
-:term:`logical lines <logical line>`, a fully wrapped document, or a windowed :term:`viewport`.
+:term:`logical lines <logical line>`, a fully wrapped :term:`text buffer` (:term:`visual lines <visual line>`),
+or a windowed :term:`viewport` (:term:`display lines <display line>`).
 
 4.5.2 State Invariants
 ----------------------
@@ -33,8 +34,8 @@ These modes allow consumers to view the :term:`text buffer` as a raw string, a c
    :tags: mode, state
 
    For **Display Mode**, the output is a function of both the :term:`text buffer` state and the current :term:`viewport`
-   range. The output only remains identical if both the buffer content and the :term:`window` boundaries
-   (``window_start``) are unchanged.
+   range. The output only remains identical if both the :term:`buffer <Text Buffer>` content and the :term:`window`
+   boundaries (:term:`window start`) are unchanged.
 
 
 4.5.3 Preconditions
@@ -49,7 +50,7 @@ All operations in this section assume a valid :term:`display height` and :term:`
 4.5.4 Stimulus/Response Sequences
 ---------------------------------
 
-* **Stimulus:** An external consumer requests the buffer content in a specific output mode.
+* **Stimulus:** An external consumer requests the :term:`buffer <Text Buffer>` content in a specific output mode.
 
   **Response:** The system evaluates the current state against the requested mode's logic and returns the formatted data.
 
@@ -67,7 +68,8 @@ Raw Mode
    The system must provide an interface to return the entire content of the :term:`text buffer` as a single, continuous
    string of :term:`characters <character>`.
 
-   This output must include all newline characters (``\n``) exactly as they exist in the buffer without modification.
+   This output must include all newline characters (``\n``) exactly as they exist in the :term:`buffer <Text Buffer>`
+   without modification.
 
 Logical Mode
 ~~~~~~~~~~~~
@@ -92,7 +94,7 @@ Wrapped Mode
    :tags: wrapped mode, mode
    :links: FR-WRAP-003
 
-   The system must provide an interface to return the entire document as a sequence of
+   The system must provide an interface to return the entire :term:`text buffer` as a sequence of
    :term:`visual lines <visual line>`, calculated based on the current ``display_width``.
 
    The wrapping logic must strictly follow :need:`FR-WRAP-003`.
@@ -117,8 +119,8 @@ Display Mode
    The system must provide an interface to return only the subset of :term:`visual lines <visual line>` currently
    visible within the :term:`window`.
 
-   The number of lines returned must not exceed the ``display_height``, and the content must correspond to the range
-   defined by ``window_start``.
+   The number of lines returned must not exceed the :term:`display height```, and the content must correspond to the
+   range defined by :term:`window start`.
 
 .. freq:: Display-to-Logical Mapping
    :status: Open

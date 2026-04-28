@@ -5,10 +5,10 @@
 ------------------------------
 **Priority: High**
 
-The :term:`Text Buffer` is the conceptual source of truth for document content. It is modeled as a continuous sequence
+The :term:`Text Buffer` is the conceptual source of truth of the text. It is modeled as a continuous sequence
 of :term:`characters <character>`.
 
-The :term:`buffer <Text Buffer>` defines the observable state of the document. All text manipulation operations modify
+The :term:`buffer <Text Buffer>` defines the observable state of the text. All text manipulation operations modify
 this state.
 
 4.1.2 State Invariants
@@ -27,8 +27,8 @@ this state.
    :tags: buffer
 
    The :term:`buffer <Text Buffer>` must be processed in a left-to-right manner. Therefore a :term:`character`
-   "in front of" the cursor is visually to the right of the cursor. A :term:`character` "behind" the cursor is visually
-   to the left of the cursor.
+   "in front of" the :term:`cursor` is visually to the right of the :term:`cursor`. A :term:`character` "behind" the
+   :term:`cursor` is visually to the left of the :term:`cursor`.
 
 4.1.3 Preconditions
 -------------------

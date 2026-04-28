@@ -17,8 +17,8 @@ corresponding to the four :doc:`output modes <f-req_output_modes>`:
 3. **Visual Coordinate** (``[v_row, v_col]``) - Relevant for text layout, rendering, and visual navigation.
 4. **Window Coordinate** (``[x, y]``) - Relevant for displaying text within a :term:`viewport`.
    **Note:** ``[x, y]`` are not pixel coordinates. The system does not operate with pixels. ``y`` denotes the visible
-   line index within the :term:`viewport` (where ``y=0`` is the first visible line, not necessarily the first document
-   line). ``x`` denotes the column/character index.
+   line index within the :term:`viewport` (where ``y=0`` is the first :term:`display line`, not necessarily the first
+   :term:`visible line` line). ``x`` denotes the column/character index.
 
 4.2.2 State Invariants
 ----------------------
@@ -47,15 +47,16 @@ corresponding to the four :doc:`output modes <f-req_output_modes>`:
 .. inv:: Inter-Character Positioning
    :id: INV-CURSOR-002
 
-   The :term:`cursor` must always refer to a position *between* characters, not *on* a character itself.
+   The :term:`cursor` must always refer to a position *between* :term:`characters <Character>`, not *on* a
+   :term:`character` itself.
 
 .. inv:: Coordinate Synchronization
    :id: INV-CURSOR-003
    :links: INV-CURSOR-001
 
-   The Absolute Index, Logical Coordinate, Visual Coordinate, and Window Coordinate must bijectively map
-   to the exact same underlying position in the :term:`text buffer`. A change in one representation must be
-   perfectly reflected in the others.
+   The :term:`Absolute Index`, :term:`Logical Coordinate`, :term:`Visual Coordinate`, and :term:`Window Coordinate` must
+   bijectively map to the exact same underlying position in the :term:`text buffer`. A change in one representation
+   must be perfectly reflected in the others.
 
 4.2.3 Preconditions
 -------------------
@@ -63,8 +64,9 @@ corresponding to the four :doc:`output modes <f-req_output_modes>`:
 All operations in this section assume a valid, initialized :term:`text buffer` as defined in
 :doc:`Text Buffer Specification <f-req_text_manipulation>`.
 
-Operations relying on visual representations (Visual Coordinates, Window Coordinates, Cursor Movement) assume valid,
-initialized :term:`viewport`, :term:`display height` and :term:`display width`.
+Operations relying on visual representations (:term:`Visual Coordinates <Visual Coordinate>`,
+:term:`Window Coordinates <Window Coordinate>`, Cursor Movement) assume valid, initialized :term:`viewport`,
+:term:`display height` and :term:`display width`.
 
 4.2.4 Stimulus/Response Sequences
 ---------------------------------
@@ -76,13 +78,13 @@ initialized :term:`viewport`, :term:`display height` and :term:`display width`.
 
 * **Stimulus:** An external system or user triggers a vertical :term:`cursor` movement (e.g., up, down).
 
-  **Response:** The system calculates the new Visual Coordinate relative to the :term:`visual lines <visual line>`,
-  truncating the visual column if the target line is shorter, and applies the update.
+  **Response:** The system calculates the new :term:`Visual Coordinate` relative to the
+  :term:`visual lines <visual line>`, truncating the visual column if the target line is shorter, and applies the update.
 
 * **Stimulus:** An external system or user triggers a boundary :term:`cursor` movement (e.g., home, end).
 
-  **Response:** The system updates the :term:`cursor` to the absolute start (index ``0``)
-  or absolute end (index ``len(text)``) of the :term:`text buffer`.
+  **Response:** The system updates the :term:`cursor` to the absolute start (:term:`index <Absolute Index>` ``0``)
+  or absolute end (:term:`index <Absolute Index>` ``len(text)``) of the :term:`text buffer`.
 
 * **Stimulus:** Text is inserted or deleted at the current :term:`cursor`.
 
@@ -108,9 +110,11 @@ Cursor Position & Coordinates
    :tags: cursor, position
    :links: INV-CURSOR-001
 
-   The system must provide an interface to return the :term:`cursor` as an Absolute integer Index`.
-   A ``index`` value equal to ``len(text)`` represents the position immediately after the last character in the
-   :term:`text buffer`.
+   The system must provide an interface to return the :term:`cursor` as an
+   :term:`Absolute integer Index <Absolute Index>`.
+
+   An :term:`Absolute Index` value equal to ``len(text)`` represents the position immediately after the last
+   :term:`character` in the :term:`text buffer`.
 
 .. freq:: Logical Coordinate Representation
    :status: Open
@@ -118,9 +122,9 @@ Cursor Position & Coordinates
    :tags: cursor, coordinates
    :links: INV-CURSOR-001
 
-   The system must provide an interface to return the :term:`cursor` as a Logical Coordinate ``[row, col]``.
+   The system must provide an interface to return the :term:`cursor` as a :term:`Logical Coordinate` ``[row, col]``.
    A ``col`` value equal to the :term:`logical line` length represents the position immediately after the last
-   character (before the newline delimiter).
+   :term:`character` (before the newline delimiter).
 
 .. freq:: Visual Coordinate Representation
    :status: Open
@@ -128,10 +132,10 @@ Cursor Position & Coordinates
    :tags: cursor, coordinates
    :links: INV-CURSOR-001
 
-   The system must provide an interface to return the :term:`cursor` as a Visual Coordinate ``[v_row, v_col]``
+   The system must provide an interface to return the :term:`cursor` as a :term:`Visual Coordinate` ``[v_row, v_col]``
    representing its location across all wrapped :term:`visual lines <visual line>`.
    A ``v_col`` value equal to the :term:`visual line` length represents the position immediately after the last
-   character on that visual segment.
+   :term:`character` on that visual segment.
 
 .. freq:: Window Coordinate Representation
    :status: Open
@@ -139,9 +143,10 @@ Cursor Position & Coordinates
    :tags: cursor, coordinates
    :links: INV-CURSOR-001
 
-   The system must provide an interface to return the :term:`cursor` as a Window Coordinate ``[x, y]`` representing its
-   location within the visible :term:`viewport`.
-   An ``x`` value equal to ``display_width`` represents a position resting at the extreme right edge of the window.
+   The system must provide an interface to return the :term:`cursor` as a :term:`Window Coordinate` ``[x, y]``
+   representing its location within the visible :term:`viewport`.
+   An ``x`` value equal to ``display_width`` represents a position resting at the extreme right edge of the
+   :term:`window`.
 
 Edge Case: Boundary wrapping
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~

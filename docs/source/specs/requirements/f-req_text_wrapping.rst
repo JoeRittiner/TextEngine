@@ -9,9 +9,9 @@
 Instead, they are segmented into multiple :term:`visual lines <visual line>`.
 
 Wrapping is a purely visual transformation and does not modify the underlying :term:`text buffer`.
-No "soft" or "hard" newline characters are inserted into the buffer to facilitate wrapping.
-This mechanism determines the mapping between the Absolute Index and Visual Coordinates as described in the
-:doc:`Cursor Specification <f-req_cursor_movement>`.
+No "soft" or "hard" newline characters are inserted into the :term:`text buffer` to facilitate wrapping.
+This mechanism determines the mapping between the :term:`Absolute Index` and
+:term:`Visual Coordinates <Visual Coordinate> as described in the :doc:`Cursor Specification <f-req_cursor_movement>`.
 
 .. note::
    The current implementation uses "Character Wrapping" (breaking at the exact :term:`display width` boundary).
@@ -57,7 +57,7 @@ All wrapping logic assumes a valid :term:`text buffer` as defined in
 * **Stimulus:** The :term:`text buffer` is modified (insertion, deletion, or initialization).
 
   **Response:** The system recalculates the break points for all affected :term:`logical lines <logical line>`
-  and updates the total visual line count and :term:`cursor` Visual Coordinates.
+  and updates the total :term:`visual line`-count and :term:`cursor` :term:`Visual Coordinates <Visual Coordinate>`.
 
 4.3.5 Functional Requirements
 -----------------------------
@@ -77,8 +77,8 @@ All wrapping logic assumes a valid :term:`text buffer` as defined in
    :id: FR-WRAP-002
    :tags: wrap
 
-   The system must not truncate or omit characters from the :term:`visual lines <visual line>`.
-   Every character in the :term:`text buffer` must be assigned to exactly one :term:`visual line`.
+   The system must not truncate or omit :term:`characters <character>` from the :term:`visual lines <visual line>`.
+   Every :term:`character` in the :term:`text buffer` must be assigned to exactly one :term:`visual line`.
 
 .. freq:: Break Logic (Character-Based)
    :status: Open
@@ -97,16 +97,16 @@ All wrapping logic assumes a valid :term:`text buffer` as defined in
    :id: FR-WRAP-004
    :tags: wrap
 
-   Wrapping must be performed on a per-line basis. The system must never combine characters from two different
-   :term:`logical lines <logical line>` into a single :term:`visual line`.
+   Wrapping must be performed on a per-line basis. The system must never combine :term:`characters <character>` from
+   two different :term:`logical lines <logical line>` into a single :term:`visual line`.
 
 .. freq:: Empty Line Handling
    :status: Open
    :id: FR-WRAP-005
    :tags: wrap
 
-   A :term:`logical line` with zero characters (including and excluding newlines) must still result in exactly one
-   :term:`visual line` with a length of zero.
+   A :term:`logical line` with zero :term:`characters <character>` (including and excluding newlines) must still result
+   in exactly one :term:`visual line` with a length of zero.
 
 
 Out of Scope
@@ -116,4 +116,4 @@ Out of Scope
    :id: NR-WRAP-101
    :tags: wrap, out-of-scope
 
-   Wrapping may occur at any character boundary. Word boundaries do not need to be preserved.
+   Wrapping may occur at any :term:`character` boundary. Word boundaries do not need to be preserved.
