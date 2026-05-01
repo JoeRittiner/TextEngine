@@ -82,5 +82,6 @@ Glossary
       A marker representing the current insertion point. It bijectively maps to an :term:`Absolute Index`,
       a :term:`Logical Coordinate`, a :term:`Visual Coordinate`, and a :term:`Window Coordinate`.
 
+   System
    TextEditor
       The System.
