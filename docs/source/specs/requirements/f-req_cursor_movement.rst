@@ -1,7 +1,7 @@
-4.2 Cursor & Movement
+4.3 Cursor & Movement
 =====================
 
-4.2.1 Description and Priority
+4.3.1 Description and Priority
 ------------------------------
 **Priority: High**
 
@@ -20,7 +20,7 @@ corresponding to the four :doc:`output modes <f-req_output_modes>`:
    line index within the :term:`viewport` (where ``y=0`` is the first :term:`display line`, not necessarily the first
    :term:`visible line` line). ``x`` denotes the column/character index.
 
-4.2.2 State Invariants
+4.3.2 State Invariants
 ----------------------
 
 .. inv:: Valid Coordinate Ranges
@@ -58,7 +58,7 @@ corresponding to the four :doc:`output modes <f-req_output_modes>`:
    bijectively map to the exact same underlying position in the :term:`text buffer`. A change in one representation
    must be perfectly reflected in the others.
 
-4.2.3 Preconditions
+4.3.3 Preconditions
 -------------------
 
 All operations in this section assume a valid, initialized :term:`text buffer` as defined in
@@ -68,7 +68,7 @@ Operations relying on visual representations (:term:`Visual Coordinates <Visual 
 :term:`Window Coordinates <Window Coordinate>`, Cursor Movement) assume valid, initialized :term:`viewport`,
 :term:`display height` and :term:`display width`.
 
-4.2.4 Stimulus/Response Sequences
+4.3.4 Stimulus/Response Sequences
 ---------------------------------
 
 * **Stimulus:** An external system or user triggers a horizontal :term:`cursor` movement (e.g., left, right).
@@ -91,7 +91,7 @@ Operations relying on visual representations (:term:`Visual Coordinates <Visual 
   **Response:** The text is manipulated, and the :term:`cursor` implicitly updates its coordinates to remain logically
   consistent with the surrounding text boundary.
 
-4.2.5 Functional Requirements
+4.3.5 Functional Requirements
 -----------------------------
 
 Cursor Position & Coordinates
@@ -286,7 +286,7 @@ Boundary Behaviors
 
    Equivalent to setting the :term:`absolute index` to the length of the :term:`text buffer`.
 
-4.2.6 Out of Scope
+4.3.6 Out of Scope
 ------------------
 
 .. nreq:: Desired Column Retention

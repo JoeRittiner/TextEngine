@@ -1,7 +1,7 @@
-4.3 Text Wrapping
+4.4 Text Wrapping
 =================
 
-4.3.1 Description and Priority
+4.4.1 Description and Priority
 ------------------------------
 **Priority: Medium**
 
@@ -17,7 +17,7 @@ This mechanism determines the mapping between the :term:`Absolute Index` and
    The current implementation uses "Character Wrapping" (breaking at the exact :term:`display width` boundary).
    Future iterations may introduce "Word Wrapping" logic.
 
-4.3.2 State Invariants
+4.4.2 State Invariants
 ----------------------
 
 .. inv:: Defined Display Width
@@ -44,14 +44,14 @@ This mechanism determines the mapping between the :term:`Absolute Index` and
    The sum of the lengths of all :term:`visual lines <visual line>` associated with a :term:`logical line`
    must equal the length of that :term:`logical line`.
 
-4.3.3 Preconditions
+4.4.3 Preconditions
 -------------------
 
 All wrapping logic assumes a valid :term:`text buffer` as defined in
 :doc:`Text Buffer Specification <f-req_text_manipulation>`. Wrapping is applied automatically whenever the
 :term:`text buffer` state changes or the system is initialized.
 
-4.3.4 Stimulus/Response Sequences
+4.4.4 Stimulus/Response Sequences
 ---------------------------------
 
 * **Stimulus:** The :term:`text buffer` is modified (insertion, deletion, or initialization).
@@ -59,7 +59,7 @@ All wrapping logic assumes a valid :term:`text buffer` as defined in
   **Response:** The system recalculates the break points for all affected :term:`logical lines <logical line>`
   and updates the total :term:`visual line`-count and :term:`cursor` :term:`Visual Coordinates <Visual Coordinate>`.
 
-4.3.5 Functional Requirements
+4.4.5 Functional Requirements
 -----------------------------
 
 .. freq:: Non-Destructive Wrapping

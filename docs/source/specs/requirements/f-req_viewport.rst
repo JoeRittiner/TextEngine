@@ -1,7 +1,7 @@
-4.4 Viewport & Scrolling
+4.5 Viewport & Scrolling
 ========================
 
-4.4.1 Description and Priority
+4.5.1 Description and Priority
 ------------------------------
 **Priority: Low**
 
@@ -17,7 +17,7 @@ the absolute start or end of the :term:`text buffer` where scrolling further is 
 
 The visible :term:`window` range is automatically updated in response to :term:`cursor` movement and text manipulation.
 
-4.4.2 State Invariants
+4.5.2 State Invariants
 ----------------------
 
 .. inv:: Display Dimensions
@@ -58,13 +58,13 @@ The visible :term:`window` range is automatically updated in response to :term:`
 
    The :term:`viewport` must always be fully contained within the :term:`window`.
 
-4.4.3 Preconditions
+4.5.3 Preconditions
 -------------------
 
 The system requires an initialized :term:`text buffer` that has been successfully mapped into
 :term:`visual lines <visual line>` according to the :doc:`Wrapping Specification <f-req_text_wrapping>`.
 
-4.4.4 Stimulus/Response Sequences
+4.5.4 Stimulus/Response Sequences
 ---------------------------------
 
 * **Stimulus:** The :term:`cursor` is moved to a new position within the bounds of the current :term:`viewport`.
@@ -83,7 +83,7 @@ The system requires an initialized :term:`text buffer` that has been successfull
   **Response:** The system automatically shifts the :term:`window start` upwards (decreasing the value) until the
   :term:`window` bounds are valid again.
 
-4.4.5 Functional Requirements
+4.5.5 Functional Requirements
 -----------------------------
 
 .. freq:: Cursor Constraint & Scrolloff

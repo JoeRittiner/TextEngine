@@ -1,7 +1,7 @@
-4.5 Output Modes
+4.6 Output Modes
 ================
 
-4.5.1 Description and Priority
+4.6.1 Description and Priority
 ------------------------------
 **Priority: High**
 
@@ -12,7 +12,7 @@ These modes allow consumers to view the :term:`text buffer` as a raw string, a c
 :term:`logical lines <logical line>`, a fully wrapped :term:`text buffer` (:term:`visual lines <visual line>`),
 or a windowed :term:`viewport` (:term:`display lines <display line>`).
 
-4.5.2 State Invariants
+4.6.2 State Invariants
 ----------------------
 
 .. inv:: Read-Only Operations
@@ -38,7 +38,7 @@ or a windowed :term:`viewport` (:term:`display lines <display line>`).
    boundaries (:term:`window start`) are unchanged.
 
 
-4.5.3 Preconditions
+4.6.3 Preconditions
 -------------------
 
 All operations in this section assume a valid :term:`text buffer` as per :doc:`f-req_text_manipulation`.
@@ -47,14 +47,14 @@ All operations in this section assume a valid :term:`display width` as per :doc:
 
 All operations in this section assume a valid :term:`display height` and :term:`viewport` as per :doc:`f-req_viewport`.
 
-4.5.4 Stimulus/Response Sequences
+4.6.4 Stimulus/Response Sequences
 ---------------------------------
 
 * **Stimulus:** An external consumer requests the :term:`buffer <Text Buffer>` content in a specific output mode.
 
   **Response:** The system evaluates the current state against the requested mode's logic and returns the formatted data.
 
-4.5.5 Functional Requirements
+4.6.5 Functional Requirements
 -----------------------------
 
 Raw Mode
@@ -130,7 +130,7 @@ Display Mode
    The output for Display Mode must include metadata indicating which :term:`display lines <display line>` belong to
    which :term:`logical line`.
 
-4.5.6 Out of Scope
+4.6.6 Out of Scope
 ------------------
 
 .. nreq:: Rendering & I/O

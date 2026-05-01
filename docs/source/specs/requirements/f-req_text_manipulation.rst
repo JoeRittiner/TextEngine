@@ -1,7 +1,7 @@
-4.1 Text Buffer & Manipulation
+4.2 Text Buffer & Manipulation
 ==============================
 
-4.1.1 Description and Priority
+4.2.1 Description and Priority
 ------------------------------
 **Priority: High**
 
@@ -11,7 +11,7 @@ of :term:`characters <character>`.
 The :term:`buffer <Text Buffer>` defines the observable state of the text. All text manipulation operations modify
 this state.
 
-4.1.2 State Invariants
+4.2.2 State Invariants
 ----------------------
 
 .. inv:: Empty Buffer Definition
@@ -30,13 +30,13 @@ this state.
    "in front of" the :term:`cursor` is visually to the right of the :term:`cursor`. A :term:`character` "behind" the
    :term:`cursor` is visually to the left of the :term:`cursor`.
 
-4.1.3 Preconditions
+4.2.3 Preconditions
 -------------------
 
 All operations in this section assume a valid :term:`cursor` position as defined in
 :doc:`Cursor Specification <f-req_cursor_movement>`.
 
-4.1.4 Stimulus/Response Sequences
+4.2.4 Stimulus/Response Sequences
 ---------------------------------
 
 * **Stimulus:** External system provides a sequence of :term:`characters <character>` to
@@ -54,7 +54,7 @@ All operations in this section assume a valid :term:`cursor` position as defined
   **Response:** The system removes the :term:`character` immediately left of the :term:`cursor`, if present, and updates
   the :term:`cursor` position.
 
-4.1.5 Functional Requirements
+4.2.5 Functional Requirements
 -----------------------------
 
 .. freq:: Text Buffer
@@ -272,7 +272,7 @@ Special characters as defined in :ref:`req_special_characters` are required to b
 
    The system must ignore the alert character (``\a``). (No-op)
 
-4.1.6 Out of Scope
+4.2.6 Out of Scope
 ------------------
 
 .. nreq:: Text Selection

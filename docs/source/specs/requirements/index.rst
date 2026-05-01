@@ -125,6 +125,7 @@ and behavioral rules are detailed in the following subsystems.
    :maxdepth: 2
    :caption: Functional Requirements
 
+   f-req_initialization
    f-req_text_manipulation
    f-req_cursor_movement
    f-req_text_wrapping
