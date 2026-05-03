@@ -23,6 +23,7 @@ This mechanism determines the mapping between the :term:`Absolute Index` and
 .. inv:: Defined Display Width
    :id: INV-WRAP-001
    :tags: wrap
+   :links: FR-INIT-003
 
    A positive integer :term:`display width` (representing the maximum number of :term:`characters <character>`
    per :term:`visual line`) must be defined at system initialization.
@@ -30,6 +31,7 @@ This mechanism determines the mapping between the :term:`Absolute Index` and
 .. inv:: Static Display Width
    :id: INV-WRAP-002
    :tags: wrap
+   :links: FR-INIT-003
 
    The :term:`display width` must remain constant during the lifetime of the system instance.
 
@@ -85,12 +87,8 @@ All wrapping logic assumes a valid :term:`text buffer` as defined in
    :id: FR-WRAP-003
    :tags: wrap
 
-   A :term:`logical line` must be split into :term:`visual lines <visual line>` such that:
-      * Each :term:`visual line` (except potentially the last one) has a length exactly equal to the
-        :term:`display width`.
-      * The final :term:`visual line` of a non-empty :term:`logical line` has a length of ``display_width`` if
-        ``logical_line_length % display_width == 0``. Otherwise, it has a length of
-        ``logical_line_length % display_width``.
+   A :term:`logical line` is split into :term:`visual lines <visual line>` of length ``display_width``, except the
+   last, whose length is ``logical_line_length % display_width`` (or ``display_width`` if zero).
 
 .. freq:: Line Isolation
    :status: Open
@@ -105,8 +103,8 @@ All wrapping logic assumes a valid :term:`text buffer` as defined in
    :id: FR-WRAP-005
    :tags: wrap
 
-   A :term:`logical line` with zero :term:`characters <character>` (including and excluding newlines) must still result
-   in exactly one :term:`visual line` with a length of zero.
+   A :term:`logical line` with zero :term:`characters <character>` must result in exactly one :term:`visual line` with
+   a length of zero.
 
 
 Out of Scope

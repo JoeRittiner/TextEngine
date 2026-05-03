@@ -33,6 +33,8 @@ Glossary
       A system-wide constant defining the maximum number of :term:`characters <character>` permitted in a single
       :term:`Visual Line`.
 
+      The value of :term:`Display Width` may be referred to as ``display_width``.
+
    Visual Line
       A segment of a :term:`Logical Line` as it appears after :doc:`wrapping <f-req_text_wrapping>`.
 
@@ -51,8 +53,12 @@ Glossary
       A system-wide constant defining the maximum number of :term:`Visual Lines <Visual Line>` that can be rendered in
       the  :term:`window` simultaneously.
 
+      The value of :term:`Display Height` may be referred to as ``display_height``.
+
    Window Start
-      The index of the first :term:`Visual Line` currently rendered at the top of the  :term:`window`.
+      The index of the first :term:`Visual Line` currently rendered at the top of the :term:`window`.
+
+      The value of :term:`Window Start` may be referred to as ``window_start``.
 
    Display Line
       A :term:`Visual Line` that is currently visible within the  :term:`window` boundaries
@@ -63,6 +69,8 @@ Glossary
       and the top/bottom edges of the  :term:`window`. This creates a "margin" that triggers scrolling before the cursor hits
       the absolute edge of the display.
 
+      The value of :term:`ScrollOff` may be referred to as ``scrolloff``.
+
    Viewport
       The interior subset of the  :term:`window` where the :term:`Cursor` is allowed to move without triggering a scroll.
 
@@ -71,6 +79,8 @@ Glossary
 
    Viewport Height
       The vertical capacity of the :term:`Viewport`, calculated as: ``display_height - (2 * scrolloff)``.
+
+      The value of :term:`Viewport Height` may be referred to as ``viewport_height``.
 
    Window Coordinate
       A coordinate pair ``[x, y]`` representing the :term:`Cursor`'s position relative to the visible  :term:`window`.
@@ -84,4 +94,4 @@ Glossary
 
    System
    TextEditor
-      The System.
+      The System. Single threaded.

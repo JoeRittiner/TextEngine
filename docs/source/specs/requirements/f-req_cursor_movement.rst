@@ -18,7 +18,7 @@ corresponding to the four :doc:`output modes <f-req_output_modes>`:
 4. **Window Coordinate** (``[x, y]``) - Relevant for displaying text within a :term:`viewport`.
    **Note:** ``[x, y]`` are not pixel coordinates. The system does not operate with pixels. ``y`` denotes the visible
    line index within the :term:`viewport` (where ``y=0`` is the first :term:`display line`, not necessarily the first
-   :term:`visible line` line). ``x`` denotes the column/character index.
+   visible line). ``x`` denotes the column/character index.
 
 4.3.2 State Invariants
 ----------------------
@@ -54,9 +54,11 @@ corresponding to the four :doc:`output modes <f-req_output_modes>`:
    :id: INV-CURSOR-003
    :links: INV-CURSOR-001
 
-   The :term:`Absolute Index`, :term:`Logical Coordinate`, :term:`Visual Coordinate`, and :term:`Window Coordinate` must
-   bijectively map to the exact same underlying position in the :term:`text buffer`. A change in one representation
-   must be perfectly reflected in the others.
+   Valid :term:`Absolute Index`, :term:`Logical Coordinate`, :term:`Visual Coordinate`, and :term:`Window Coordinate`
+   values must bijectively map to the exact same underlying position in the :term:`text buffer`. A change in one
+   representation must be perfectly reflected in the others.
+
+   **Exception:** :need:`FR-CURSOR-010` boundary case.
 
 4.3.3 Preconditions
 -------------------
@@ -158,13 +160,13 @@ Edge Case: Boundary wrapping
    :links: FR-WRAP-003, INV-CURSOR-001
 
    When the :term:`cursor` is positioned at the exact boundary of a wrapped :term:`logical line`
-   ([``row, N * display_width``]), the :term:`Visual Coordinate` must be represented as resting at the start of
-   the next :term:`visual line` (``[v_row, 0]``).
+   (e.g. [``row, N * display_width``], where ``N`` is a positive integer), the :term:`Visual Coordinate` must be
+   represented as resting at the start of the next :term:`visual line` (``[v_row, 0]``).
    The system must normalize any input of ``[v_row, display_width]`` to ``[v_row + 1, 0]``.
 
    **Exception:**
    When the :term:`cursor` is positioned at the end of a :term:`logical line`, whose final :term:`visual line` is
-   exactly ``display_width`` :term:`characters <character>` long, (:need:`[[id]] <FR-WRAP-003>`) the
+   exactly ``display_width`` :term:`characters <character>` long, (:need:`FR-WRAP-003`) the
    :term:`Visual Coordinate` must be represented as `[v_row, display_width]` instead. Since the :term:`visual line`
    `v_row+1` doesn't exist.
 
@@ -226,9 +228,11 @@ Vertical Movement
    :tags: movement, vertical
    :links: NR-CURSOR-101
 
-   When moving vertically, the system must attempt to preserve the current visual column (``v_col``).
-   If the target :term:`visual line` is shorter than the current ``v_col``, the system must truncate the new position
-   to the end of the target :term:`visual line` (its maximum valid ``v_col``).
+   When moving vertically, the system must preserve the current visual column (``v_col``).
+
+   **Exception:**
+   Only if the target :term:`visual line` is shorter than the current ``v_col``, the system must truncate the new
+   position to the end of the target :term:`visual line` (its maximum valid ``v_col``).
 
 .. _horizontal-movement:
 
