@@ -45,7 +45,7 @@ All operations in this section assume a valid :term:`text buffer` as per :doc:`f
 
 All operations in this section assume a valid :term:`display width` as per :doc:`f-req_text_wrapping`.
 
-All operations in this section assume a valid :term:`display height` and :term:`viewport` as per :doc:`f-req_viewport`.
+All operations in this section assume a valid :term:`display height` and :term:`viewport` as per :doc:`f-req_window`.
 
 4.6.4 Stimulus/Response Sequences
 ---------------------------------
@@ -119,7 +119,7 @@ Display Mode
    The system must provide an interface to return only the subset of :term:`visual lines <visual line>` currently
    visible within the :term:`window`.
 
-   The number of lines returned must not exceed the :term:`display height```, and the content must correspond to the
+   The number of lines returned must not exceed the :term:`display height`, and the content must correspond to the
    range defined by :term:`window start`.
 
 .. freq:: Display-to-Logical Mapping

@@ -1,5 +1,5 @@
-4.5 Viewport & Scrolling
-========================
+4.5 Window & Scrolling
+======================
 
 4.5.1 Description and Priority
 ------------------------------
