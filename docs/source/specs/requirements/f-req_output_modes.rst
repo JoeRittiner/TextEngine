@@ -1,3 +1,5 @@
+.. _req_output_modes:
+
 4.6 Output Modes
 ================
 

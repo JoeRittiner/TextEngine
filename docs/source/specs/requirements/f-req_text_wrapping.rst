@@ -1,3 +1,5 @@
+.. _req_text_wrapping:
+
 4.4 Text Wrapping
 =================
 

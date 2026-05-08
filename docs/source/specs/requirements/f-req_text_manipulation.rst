@@ -1,3 +1,5 @@
+.. _req_text_manipulation:
+
 4.2 Text Buffer & Manipulation
 ==============================
 

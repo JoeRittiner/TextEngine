@@ -1,3 +1,5 @@
+.. _req_cursor_and_movement:
+
 4.3 Cursor & Movement
 =====================
 

@@ -1,3 +1,5 @@
+.. _req_window:
+
 4.5 Window & Scrolling
 ======================
 

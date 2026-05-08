@@ -1,3 +1,5 @@
+.. _req_initialization:
+
 4.1 System Initialization
 =========================
 

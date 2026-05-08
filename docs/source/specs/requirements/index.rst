@@ -133,14 +133,19 @@ and behavioral rules are detailed in the following subsystems.
    f-req_output_modes
    req_glossary
 
+.. _req_non_functional_requirements:
 
 5. Other Nonfunctional Requirements
 -----------------------------------
+
+.. _req_performance_requirements:
 
 5.1 Performance Requirements
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The system must ensure that text manipulation, cursor tracking, and visual wrapping remain highly performant and
 mathematically deterministic to prevent lag during rapid host-application input loops.
+
+.. _req_software_quality_attributes:
 
 5.2 Software Quality Attributes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
