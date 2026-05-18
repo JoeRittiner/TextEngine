@@ -73,11 +73,10 @@ Document Conventions
   architectural responsibility. Whether a component is realised as a class, a module, or a set of
   pure functions is an implementation not assumed here.
 
-.. note:: **C4 Model:**
-
-   The :ref:`Text Editor <arch_system>` is made up of three :ref:`Domains/ Layers/ Containers <arch_containers>`
-   (applications and data stores), each of which contains one or more :ref:`components <arch_components>`,
-   which in turn are implemented by one or more "code" elements (classes, interfaces, objects, functions, etc).
+* **C4 levels:** This document follows the C4 model hierarchy. The engine is within the *System*; its
+  three domains are *Containers*; the modules within each domain are *Components*, which are made up of *Classes*,
+  *Functions* and *Code*.
+  See :doc:`decisions/arch-c4_model` for the rationale for adopting this model.
 
 .. _arch_goals_and_constraints:
 
@@ -90,12 +89,11 @@ Architectural Goals and Constraints
 Goals
 ~~~~~
 
-.. State the qualities this architecture is explicitly designed to achieve. These should be derived from
-   the non-functional requirements in the SRS. Examples for this kind of project:
-   - Testability: all logic must be exercisable without a host application.
-   - Separation of concerns: each component owns one well-defined responsibility.
-   - Replaceability: internal components should be replaceable without changing the public API.
-   Write each goal as a short labelled statement, not a vague aspiration.
+* **Single Responsibility per Container:**
+  Each domain has a single responsibility. If a container's responsibility cannot be described in
+  one sentence without the word "and", it is doing too much.
+
+  *Rationale:* Prevents the spread of concerns and makes the architecture easier to understand and maintain.
 
 * **Strict Unidirectional Dependencies:**
   Dependencies flow in one direction only: from higher domains toward lower domains. No component
@@ -130,8 +128,6 @@ Goals
 * **Performance:**
   Text manipulation, cursor tracking, and visual wrapping must remain performant during rapid
   host-application input loops. See :ref:`req_performance_requirements`.
-
-.. :ref:`req_software_quality_attributes`
 
 Constraints
 ~~~~~~~~~~~
@@ -213,11 +209,9 @@ The caller never observes a partially-updated state.
   (:doc:`../requirements/f-req_initialization`)
 
 **Mutation Commands**
-  Operations that modify the text buffer (``insert``, ``delete``, ``backspace``). The cursor may be updated as a
-  consequence. The engine does not expose partial results mid-mutation.
-
-  *Error contract (TBD):* Behaviour on invalid operations (e.g. ``backspace`` at position 0) is
-  unresolved. See :ref:`arch_error_contract`.
+  Operations that modify the text buffer (``insert``, ``delete``, ``backspace``). The cursor may be
+  updated as a consequence. The engine does not expose partial results mid-mutation.
+  (:doc:`../requirements/f-req_text_manipulation`)
 
 **Cursor Movement**
   Operations that reposition the cursor without modifying text (``move_up``, ``move_down``,
@@ -225,11 +219,13 @@ The caller never observes a partially-updated state.
   (:doc:`../requirements/f-req_cursor_movement`)
 
 **Cursor Query**
-  Returns the current cursor position in a caller-specified coordinate space (see :ref:`arch_coordinate_spaces`).
+  Returns the current cursor position in a caller-specified coordinate space.
+  See :ref:`arch_coordinate_spaces`.
+  (:doc:`../requirements/f-req_cursor_movement`)
 
 **Content Query**
-  Returns the current text content in a caller-specified form (:term:`logical lines`, :term:`visual lines`,
-  or :term:`display lines`).
+  Returns the current text content in a caller-specified form (logical lines, visual lines, or display lines).
+  (:doc:`../requirements/f-req_output_modes`)
 
 .. _arch_containers:
 
@@ -242,11 +238,17 @@ Domain Layer Model
 The engine is divided into three layered domains. Each domain depends only on the one domain directly
 below it and is completely independent of the domains above it.
 
-.. note:: **C4 Model:**
-   In this architecture, the domains/ layers aren't necessarily "real". They're more conceptual. There might not
-   be a literal "LogicalLayer" or "DisplayLayer" that exists, the same way an actual database or UI might exist in other
-   C4 models. Nonetheless, the components will be grouped into these conceptual domains for the purposes of this
-   architecture. I.e. they will not overlap.
+.. note::
+
+   Each domain is represented at runtime by a domain service (e.g. ``VisualLayer``), which owns the domain's internal
+   components and is the sole point of contact for the layer above. This makes each domain independently instantiable
+   and unit-testable in isolation. The C4 *container* level is used here because it accurately captures this boundary
+   structure.
+
+   Though the domains are not separately deployable processes; they are bounded objects within a single Python module.
+   See :doc:`decisions/arch-c4_model`.
+
+.. Domain Services could be "interfaced" and therefore mocked for unit testing.
 
 Data flows *up* through the layers in response to queries. Commands flow *down*: the caller
 instructs a domain, which delegates further down as needed. No domain notifies the domain above it
@@ -271,11 +273,8 @@ cross-domain operations.
 
 * **DisplayDomain:** Manages window geometry and tracks the cursor in Window coordinates.
   Determines which subset of visual lines is returned to the host. If cursor movement causes the
-  viewport to scroll, the Visual Domain is unaffected. Does not mutate cursor or text directly; it
-  passes mutation requests down to the Visual Domain.
-
-**Important:** Domains have no responsibility to notify the Domain above them when it changes.
-Synchronisation is the Facade's responsibility.
+  viewport to scroll, the Visual Domain is unaffected. Does not mutate cursor or text directly,
+  it passes movement requests down to the Visual Domain. Translates between Window and Visual coordinates.
 
 .. **Why is Cursor in the Visual Domain, not the Logical Domain?**
    See :doc:`decisions/arch-cursor_domain`.
@@ -291,14 +290,30 @@ onto the output modes exposed by the public API (See :doc:`../requirements/f-req
 
 .. _arch_coordinate_ownership:
 
-======= ======= ============== ======================================
-Mode    Domain  Coordinate     Meaning
-======= ======= ============== ======================================
-Raw     Logical Absolute Index ...
-Logical Logical Logical        ...
-Wrapped Visual  Visual         ...
-Display Display Window         ...
-======= ======= ============== ======================================
+.. list-table::
+   :widths: 15 20 20 45
+   :header-rows: 1
+
+   * - Output Mode
+     - Domain
+     - Coordinate
+     - Meaning
+   * - Raw
+     - Logical
+     - Absolute Index
+     - TBD
+   * - Logical
+     - Logical
+     - ``(line, col)``
+     - TBD
+   * - Wrapped
+     - Visual
+     - ``(row, col)``
+     - TBD
+   * - Display
+     - Display
+     - ``[x, y]``
+     - TBD
 
 Container Diagram
 ~~~~~~~~~~~~~~~~~
@@ -342,8 +357,18 @@ Components
 Component Descriptions
 ~~~~~~~~~~~~~~~~~~~~~~
 
+#. **TextBuffer** holds the raw text string. (Domain Service)
+#. **CursorState** tracks the cursor position.
+#. **WrapEngine** adapts the LogicalLayer into VisualData (lines and cursor position.)
+#. **VisualContainer** tracks the text and cursor in Visual coordinates. (Domain Service)
+#. **ViewportState** truncates the visual lines to fit the window.
+#. **DisplayCoordinateTranslator** translates between visual and display coordinates.
+#. **DisplayContainer** tracks the text and cursor in Display coordinates. (Domain Service)
+#. **Facade** coordinates cross-domain operations.
+
+
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    arch-text_buffer
 
@@ -397,17 +422,12 @@ Unresolved Questions
 ~~~~~~~~~~~~~~~~~~~~~
 
 * **Error handling contract:** What is the engine's behaviour on invalid operations?
-  Options: raise an exception, return a status code, or silently no-op with state unchanged.
-  This affects the public API contract in [...] and must be decided before the facade is implemented.
+  Options: Generally: silently no-op with state unchanged.
+  (:ref:`arch_public_api`).
 
-* **Logging:** Should the engine emit structured logs? If so, at which layer. Only the facade,
-  or also internal components? Using the standard library ``logging`` module is consistent with
-  the library constraint, but the scope is unresolved.
-
-* **Resize behaviour:** The configurable geometry constraint (:need:`INV-VIEW-001`) implies the
-  display can be resized at runtime. Is this a re-initialisation (new engine instance) or a
-  mutation operation on an existing instance? The current API does not expose a resize method.
-
+* **Logging:** Should the engine emit structured logs? If so, at which layer? Facade only, or
+  also internal components? Using the standard library ``logging`` module is consistent with the
+  dependency constraint, but the scope is unresolved.
 
 Known Limitations
 ~~~~~~~~~~~~~~~~~
@@ -416,6 +436,8 @@ Known Limitations
   from multiple threads simultaneously.
 * **In-memory only.** The entire text buffer is held in memory. There is no streaming or paging
   for large documents.
+* **Resize Behavior:** The requirements :need:`INV-VIEW-001` and :need:`INV-WRAP-001` define that `display_width` and
+  `display_height` are defined once at initialization and cannot be changed. Dynamic resizing is not supported.
 
 .. Future Evolution
    ~~~~~~~~~~~~~~~~
