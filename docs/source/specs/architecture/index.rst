@@ -357,7 +357,8 @@ Components
 Component Descriptions
 ~~~~~~~~~~~~~~~~~~~~~~
 
-#. **TextBuffer** holds the raw text string. (Domain Service)
+#. **TextBuffer** holds the raw text string.
+#. **LogicalDomainService** sanitizes inputs and splits raw text into lines.
 #. **CursorState** tracks the cursor position.
 #. **WrapEngine** adapts the LogicalLayer into VisualData (lines and cursor position.)
 #. **VisualContainer** tracks the text and cursor in Visual coordinates. (Domain Service)
@@ -371,6 +372,7 @@ Component Descriptions
    :maxdepth: 1
 
    components/arch-text_buffer
+   components/arch-logical_domain_service
 
 Internal Interfaces
 ~~~~~~~~~~~~~~~~~~~

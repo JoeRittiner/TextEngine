@@ -5,9 +5,12 @@ title Text Editor Architecture - Logical Layer
 interface LogicalLayer
 
 rectangle "Logical Domain" #LightBlue {
+   component LogicalDomainService
    component "TextBuffer"
 }
 
-LogicalLayer -- TextBuffer
+LogicalDomainService *-> TextBuffer
+
+LogicalLayer -- LogicalDomainService
 
 @enduml

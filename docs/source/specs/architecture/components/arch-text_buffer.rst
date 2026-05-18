@@ -1,3 +1,5 @@
+.. _arch_component_text_buffer:
+
 Text Buffer
 ~~~~~~~~~~~
 
@@ -5,9 +7,9 @@ Responsibility
 ..............
 
 The TextBuffer is the single authoritative store for the content of the document. It
-accepts mutation operations (:need:`FR-TEXT-011`, :need:`FR-TEXT-021`) at a given absolute index and exposes the
-resulting text as a raw string. It is the only component permitted to hold or modify the underlying text.
-(:need:`FR-TEXT-001`, :need:`FR-TEXT-002`)
+accepts mutation operations (insert, delete) at a given absolute index and exposes the
+resulting text as a raw string. It is the only component permitted to hold or modify the
+underlying text. (:need:`FR-TEXT-001`, :need:`FR-TEXT-002`)
 
 Owned State
 ...........
@@ -22,12 +24,23 @@ window-clipped output) are derived from this string by other components.
 Behaviour
 .........
 
-Insertion is always a pure splice: characters are inserted at the
-given absolute index without overwriting existing content. (:need:`FR-TEXT-014`)
-Inserting a multi-character string produces the same buffer state as inserting each character
-sequentially. (:need:`FR-TEXT-017`)
+The TextBuffer normalises certain input characters on insertion, before they enter the
+buffer. These rules are architecturally significant because they define what the raw text
+string actually contains, and therefore what all downstream components can assume.
 
-"Delete" targets the character immediately to the right of the given index. Deleting past
+* ``\t`` is expanded to four spaces. (:need:`FR-TEXT-043`)
+* ``\r``, ``\b``, ``\f``, ``\v``, and ``\a`` are silently ignored. (:need:`FR-TEXT-042`,
+  :need:`FR-TEXT-044`, :need:`FR-TEXT-045`, :need:`FR-TEXT-046`, :need:`FR-TEXT-047`)
+* ``\n`` is stored as-is and defines logical line boundaries. (:need:`FR-TEXT-041`,
+  :need:`FR-TEXT-016`, :need:`FR-TEXT-025`)
+
+After normalisation, insertion is always a pure splice: characters are inserted at the
+given absolute index without overwriting existing content. (:need:`FR-TEXT-014`) Inserting
+an empty string is a no-op. (:need:`FR-TEXT-013`) Inserting a multi-character string
+produces the same buffer state as inserting each character sequentially.
+(:need:`FR-TEXT-017`)
+
+Delete targets the character immediately to the right of the given index. Deleting past
 the end of the buffer is a no-op. (:need:`FR-TEXT-024`)
 
 Dependencies
@@ -39,8 +52,8 @@ only the Python standard library.
 Key Invariants
 ..............
 
-* **Buffer always exists.** The buffer always represents at least one logical line. An
-  empty buffer contains zero characters and yields one empty line when split.
+* **Buffer always exists.** The buffer always represents at least an empty buffer containing
+  zero characters.
   (:need:`INV-TEXT-001`)
 
 * **Left-to-right processing.** The buffer is processed left-to-right. A character "in
@@ -51,6 +64,6 @@ Key Invariants
   provided initial text (or is empty), and this state is indistinguishable from one
   reached through normal operation. (:need:`INV-INIT-002`)
 
-* **Output stability.** For any given buffer state, repeated queries for raw text return identical results.
-  Output is a pure function of the buffer contents.
+* **Output stability.** For any given buffer state, repeated queries for raw text return
+  identical results. Output is a pure function of the buffer contents.
   (:need:`INV-MODE-002`)
