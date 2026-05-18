@@ -370,7 +370,7 @@ Component Descriptions
 .. toctree::
    :maxdepth: 1
 
-   arch-text_buffer
+   components/arch-text_buffer
 
 Internal Interfaces
 ~~~~~~~~~~~~~~~~~~~
