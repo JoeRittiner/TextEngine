@@ -318,7 +318,7 @@ onto the output modes exposed by the public API (See :doc:`../requirements/f-req
 Container Diagram
 ~~~~~~~~~~~~~~~~~
 
-.. plantuml:: diagrams/domain_layers.puml
+.. plantuml:: diagrams/domain_containers.puml
 
 Data Flow: Representative Examples
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

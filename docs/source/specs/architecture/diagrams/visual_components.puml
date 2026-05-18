@@ -1,0 +1,28 @@
+@startuml
+
+title Text Editor Architecture - Visual Component
+
+interface VisualLayer as "\nVisualLayer"
+interface LogicalLayer
+
+rectangle "Visual Domain" #Green {
+   component "VisualContainer"
+   'Stateful (Orchestrator/ Facade)
+   component "WrapEngine"
+   'Stateless (Adapter Pattern?)
+   component "CursorState"
+   'Stateful
+
+note top of WrapEngine
+    Adapter Pattern
+end note
+}
+
+VisualContainer -up-|> VisualLayer
+WrapEngine ..> LogicalLayer : " adapts"
+
+VisualContainer *--> WrapEngine
+VisualContainer *--> CursorState
+WrapEngine <. CursorState
+
+@enduml

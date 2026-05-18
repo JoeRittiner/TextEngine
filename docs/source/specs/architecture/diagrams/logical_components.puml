@@ -1,0 +1,13 @@
+@startuml
+
+title Text Editor Architecture - Logical Layer
+
+interface LogicalLayer
+
+rectangle "Logical Domain" #LightBlue {
+   component "TextBuffer"
+}
+
+LogicalLayer -- TextBuffer
+
+@enduml

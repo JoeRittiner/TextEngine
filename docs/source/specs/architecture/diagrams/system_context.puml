@@ -1,0 +1,15 @@
+@startuml
+
+title Text Editor Architecture - System Context
+
+
+interface API
+
+node "Host Application" #White
+package "Text Editor" #LightGrey {
+}
+
+API - [Text Editor]
+[Host Application] ..> API : use
+
+@enduml

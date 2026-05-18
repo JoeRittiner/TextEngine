@@ -1,0 +1,24 @@
+@startuml
+
+title Text Editor Architecture - Display Layer
+
+interface DisplayLayer as "\nDisplayLayer"
+interface VisualLayer
+
+rectangle "Visual Domain" #Orange {
+   component DisplayContainer
+   component DisplayCoordinateTranslator
+   component ViewportState
+   'Stateless?
+   ' component CoordinateTranslator
+}
+
+DisplayContainer -up-|> DisplayLayer
+
+DisplayContainer *--> DisplayCoordinateTranslator
+DisplayContainer *--> ViewportState
+DisplayCoordinateTranslator .> ViewportState
+
+DisplayContainer .> VisualLayer
+
+@enduml
