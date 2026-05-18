@@ -411,6 +411,9 @@ Architectural Decisions
    :maxdepth: 1
    :glob:
 
+   decisions/arch-layers
+   decisions/arch-display_domain
+   decisions/arch-c4_model
    decisions/*
 
 Open Questions

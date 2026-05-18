@@ -1,28 +1,19 @@
-.. The engine is within the *System*; its three domains are *Containers*; the modules within each domain are
-  *Components*, which are made up of *Classes*, *Functions* and *Code*.
-
-.. Though the domains are not separately deployable processes; they are bounded objects within a single Python module.
-   See :doc:`decisions/arch-c4_model`.
-
 C4 Model
 ~~~~~~~~
 
 Context
 .......
 
-.. What situation or question forced this decision? What were the competing pressures?
+The engine's layered domain structure was already decided (see :doc:`arch-layers`): three
+additive domains, Logical, Visual, and Display, stacked with strict unidirectional
+dependencies. That decision produced a natural hierarchy of abstraction: the engine as a
+whole, the domains within it, and the modules within each domain.
 
-The Text Editor Engine needed a vocabulary and a diagramming convention to describe and
-communicate its internal structure. Without a shared model, there is no principled way to
-answer questions such as: what counts as a component? what is the boundary of a domain?
-what level of detail belongs in which diagram?
-
-The engine is structured around three layered domains: Logical, Visual, and Display.
-Each with distinct responsibilities and strict unidirectional dependencies
-(:ref:`arch_goals_and_constraints`). This layered structure has a natural hierarchy of
-abstraction: the engine as a whole, the domains within it, and the modules within each
-domain. A structural model was needed that could express that hierarchy consistently and
-support diagrams at each level of detail.
+What remained was a documentation decision: how to describe and communicate that hierarchy
+consistently. Without a shared model, there is no principled way to answer questions such
+as: what counts as a component? what is the boundary of a domain? what level of detail
+belongs in which diagram? Inventing answers ad-hoc risks inconsistency across diagrams and
+requires every term to be defined before it can be used.
 
 Decision
 ........
@@ -43,11 +34,10 @@ The C4 hierarchy is applied as follows:
 Rationale
 .........
 
-The C4 model's four-level hierarchy maps cleanly onto the engine's existing structure.
-The three domains correspond naturally to Containers: each has a single statable
-responsibility, a defined interface to adjacent domains, and internal components that are
-hidden behind that interface. Adopting C4 gives these concepts standard names and a
-standard set of diagram types, rather than inventing an ad-hoc notation.
+The C4 model's four-level hierarchy maps directly onto the engine's existing structure,
+with no forcing required. The engine is in the System; its three domains are Containers; the
+modules within each domain are Components. C4 therefore gives the hierarchy names it would
+have needed regardless. It does not impose a structure, it labels one that already exists.
 
 C4 also scales with the reader. The Context and Container diagrams communicate the
 high-level structure to anyone reading the architecture document for the first time.
@@ -62,17 +52,6 @@ without requiring project-specific conventions to be explained first.
 Alternatives Considered
 .......................
 
-**Monolithic architecture with no formal structural model.**
-  The engine could have been implemented as a single flat module of functions and classes,
-  with no explicit domain boundaries, no formal component model, and no architectural
-  diagrams. This is the simplest possible approach and would have been sufficient for a
-  project of this scale in purely functional terms. It was rejected for two reasons:
-
-  1. it would provide no learning value in designing and reasoning about a layered
-     architecture
-  2. a flat structure actively works against the testability and single-responsibility
-     goals (:ref:`arch_goals_and_constraints`) that are central to the project.
-
 **An ad-hoc structural vocabulary.**
   Rather than adopting C4, the architecture document could have invented its own terms and
   diagram conventions. This was rejected because it would require every diagram and every
@@ -84,15 +63,16 @@ Consequences
 
 **Easier:**
 
-* Each domain has a single statable responsibility (Container = one concern), enforced by
-  the model's vocabulary. This directly supports the Single Responsibility Principle and
-  makes violations visible: if a Container's responsibility requires "and", it is doing
-  too much.
-* Components within a domain can be tested in isolation, because the Container boundary
-  defines a clear seam. Mocking a domain's interface for testing is a natural consequence
-  of treating it as a Container.
 * Diagrams at different levels of detail (Context, Container, Component) can be produced
-  independently and read independently, which keeps each diagram focused.
+  and read independently. A reader who only needs the high-level picture reads the
+  Container diagram; a reader implementing a component reads the Component diagram. Neither
+  diagram needs to carry the detail of the other.
+* The model's vocabulary resolves naming questions without discussion. Whether a given
+  unit is a Container or a Component is answered by C4's definitions, not by negotiation
+  each time a new diagram is drawn.
+* The Container boundary makes violations of single responsibility visible in the
+  documentation itself: if a Container's responsibility cannot be stated in one sentence,
+  the diagram signals a problem before the code is written.
 
 **Constrained or made harder:**
 
@@ -107,4 +87,4 @@ Consequences
 * For a project of this scale, the full C4 apparatus — four levels, multiple diagram
   types, explicit interface contracts — is more structure than the complexity of the
   problem strictly demands. The overhead is accepted in exchange for the learning value
-  and the structural discipline it imposes.
+  and the consistency it enforces.
