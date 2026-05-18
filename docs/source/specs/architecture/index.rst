@@ -14,7 +14,7 @@ Purpose
 
 This document describes the internal structure of the Text Editor Engine. Where the
 :doc:`Software Requirements Specification (SRS) <../requirements/index>` defines *what* the system must do from the
-outside, this document defines *how* the system is structured internally to fulfil those requirements.
+outside, this document defines how the system is *structured* internally to fulfil those requirements.
 
 Specifically, this document records: the domain decomposition of the system, the responsibilities and
 boundaries of each component, the contracts between components, and the rationale behind significant
@@ -34,37 +34,24 @@ or file I/O. These are explicitly outside the engine's boundary (see :ref:`arch_
 Intended Audience
 ~~~~~~~~~~~~~~~~~
 
-.. Describe who should read this document. For a personal project this may just be yourself (now and in
-   the future), but it is still worth stating. Future-you is a different reader than present-you.
-
-The primary audience is the author, both as engine implementer and as future host application integrator.
-The engine implementer should read the document in full. The host application integrator should focus on
-the public API (:ref:`arch_public_api`) and the out-of-scope boundary (:ref:`arch_out_of_scope`).
+The primary audience is the author, both as engine implementer and as future host application
+integrator. The engine implementer should read the document in full. The host application integrator
+should focus on the public API (:ref:`arch_public_api`) and the out-of-scope boundary
+(:ref:`arch_out_of_scope`).
 
 Relationship to Other Documents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. List the other documents this architecture depends on or is informed by.
-   Typical entries:
-   - The Software Requirements Specification (SRS), which defines the behavioural contract this
-     architecture must satisfy.
-   - The glossary, for shared terminology.
-   State that this document does *not* restate requirements — it references them.
-
 * **Software Requirements Specification (SRS):** :doc:`../requirements/index` -
-  Defines the behavioural contract this architecture must satisfy. This document references
+  defines the behavioural contract this architecture must satisfy. This document references
   requirements but does not reproduce them.
-* **Component Descriptions:** Individual component pages under :ref:`arch_components`.
-* **Architectural Decisions:** Individual decision pages under :ref:`arch_decisions`.
-* **Glossary:** :doc:`arch_glossary` - Shared terminology for all architecture documents.
+* **Component Descriptions:** individual component pages under :ref:`arch_components`.
+* **Architectural Decisions:** individual decision pages under :ref:`arch_decisions`.
+* **Glossary:** :doc:`arch_glossary`: shared terminology for all architecture documents.
 
 References
 ~~~~~~~~~~
 
-.. List any external resources that informed architectural decisions: books, articles, language
-   documentation, or patterns referenced by name (e.g. "Facade", "Separation of Concerns").
-
-* Software Requirements Specification: :doc:`../requirements/index`
 * Facade Pattern: https://refactoring.guru/design-patterns/facade
 * C4 Model (context/container/component diagrams): https://c4model.com/
 * UML 2.5.1 Specification: https://www.omg.org/spec/UML/2.5.1/PDF/
@@ -73,18 +60,18 @@ References
 Document Conventions
 ~~~~~~~~~~~~~~~~~~~~
 
-* **Diagram Color-Coding:** Architectural diagrams use a consistent color scheme to distinguish domains:
-  Logical Domain (blue), Visual Domain (green), Display Domain (orange), and the Facade (grey).
+* **Diagram color-coding:** Architectural diagrams use a consistent color scheme to distinguish
+  domains: Logical Domain (blue), Visual Domain (green), Display Domain (orange), Facade (grey).
 
-* **Naming Convention:** System components use ``PascalCase``. Internal functions and variables
-  follow Python's standard ``snake_case``.
+* **Naming convention:** Component names use ``PascalCase``. Internal functions and variables
+  follow Python's ``snake_case``.
 
-* **Dependency Arrows:** In all component diagrams, arrows point in the direction of dependency
-  (i.e., from the dependent to the thing it depends on), not in the direction of data flow.
+* **Dependency arrows:** In all component diagrams, arrows point in the direction of dependency
+  (from the dependent toward the thing it depends on), not in the direction of data flow.
 
-* **"Component" vs. "class":** This document uses the term *component* to refer to a named unit of
+* **"Component" vs. "class":** This document uses *component* to mean a named unit of
   architectural responsibility. Whether a component is realised as a class, a module, or a set of
-  pure functions is an implementation detail not recorded here.
+  pure functions is an implementation not assumed here.
 
 .. note:: **C4 Model:**
 
@@ -115,8 +102,9 @@ Goals
   in the Logical Domain may depend on anything in the Visual or Display Domain. This is an absolute
   rule, not a guideline.
 
-  *Rationale:* Enforces testability (each domain can be tested in isolation and mocked), replaceability
-  (a domain can be rewritten without affecting domains below it), and prevents circular coupling.
+  *Rationale:* Enforces testability (each domain can be tested in isolation and mocked),
+  replaceability (a domain can be rewritten without affecting domains below it), and prevents
+  circular coupling.
 
 * **Pure Logic and Determinism:**
   The engine is a pure-logic system. Given the same initial state and the same sequence of
@@ -126,12 +114,12 @@ Goals
   *Rationale:* Makes all behaviour unit-testable and all bugs reproducible.
 
 * **Single Responsibility per Component:**
-  Each component owns one clearly statable concern. If a component's responsibility cannot be
-  described in one sentence without the word "and", it is likely doing too much.
+  Each component within a domain  owns one clearly statable concern. If a component's responsibility cannot be
+  described in one sentence without the word "and", it is doing too much.
 
-  *Rationale:* The multi-coordinate cursor system creates natural pressure toward coupling.
-  Strict single responsibility keeps coordinate translation localised and prevents it from
-  spreading across components.
+  *Rationale:* The multi-coordinate cursor system creates natural pressure toward coupling. Strict
+  single responsibility keeps coordinate translation localised and prevents it from spreading across
+  components.
 
 * **Testability Without a Host:**
   Every component and every code path must be exercisable by a unit test that does not instantiate
@@ -148,53 +136,47 @@ Goals
 Constraints
 ~~~~~~~~~~~
 
-.. Record any constraints that limit your architectural choices. These may come from:
-   - The requirements (e.g. pure-logic system, no I/O, no rendering).
-   - The implementation language or runtime (e.g. Python, single-threaded).
-   - Personal/project constraints (e.g. no third-party dependencies, must be a single importable module).
-   Constraints differ from goals: goals are things you are optimising for, constraints are things you
-   cannot violate.
-
 * **Language:** Implemented entirely in Python.
 * **Threading:** Single-threaded. No concurrency model is defined or supported.
-* **Deployment unit:** The engine is provided as a single importable module. The ``TextEditor`` class
-  is the sole public entry point.
-* **Module Dependencies:** Python Standard Library only. No third-party packages.
-* **Testing Dependencies:** Testing may use any packages. (E.g. pytest, Hypothesis, etc.)
-* **UI/IO Independence:** The engine must not depend on any GUI framework, terminal library, or
+* **Deployment unit:** The engine is provided as a single importable module. ``TextEditor`` is the
+  sole public entry point. :need:`NFREQ-DEPLOY-201`
+* **Dependencies:** Python Standard Library only. No third-party packages. (Test dependencies
+  such as ``pytest`` and ``hypothesis`` are exempt from this constraint.)
+* **UI/IO independence:** The engine must not depend on any GUI framework, terminal library, or
   ``stdin``/``stdout``. All rendering and input capture are the host application's responsibility.
   See :need:`NR-CURSOR-102`, :need:`NR-MODE-101`.
-* **No State Persistence:** The engine does not read from or write to disk. See :need:`NR-INIT-102`.
+* **No state persistence:** The engine does not read from or write to disk. See :need:`NR-INIT-102`.
 
 .. _arch_asr:
 
 Architecturally Significant Requirements
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-These requirements have a disproportionate influence on structure and are called out here because
-they constrain or motivate specific architectural decisions.
+These requirements have a disproportionate influence on structure and are highlighted here because
+they constrain or directly motivate specific architectural decisions.
 
 * **Four-Coordinate Cursor System** (:need:`INV-CURSOR-001`):
   The cursor must be tracked consistently across Absolute Index, Logical, Visual, and Window
-  coordinate spaces. This is the most structurally complex requirement in the system; it is the
-  primary reason the domain layer boundary between Visual and Display exists.
+  coordinate spaces. This is the most structurally complex requirement in the system and is the
+  primary reason the domain boundary between Visual and Display exists.
+  (See :doc:`decisions/arch-display_domain`.)
 
 * **Non-Destructive Visual Wrapping** (:need:`FR-WRAP-001`):
-  Line wrapping is a visual transformation and must never mutate the underlying buffer.
+  Line wrapping is a visual transformation and must never mutate the underlying text buffer.
   This requirement mandates that the Logical Domain is unaware of wrap state.
 
 * **Configurable Display Geometry** (:need:`INV-WRAP-001`, :need:`INV-VIEW-001`, :need:`INV-VIEW-002`):
-  Width, height, and scrolloff must be runtime-configurable. This means the Display Domain must
-  hold no hardcoded geometry assumptions, and the engine must be re-queryable after a resize
-  without re-initialising text or cursor state.
+  Width, height, and scrolloff must be runtime-configurable. The Display Domain must hold no
+  hardcoded geometry assumptions, and the engine must be re-queryable after a resize without
+  re-initialising text or cursor state.
 
 .. _arch_out_of_scope:
 
 Explicitly Out of Scope
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-The following concerns are deliberately excluded from the engine.
-Host applications are responsible for all of the below.
+The following concerns are deliberately excluded from the engine. The host application is
+responsible for all of the below. (If/ When required.)
 
 * Rendering and display output
 * Keyboard and mouse input capture
@@ -213,6 +195,8 @@ System Context Diagram
 
 .. plantuml:: diagrams/system_context.puml
 
+.. _arch_public_api:
+
 Public API (Facade Interface)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -225,7 +209,8 @@ The caller never observes a partially-updated state.
 **Initialisation**
   The engine is configured at construction time with display geometry (width, height, scrolloff).
   Text content and cursor position may optionally be seeded. After construction the engine is in a
-  fully valid state. (:need:`XX-XXX-XXX`)
+  fully valid state.
+  (:doc:`../requirements/f-req_initialization`)
 
 **Mutation Commands**
   Operations that modify the text buffer (``insert``, ``delete``, ``backspace``). The cursor may be updated as a
@@ -235,9 +220,9 @@ The caller never observes a partially-updated state.
   unresolved. See :ref:`arch_error_contract`.
 
 **Cursor Movement**
-  Operations that reposition the cursor without modifying text (``move_up``, ``move_down``, ``move_left``,
-  ``move_right``, ``move_home``, ``move_end``). Movement at a boundary (e.g. ``move_left`` at column 0) is
-  a no-op.
+  Operations that reposition the cursor without modifying text (``move_up``, ``move_down``,
+  ``move_left``, ``move_right``, ``move_home``, ``move_end``). Movement at a boundary is a no-op.
+  (:doc:`../requirements/f-req_cursor_movement`)
 
 **Cursor Query**
   Returns the current cursor position in a caller-specified coordinate space (see :ref:`arch_coordinate_spaces`).
@@ -254,7 +239,7 @@ Containers
 Domain Layer Model
 ~~~~~~~~~~~~~~~~~~
 
-The engine is divided into three layered domains (containers). Each domain depends only on the domain directly
+The engine is divided into three layered domains. Each domain depends only on the one domain directly
 below it and is completely independent of the domains above it.
 
 .. note:: **C4 Model:**
@@ -269,8 +254,7 @@ of a change. It is the caller's responsibility (ultimately the ``TextEditor`` fa
 after a mutating operation.
 
 Within each domain, components are either **stateful** (they own and mutate data) or **stateless
-calculators** (pure functions with no owned state). This distinction is noted in each component
-description.
+calculators** (pure functions with no owned state).
 
 A single public-facing class, ``TextEditor``, acts as the Facade: it is the only entry point for
 host applications, owns references to all internal components, and is responsible for coordinating
@@ -282,10 +266,10 @@ cross-domain operations.
   occur here. This is the single source of truth for text.
 
 * **VisualDomain:** Requests raw text from the Logical Domain and applies visual transformations
-  (line wrapping). Tracks the cursor in Visual coordinates. Does not mutate text directly; it
-  passes mutation requests down to the Logical Domain.
+  (line wrapping). Does not mutate text directly, it passes mutation requests down to the Logical Domain.
+  Tracks the cursor in Visual coordinates. Translates between Visual and Logical coordinates.
 
-* **DisplayDomain:** Manages the window and tracks the cursor in Window coordinates.
+* **DisplayDomain:** Manages window geometry and tracks the cursor in Window coordinates.
   Determines which subset of visual lines is returned to the host. If cursor movement causes the
   viewport to scroll, the Visual Domain is unaffected. Does not mutate cursor or text directly; it
   passes mutation requests down to the Visual Domain.
@@ -293,22 +277,17 @@ cross-domain operations.
 **Important:** Domains have no responsibility to notify the Domain above them when it changes.
 Synchronisation is the Facade's responsibility.
 
-*Why is Cursor in the Visual Domain, not the Logical Domain?**
-See the decision record: :doc:`decisions/arch-cursor_domain`
-
+.. **Why is Cursor in the Visual Domain, not the Logical Domain?**
+   See :doc:`decisions/arch-cursor_domain`.
 
 .. _arch_coordinate_spaces:
 
-Coordinate Systems/ Output Modes
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Coordinate Systems & Output Modes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The cursor exists simultaneously in four coordinate spaces. Each domain is responsible for
-translating between the spaces it owns.
-
-The four cursor coordinate systems/ output modes map directly onto the domain structure:
-
-:need:`FR-MODE-XXX`
-:doc:`../requirements/f-req_output_modes`
+translating between the spaces it owns. The four spaces map directly onto the domain structure and
+onto the output modes exposed by the public API (See :doc:`../requirements/f-req_output_modes`).
 
 .. _arch_coordinate_ownership:
 
@@ -324,12 +303,10 @@ Display Display Window         ...
 Container Diagram
 ~~~~~~~~~~~~~~~~~
 
-.. https://c4model.com/diagrams/container
-
 .. plantuml:: diagrams/domain_layers.puml
 
-Data Flow: Representative Example
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Data Flow: Representative Examples
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. TODO: Sequence diagram for insert() and move_right() — one mutation, one movement.
    Both should illustrate the downward command / upward data pattern.
@@ -342,17 +319,16 @@ Data Flow: Representative Example
    request down to the Logical Domain.
 #. The Logical Domain mutates the text buffer and returns the updated text.
 #. The Visual Domain recomputes the wrapped line layout from the updated text.
-#. The Facade queries the Display Domain to determine whether the viewport needs to scroll
-   to keep the cursor visible, and updates Window coordinates accordingly.
-#. Control returns to the host application. No output is pushed; the host must call
-   ``get_text()`` and ``get_position()`` to retrieve the new state.
+#. The Facade queries the Display Domain to determine whether the viewport needs to scroll to keep
+   the cursor visible, and updates Window coordinates accordingly.
+#. Control returns to the host application. No output is pushed. The host must get the updated  text
+   and display position manually.
 
 .. plantuml:: diagrams/seq_insert.puml
 
 **Example:** ``move_right()``
 
-#. The host application calls ``TextEditor.move_right()``.
-#. ...
+.. TODO
 
 .. plantuml:: diagrams/seq_move_right.puml
 
@@ -374,62 +350,51 @@ Component Descriptions
 Internal Interfaces
 ~~~~~~~~~~~~~~~~~~~
 
-Key contracts between internal components are listed here. Full per-component interfaces are
-documented in :ref:`arch_component_descriptions`.
+Key contracts between internal components are recorded here. Full per-component interface details
+are in :ref:`arch_component_descriptions`.
 
-* **Display Domain → Visual Domain:** The Display component queries the Visual Domain for the
-  total number of wrapped visual lines and the current cursor visual position. It receives counts
-  and indices. Never raw text. Raw text does not cross the Display domain boundary.
+* **Visual → Logical:** The Visual Domain queries the Logical Domain for the raw text string.
+  It does not instruct the Logical Domain on how to store or represent text.
 
-* **Visual Domain → Logical Domain:** The Visual Domain queries the Logical Domain for the raw
-  text string and current absolute cursor index. It does not instruct the Logical Domain on how
-  to store or represent text.
+* **Display → Visual:** The Display Domain queries the Visual Domain for the total number of
+  wrapped visual lines and the current cursor visual position. It receives counts and indices,
+  never raw text. Raw text does not cross the Display domain boundary.
 
-* **Inter Domain:** Components within the same domain must adhere to a similar single-direction
-  control flow. (E.g. The LineWrapper may provide data to the Cursor, which requests it. But the LineWrapper should not
-  need to know about the Cursor.)
+* **Intra-domain:** Components within the same domain follow the same unidirectional rule. A
+  component may depend on another component in the same domain, but not the reverse. For example,
+  within the Visual Domain, ``Cursor`` may request data from and depend on ``LineWrapper``, but
+  ``LineWrapper`` must not depend on ``Cursor``.
 
-* **No cross-domain direct calls:** Components do not call components in non-adjacent domains.
-  All coordination is mediated by the ``TextEditor`` facade.
+* **No cross-domain direct calls:** Components do not call components in non-adjacent domains. (The Display Domain is
+  unaware of the Logical Domain.)
+  Each domain exposes a single internal interface (a domain service).
+  Internal coordination within a domain is the domain service's responsibility.
 
 Component Diagram
 ~~~~~~~~~~~~~~~~~
-
-.. Insert diagrams showing the major components and their relationships.
-   https://c4model.com/diagrams/component
-   Use a consistent notation: boxes for components, arrows for dependency direction, labels on arrows
-   to indicate the nature of the relationship (e.g. "delegates to", "queries", "notifies").
 
 .. plantuml:: diagrams/display_components.puml
 .. plantuml:: diagrams/visual_components.puml
 .. plantuml:: diagrams/logical_components.puml
 
+.. _arch_decisions:
+
 Architectural Decisions
 -----------------------
 
-.. This is one of the most valuable sections of an architecture document. Record the significant
-   choices you made, *why* you made them, and what alternatives you considered. This turns the
-   document from a description of what exists into a record of *reasoning* — which is what you
-   actually need when you revisit a decision six months later.
-   Use a consistent record format for each decision (see sub-sections below).
-
 .. toctree::
    :maxdepth: 1
+   :glob:
 
-   decisions/arch-c4_model
-   decisions/arch-cursor_domain
+   decisions/*
 
 Open Questions
 --------------
 
+.. _arch_error_contract:
+
 Unresolved Questions
 ~~~~~~~~~~~~~~~~~~~~~
-
-.. List any architectural questions that have not yet been answered. Prefer an explicit "TBD" over
-   a hidden assumption. For each open question, note what information is needed to resolve it and
-   what the impact of the decision will be.
-
-.. _arch_error_contract:
 
 * **Error handling contract:** What is the engine's behaviour on invalid operations?
   Options: raise an exception, return a status code, or silently no-op with state unchanged.
@@ -447,23 +412,13 @@ Unresolved Questions
 Known Limitations
 ~~~~~~~~~~~~~~~~~
 
-.. Describe any limitations of the current architecture that are accepted for now but may need to
-   be revisited as the project grows. For example: single-threaded assumptions, no support for
-   documents larger than memory, etc.
-
 * **Single-threaded only.** No concurrency primitives are used. The engine is not safe to call
   from multiple threads simultaneously.
 * **In-memory only.** The entire text buffer is held in memory. There is no streaming or paging
   for large documents.
 
-Future Evolution
-~~~~~~~~~~~~~~~~
-
-.. Note any anticipated extensions to the system and whether the current architecture accommodates
-   them gracefully or would require structural changes. This section prevents you from making
-   decisions now that would unnecessarily close off future options.
-
-* No architecturally relevant evolutions in consideration as of now.
+.. Future Evolution
+   ~~~~~~~~~~~~~~~~
 
 Appendix A: Glossary
 --------------------

@@ -7,29 +7,29 @@
 
 .. Link to specific Requirements?
 
-5.X Text Buffer
-~~~~~~~~~~~~~~~
+Text Buffer
+~~~~~~~~~~~
 
-5.X.1 Responsibility
-....................
+Responsibility
+..............
 
 .. One or two sentences. If you cannot state the responsibility in one sentence without using the word
    "and", consider whether this component is doing too much.
 
-5.X.2 Owned State
-.................
+Owned State
+...........
 
 .. List the data this component is the authoritative owner of. If a component owns no state (i.e. it is
    a pure calculator), say so explicitly — that is a meaningful architectural fact.
 
-5.X.3 Dependencies
-..................
+Dependencies
+............
 
 .. List what this component depends on (other components, standard library modules, etc.).
    Also state what depends on *it*, so the coupling is visible in both directions.
 
-5.X.4 Key Invariants
-....................
+Key Invariants
+..............
 
 .. List any state invariants this component is responsible for maintaining. These should be derivable
    from the requirements, but restated here in terms of the component's internal data rather than

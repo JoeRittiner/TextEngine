@@ -24,7 +24,7 @@ Since the absolute index must remain valid relative to the text buffer, the curs
 text state.
 
 However, cursor movement requirements are primarily visual in nature. For example, vertical cursor movement operates
-across visual lines rather than logical lines (:need:`FR-XXX-XX`).
+across visual lines rather than logical lines (:need:`FR-CURSOR-030`).
 
 This creates tension between:
 

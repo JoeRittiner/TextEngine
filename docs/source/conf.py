@@ -21,7 +21,8 @@ sys.path.insert(0, os.path.abspath('../../tests'))
 
 extensions = [
     'sphinx.ext.napoleon',  # Allows NumPy style docstrings
-    'sphinx_needs'
+    'sphinx_needs',
+    'sphinxcontrib.plantuml',
 ]
 
 templates_path = ['_templates']
