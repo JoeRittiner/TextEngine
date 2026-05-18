@@ -357,8 +357,9 @@ Components
 Component Descriptions
 ~~~~~~~~~~~~~~~~~~~~~~
 
-#. **TextBuffer** holds the raw text string.
-#. **LogicalDomainService** sanitizes inputs and splits raw text into lines.
+#. :doc:`components/arch-text_buffer` holds the raw text string.
+#. :doc:`components/arch-logical_domain_service` tracks the raw text in Logical coordinates.
+#. :doc:`components/arch-wrap_engine` adapts the LogicalDomain into the VisualDomain.
 #. **CursorState** tracks the cursor position.
 #. **WrapEngine** adapts the LogicalLayer into VisualData (lines and cursor position.)
 #. **VisualContainer** tracks the text and cursor in Visual coordinates. (Domain Service)
@@ -366,13 +367,6 @@ Component Descriptions
 #. **DisplayCoordinateTranslator** translates between visual and display coordinates.
 #. **DisplayContainer** tracks the text and cursor in Display coordinates. (Domain Service)
 #. **Facade** coordinates cross-domain operations.
-
-
-.. toctree::
-   :maxdepth: 1
-
-   components/arch-text_buffer
-   components/arch-logical_domain_service
 
 Internal Interfaces
 ~~~~~~~~~~~~~~~~~~~
