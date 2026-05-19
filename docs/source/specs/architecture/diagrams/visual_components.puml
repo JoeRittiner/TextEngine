@@ -1,27 +1,39 @@
 @startuml
 
-title Text Editor Architecture - Visual Component
+title Text Editor Architecture - Visual Domain [Component]
 
 interface VisualLayer as "\nVisualLayer"
 interface LogicalLayer
 
 rectangle "Visual Domain" #Green {
-   component "VisualDomainService"
-   'Stateful (Orchestrator/ Facade)
-   component "CursorState"
-   'Stateful
-   component "MovementResolver"
-   'Stateful
-   component "WrapEngine"
-   'Stateless (Adapter Pattern?)
+   component "VisualDomainService" as VDS
+   'Stateful (Orchestrator / domain facade)
+
+   component "CursorState" as CS
+   'Stateful (owns cursor position (v_row, v_col))
+
+   component "MovementResolver" as MR
+   'Stateless (pure calculator, no owned state)
+
+   component "VisualLogicalAdapter" as VLA
+   'Stateful (owns display_width and wrapping map)
+   'Sole contact point with the Logical Domain
 }
 
-VisualDomainService -up-|> VisualLayer
-WrapEngine ..> LogicalLayer : " adapts"
+VDS -up-|> VisualLayer
+VLA ..> LogicalLayer : " adapts"
 
-VisualDomainService *-> CursorState
-VisualDomainService *--> WrapEngine
-VisualDomainService *--> MovementResolver
-WrapEngine <. CursorState
+VDS *--> CS   : "get / set position"
+VDS *--> VLA  : "mutations\nvisual line reads"
+VDS o-> MR   : "resolve movement\n(passes visual lines)"
+
+VLA <- CS : "position validity check"
+
+
+note top of MR
+  Receives visual lines as parameters
+  from VisualDomainService.
+  No direct dependency on any component.
+end note
 
 @enduml

@@ -359,7 +359,7 @@ Component Descriptions
 
 #. :doc:`components/arch-text_buffer` holds the raw text string.
 #. :doc:`components/arch-logical_domain_service` tracks the raw text in Logical coordinates.
-#. :doc:`components/arch-wrap_engine` adapts the LogicalDomain into the VisualDomain.
+#. :doc:`components/arch-visual_logical_adapter` adapts the LogicalDomain into the VisualDomain.
 #. :doc:`components/arch-cursor_state` tracks the cursor position.
 #. :doc:`components/arch-movement_resolver` computes visual coordinates, given a direction
 #. **VisualDomainService** tracks the text and cursor in Visual coordinates. (Domain Service)
