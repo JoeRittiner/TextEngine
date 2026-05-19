@@ -29,11 +29,16 @@ TextBuffer's raw string:
   all ``\n`` characters. (:need:`FR-MODE-001`)
 * **Logical line output:** the buffer contents split at ``\n`` boundaries, with the
   newline characters themselves excluded from the returned strings.
-  (:need:`FR-MODE-011`, :need:`FR-TEXT-025`, :need:`FR-TEXT-035`)
+  (:need:`FR-MODE-011`, :need:`FR-TEXT-016`, :need:`FR-TEXT-025`, :need:`FR-TEXT-035`)
 
 **Coordinate translation.** The service translates between absolute indices and logical
 coordinates ``(line, col)`` for all mutation operations. Neither the TextBuffer nor the
-Visual Domain performs this translation.
+Visual Domain performs this translation. This translation is also the mechanism through
+which the system satisfies its cursor representation interfaces: returning the cursor as
+an absolute index (:need:`FR-CURSOR-002`) or as a logical coordinate
+(:need:`FR-CURSOR-003`) both depend on the Logical Domain Service's ability to convert
+between these two spaces on demand. The cursor itself is not a Logical Domain concept;
+the service provides the coordinate machinery, not the cursor state.
 
 **Mutation delegation.** Insert, delete and backspace operations are validated at the
 service boundary. Type-checking inputs and rejecting incorrect types with an exception
