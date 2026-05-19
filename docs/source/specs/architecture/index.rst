@@ -362,7 +362,8 @@ Component Descriptions
 #. :doc:`components/arch-wrap_engine` adapts the LogicalDomain into the VisualDomain.
 #. **CursorState** tracks the cursor position.
 #. **WrapEngine** adapts the LogicalLayer into VisualData (lines and cursor position.)
-#. **VisualContainer** tracks the text and cursor in Visual coordinates. (Domain Service)
+#. **MovementResolver** computes visual coordinates, given a direction
+#. **VisualDomainService** tracks the text and cursor in Visual coordinates. (Domain Service)
 #. **ViewportState** truncates the visual lines to fit the window.
 #. **DisplayCoordinateTranslator** translates between visual and display coordinates.
 #. **DisplayContainer** tracks the text and cursor in Display coordinates. (Domain Service)

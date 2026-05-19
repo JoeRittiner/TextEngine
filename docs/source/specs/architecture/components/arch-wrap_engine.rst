@@ -44,13 +44,16 @@ line. (:need:`FR-WRAP-001`, :need:`FR-WRAP-002`, :need:`FR-WRAP-003`, :need:`FR-
 
 **Coordinate translation.** The WrapEngine translates in both directions between absolute
 indices, logical coordinates ``(logical_line, logical_col)``, and visual coordinates
-``(visual_line, visual_col)``. The Visual Domain Service and the Cursor State component
-rely on this translation; they do not perform it themselves.
+``(visual_line, visual_col)``. The Visual Domain Service, the Cursor State and Movement
+Resolver components rely on this translation; they do not perform it themselves. The
+WrapEngine may offer a simple method for verifying the validity of a visual position.
+(``True``/ ``False``)
 
 **Mutation pass-through.** All text mutations from the Visual Domain are routed through
 the WrapEngine. A caller passes a position in visual coordinates; the WrapEngine
 translates it to the absolute index or logical coordinate required by the Logical Domain
 Service, issues the mutation, and invalidates or updates the wrapping map accordingly.
+Invalid visual positons are rejected, by throwing an exception.
 
 Dependencies
 ............

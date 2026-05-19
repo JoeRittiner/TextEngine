@@ -6,23 +6,22 @@ interface VisualLayer as "\nVisualLayer"
 interface LogicalLayer
 
 rectangle "Visual Domain" #Green {
-   component "VisualContainer"
+   component "VisualDomainService"
    'Stateful (Orchestrator/ Facade)
-   component "WrapEngine"
-   'Stateless (Adapter Pattern?)
    component "CursorState"
    'Stateful
-
-note top of WrapEngine
-    Adapter Pattern
-end note
+   component "MovementResolver"
+   'Stateful
+   component "WrapEngine"
+   'Stateless (Adapter Pattern?)
 }
 
-VisualContainer -up-|> VisualLayer
+VisualDomainService -up-|> VisualLayer
 WrapEngine ..> LogicalLayer : " adapts"
 
-VisualContainer *--> WrapEngine
-VisualContainer *--> CursorState
+VisualDomainService *-> CursorState
+VisualDomainService *--> WrapEngine
+VisualDomainService *--> MovementResolver
 WrapEngine <. CursorState
 
 @enduml
