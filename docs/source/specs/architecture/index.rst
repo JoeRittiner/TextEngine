@@ -361,7 +361,7 @@ Component Descriptions
 #. :doc:`components/arch-logical_domain_service` tracks the raw text in Logical coordinates.
 #. :doc:`components/arch-wrap_engine` adapts the LogicalDomain into the VisualDomain.
 #. :doc:`components/arch-cursor_state` tracks the cursor position.
-#. **MovementResolver** computes visual coordinates, given a direction
+#. :doc:`components/arch-movement_resolver` computes visual coordinates, given a direction
 #. **VisualDomainService** tracks the text and cursor in Visual coordinates. (Domain Service)
 #. **ViewportState** truncates the visual lines to fit the window.
 #. **DisplayCoordinateTranslator** translates between visual and display coordinates.
