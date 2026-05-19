@@ -1,15 +1,11 @@
 @startuml
 
-title Text Editor Architecture - Domain Containers  [WIP]
+title Text Editor Architecture - Domain Containers
 
 
 interface API
 
 package TextEditor #LightGray {
-
-interface DisplayLayer
-interface VisualLayer
-interface LogicalLayer
 
 rectangle Facade #Gray
 rectangle DisplayDomain #Orange
@@ -17,13 +13,12 @@ rectangle VisualDomain #Green
 rectangle LogicalDomain #LightBlue
 }
 
-API - Facade
-DisplayLayer - [DisplayDomain]
-VisualLayer - [VisualDomain]
-LogicalLayer - [LogicalDomain]
+Facade -up- API
 
-[Facade] ..> DisplayLayer : use
-[DisplayDomain] ..> VisualLayer : use
-[VisualDomain] ..> LogicalLayer : use
+Facade --> DisplayDomain
+DisplayDomain -> VisualDomain
+VisualDomain -> LogicalDomain
+Facade --> VisualDomain
+Facade --> LogicalDomain
 
 @enduml
