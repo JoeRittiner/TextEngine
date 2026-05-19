@@ -7,9 +7,9 @@ Responsibility
 ..............
 
 The TextBuffer is the single authoritative store for the content of the document. It
-accepts mutation operations (insert, delete) at a given absolute index and exposes the
-resulting text as a raw string. It is the only component permitted to hold or modify the
-underlying text. (:need:`FR-TEXT-001`, :need:`FR-TEXT-002`)
+accepts mutation operations (insert, delete, backspace) at a given absolute index and
+exposes the resulting text as a raw string. It is the only component permitted to hold
+or modify the underlying text. (:need:`FR-TEXT-001`, :need:`FR-TEXT-002`)
 
 Owned State
 ...........
@@ -41,7 +41,12 @@ produces the same buffer state as inserting each character sequentially.
 (:need:`FR-TEXT-017`)
 
 Delete targets the character immediately to the right of the given index. Deleting past
-the end of the buffer is a no-op. (:need:`FR-TEXT-024`)
+the end of the buffer is a no-op.
+(:need:`FR-TEXT-021`, :need:`FR-TEXT-022` :need:`FR-TEXT-024`)
+
+Backspace targets the character immediately to the left of the given index. Backspacing
+past the start of the buffer is a no-op.
+(:need:`FR-TEXT-031`, :need:`FR-TEXT-032`, :need:`FR-TEXT-034`)
 
 Dependencies
 ............

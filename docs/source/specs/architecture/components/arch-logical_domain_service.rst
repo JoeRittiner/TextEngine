@@ -29,14 +29,14 @@ TextBuffer's raw string:
   all ``\n`` characters. (:need:`FR-MODE-001`)
 * **Logical line output:** the buffer contents split at ``\n`` boundaries, with the
   newline characters themselves excluded from the returned strings.
-  (:need:`FR-MODE-011`, :need:`FR-TEXT-025`)
+  (:need:`FR-MODE-011`, :need:`FR-TEXT-025`, :need:`FR-TEXT-035`)
 
 **Coordinate translation.** The service translates between absolute indices and logical
 coordinates ``(line, col)`` for all mutation operations. Neither the TextBuffer nor the
 Visual Domain performs this translation.
 
-**Mutation delegation.** Insert and delete operations are validated at the service
-boundary. Type-checking inputs and rejecting incorrect types with an exception
+**Mutation delegation.** Insert, delete and backspace operations are validated at the
+service boundary. Type-checking inputs and rejecting incorrect types with an exception
 (:need:`FR-INIT-013`), then delegated to the TextBuffer, which applies its own
 normalisation rules before modifying the buffer. The service does not duplicate or
 override those rules.
