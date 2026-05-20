@@ -6,19 +6,19 @@ interface DisplayLayer as "\nDisplayLayer"
 interface VisualLayer
 
 rectangle "Visual Domain" #Orange {
-   component DisplayContainer
+   component DisplayDomainService
    component DisplayCoordinateTranslator
    component ViewportState
    'Stateless?
    ' component CoordinateTranslator
 }
 
-DisplayContainer -up-|> DisplayLayer
+DisplayDomainService -up-|> DisplayLayer
 
-DisplayContainer *--> DisplayCoordinateTranslator
-DisplayContainer *--> ViewportState
+DisplayDomainService *--> DisplayCoordinateTranslator
+DisplayDomainService *--> ViewportState
 DisplayCoordinateTranslator .> ViewportState
 
-DisplayContainer .> VisualLayer
+DisplayDomainService .> VisualLayer
 
 @enduml

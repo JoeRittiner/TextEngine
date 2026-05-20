@@ -364,8 +364,7 @@ Component Descriptions
 #. :doc:`components/arch-movement_resolver` computes visual coordinates, given a direction
 #. :doc:`components/arch-visual_domain_service` tracks the text and cursor in Visual coordinates.
 #. :doc:`components/arch-viewport_state` truncates the visual lines to fit the window.
-#. **DisplayCoordinateTranslator** translates between visual and display coordinates.
-#. **DisplayContainer** tracks the text and cursor in Display coordinates. (Domain Service)
+#. :doc:`components/arch-display_domain_service` tracks the text and cursor in Display coordinates.
 #. **Facade** coordinates cross-domain operations.
 
 Internal Interfaces
