@@ -47,7 +47,7 @@ Relationship to Other Documents
   requirements but does not reproduce them.
 * **Component Descriptions:** individual component pages under :ref:`arch_components`.
 * **Architectural Decisions:** individual decision pages under :ref:`arch_decisions`.
-* **Glossary:** :doc:`arch_glossary`: shared terminology for all architecture documents.
+* **Glossary:** shared terminology for all architecture documents. (:doc:`arch_glossary`)
 
 References
 ~~~~~~~~~~
@@ -367,6 +367,16 @@ Component Descriptions
 #. :doc:`components/arch-display_domain_service` tracks the text and cursor in Display coordinates.
 #. :doc:`components/arch-facade` coordinates cross-domain operations.
 
+.. toctree::
+   :maxdepth: 1
+   :caption: Components
+   :name: components
+   :glob:
+   :hidden:
+
+   components/*
+
+
 Internal Interfaces
 ~~~~~~~~~~~~~~~~~~~
 
@@ -443,7 +453,7 @@ Known Limitations
 Appendix A: Glossary
 --------------------
 
-.. include:: arch_glossary
+.. include:: arch_glossary.rst
 
 Appendix B: Revision History
 -----------------------------
