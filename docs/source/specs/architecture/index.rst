@@ -365,7 +365,7 @@ Component Descriptions
 #. :doc:`components/arch-visual_domain_service` tracks the text and cursor in Visual coordinates.
 #. :doc:`components/arch-viewport_state` truncates the visual lines to fit the window.
 #. :doc:`components/arch-display_domain_service` tracks the text and cursor in Display coordinates.
-#. **Facade** coordinates cross-domain operations.
+#. :doc:`components/arch-facade` coordinates cross-domain operations.
 
 Internal Interfaces
 ~~~~~~~~~~~~~~~~~~~
