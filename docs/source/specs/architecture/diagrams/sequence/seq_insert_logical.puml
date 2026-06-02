@@ -1,0 +1,20 @@
+@startuml
+
+title LogicalDomain.insert(text, absolute_index)
+
+participant Actor as app #white
+box "LogicalDomain" #white
+    participant LogicalDomainService as LS
+    participant TextBuffer as TB
+end box
+
+app -> LS : ""insert(text, absolute_index)""
+activate LS
+    LS -> TB : ""insert(text, absolute_index)""
+    activate TB
+        TB -> TB : ""normalize(text)""
+        TB -> TB : ""insert(text, absolute_index)""
+        return ""inserted_chars""
+    return ""inserted_chars""
+
+@enduml

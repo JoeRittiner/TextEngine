@@ -1,0 +1,21 @@
+@startuml
+
+title DisplayDomain.insert(text)
+
+participant Actor as app #white
+box "DisplayDomain" #white
+    participant DomainDomainService as DS
+    participant ViewportState as VS
+end box
+participant VisualDomain as VD #green
+
+app -> DS : ""insert(text)""
+activate DS
+    DS -> VD : ""insert(text)""
+    DS -> VD : ""get_cursor()""
+    activate VD
+        return ""visual_cursor""
+    DS -> VS : ""update(visual_cursor)""
+    deactivate DS
+
+@enduml

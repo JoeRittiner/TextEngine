@@ -1,0 +1,18 @@
+@startuml
+
+title LogicalDomain.get_text()
+
+participant Actor as app #white
+box "LogicalDomain" #white
+    participant LogicalDomainService as LS
+    participant TextBuffer as TB
+end box
+
+app -> LS : ""get_text()""
+activate LS
+    LS -> TB : ""get_text()""
+    activate TB
+        return ""raw_text""
+    return ""raw_text""
+
+@enduml

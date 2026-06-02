@@ -1,0 +1,24 @@
+@startuml
+
+title VisualDomain.get_logical_cursor()
+
+participant Actor as app #white
+box "VisualDomain" #white
+    participant VisualDomainService as VS
+    participant MovementResolver as MR
+    participant CursorState as CS
+    participant VisualLogicalAdapter as VA
+end box
+participant LogicalDomain as LD #lightblue
+
+app -> VS : ""get_logical_cursor()""
+activate VS
+    VS -> CS : ""get_cursor()""
+    activate CS #green
+        hnote over CS : Covered in another Diagram
+        return ""visual_cursor""
+    VS -> VA : ""translate_to_logical(visual_cursor)""
+    activate VA
+        return ""logical_cursor""
+    return ""logical_cursor""
+@enduml

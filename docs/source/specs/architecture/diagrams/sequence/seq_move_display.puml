@@ -1,0 +1,21 @@
+@startuml
+
+title DisplayDomain.move_*()
+
+participant Actor as app #white
+box "DisplayDomain" #white
+    participant DomainDomainService as DS
+    participant ViewportState as VS
+end box
+participant VisualDomain as VD #green
+
+app -> DS : ""move_*()""
+activate DS
+    DS -> VD : ""move_*()""
+    DS -> VD : ""get_cursor()""
+    activate VD
+        return ""visual_cursor""
+    DS -> VS : ""update(visual_cursor)""
+    deactivate DS
+
+@enduml

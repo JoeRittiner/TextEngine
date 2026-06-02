@@ -1,0 +1,18 @@
+@startuml
+
+title LogicalDomain.delete(absolute_index)
+
+participant Actor as app #white
+box "LogicalDomain" #white
+    participant LogicalDomainService as LS
+    participant TextBuffer as TB
+end box
+
+app -> LS : ""delete(absolute_index)""
+activate LS
+    LS -> TB : ""delete(absolute_index)""
+    activate TB
+        return ""deleted_chars""
+    return ""deleted_chars""
+
+@enduml

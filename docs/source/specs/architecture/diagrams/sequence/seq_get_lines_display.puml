@@ -1,0 +1,26 @@
+@startuml
+
+title DisplayDomain.get_lines()
+
+participant Actor as app #white
+box "DisplayDomain" #white
+    participant DomainDomainService as DS
+    participant ViewportState as VS
+end box
+participant VisualDomain as VD #green
+
+app -> DS : ""get_lines()""
+activate DS
+    DS -> VD : ""get_lines()""
+    activate VD
+        return ""visual_lines""
+    DS -> DS : ""truncate(visual_lines)""
+    activate DS
+        DS -> VS : ""get_range()""
+        activate VS
+            return ""start, end""
+        return ""display_lines""
+    return ""display_lines""
+deactivate DS
+
+@enduml

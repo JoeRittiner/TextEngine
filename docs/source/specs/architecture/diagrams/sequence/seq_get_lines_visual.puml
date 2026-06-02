@@ -1,0 +1,27 @@
+@startuml
+
+title VisualDomain.get_lines()
+
+participant Actor as app #white
+box "VisualDomain" #white
+    participant VisualDomainService as VS
+    participant MovementResolver as MR
+    participant CursorState as CS
+    participant VisualLogicalAdapter as VA
+end box
+participant LogicalDomain as LD #lightblue
+
+app -> VS : ""get_lines()""
+activate VS
+    VS -> VA : ""get_lines()""
+    activate VA
+        VA -> LD : ""get_lines()""
+        activate LD
+            return ""logical_lines""
+        VA -> VA : ""wrap(logical_lines)""
+        note left: Wraps lines using internal ""wrapping_map""
+        activate VA
+            return ""visual_lines""
+        return ""visual_lines""
+    return ""visual_lines""
+@enduml

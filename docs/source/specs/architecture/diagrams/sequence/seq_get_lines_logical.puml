@@ -1,0 +1,21 @@
+@startuml
+
+title LogicalDomain.get_lines()
+
+participant Actor as app #white
+box "LogicalDomain" #white
+    participant LogicalDomainService as LS
+    participant TextBuffer as TB
+end box
+
+app -> LS : ""get_lines()""
+activate LS
+    LS -> TB : ""get_text()""
+    activate TB
+        return ""raw_text""
+    LS -> LS : ""split_lines(raw_text)""
+    activate LS
+        return ""logical_lines""
+    return ""logical_lines""
+
+@enduml

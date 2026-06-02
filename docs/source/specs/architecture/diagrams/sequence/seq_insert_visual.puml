@@ -1,0 +1,29 @@
+@startuml
+
+title VisualDomain.insert(text)
+
+participant Actor as app #white
+box "VisualDomain" #white
+    participant VisualDomainService as VS
+    participant MovementResolver as MR
+    participant CursorState as CS
+    participant VisualLogicalAdapter as VA
+end box
+participant LogicalDomain as LD #lightblue
+
+app -> VS : ""insert(text)""
+activate VS
+    VS -> CS : ""get_cursor()""
+    activate CS
+        return ""visual_cursor""
+    VS -> VA : ""insert(text, visual_cursor)""
+    activate VA
+        VA -> VA : ""translate_to_absolute(visual_cursor)""
+        VA -> LD : ""insert(text, absolute_index)""
+            activate LD
+            return ""inserted_chars""
+        return ""inserted_chars""
+    VS -> CS : ""update(visual_cursor + inserted_chars)""
+    deactivate VS
+
+@enduml

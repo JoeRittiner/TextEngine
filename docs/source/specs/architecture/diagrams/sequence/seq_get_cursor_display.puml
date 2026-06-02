@@ -1,0 +1,28 @@
+@startuml
+
+title DisplayDomain.get_cursor()
+
+participant Actor as app #white
+box "DisplayDomain" #white
+    participant DomainDomainService as DS
+    participant ViewportState as VS
+end box
+participant VisualDomain as VD #green
+
+app -> DS : ""get_cursor()""
+activate DS
+    DS -> VD : ""get_cursor()""
+    activate VD
+        return ""visual_cursor""
+    DS -> DS : ""translate(visual_cursor)""
+    activate DS
+        DS -> VS : ""get_range()""
+        activate VS
+            return ""start, end""
+        return ""display_cursor""
+
+
+
+    return ""display_cursor""
+
+@enduml

@@ -1,0 +1,16 @@
+@startuml
+
+title DisplayDomain.delete()
+
+participant Actor as app #white
+box "DisplayDomain" #white
+    participant DomainDomainService as DS
+    participant ViewportState as VS
+end box
+participant VisualDomain as VD #green
+
+app -> DS : ""delete()""
+activate DS
+    DS -> VD : ""delete()""
+
+@enduml

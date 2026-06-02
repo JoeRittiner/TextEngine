@@ -1,0 +1,31 @@
+@startuml
+
+title VisualDomain.get_cursor()
+
+participant Actor as app #white
+box "VisualDomain" #white
+    participant VisualDomainService as VS
+    participant MovementResolver as MR
+    participant CursorState as CS
+    participant VisualLogicalAdapter as VA
+end box
+participant LogicalDomain as LD #lightblue
+
+app -> VS : ""get_cursor()""
+activate VS
+    VS -> CS : ""get_cursor()""
+    activate CS
+        CS -> VA : ""is_valid(visual_cursor)""
+        activate VA
+            return ""is_valid""
+        hnote over CS, VA : ""update_position()"" only if ""is_valid"" is false
+        CS -> CS : ""update_position()""
+            activate CS
+            CS -> VA : ""get_lines()""
+            activate VA
+                return ""visual_lines""
+            CS -> CS : ""adjust_position()""
+            return ""visual_cursor""
+        return ""visual_cursor""
+    return ""visual_cursor""
+@enduml

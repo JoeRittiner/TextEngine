@@ -355,6 +355,8 @@ Component Descriptions
 #. :doc:`components/arch-display_domain_service` tracks the text and cursor in Display coordinates.
 #. :doc:`components/arch-facade` coordinates cross-domain operations.
 
+:doc:`arch-component_sequences`
+
 .. toctree::
    :maxdepth: 1
    :caption: Components
@@ -363,6 +365,7 @@ Component Descriptions
    :hidden:
 
    components/*
+   arch-component_sequences.rst
 
 
 Internal Interfaces

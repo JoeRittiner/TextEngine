@@ -1,0 +1,26 @@
+@startuml
+
+title VisualDomain.move_*(text)
+
+participant Actor as app #white
+box "VisualDomain" #white
+    participant VisualDomainService as VS
+    participant MovementResolver as MR
+    participant CursorState as CS
+    participant VisualLogicalAdapter as VA
+end box
+participant LogicalDomain as LD #lightblue
+
+app -> VS : ""move_*()""
+activate VS
+    VS -> VA : ""get_lines()""
+    activate VA #orange
+        hnote over VA, LD : Returns visual lines
+        return ""visual_lines""
+    VS -> MR : ""move_*(visual_lines)""
+    activate MR
+        return ""visual_cursor""
+    VS -> CS : ""update(visual_cursor)""
+    deactivate VS
+
+@enduml
