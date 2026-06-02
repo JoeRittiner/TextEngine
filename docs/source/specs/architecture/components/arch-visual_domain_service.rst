@@ -20,10 +20,10 @@ in any meaningful sense, it has no lifecycle that the service needs to manage.
 Behaviour
 .........
 
-**Pass-through operations.** Read operations for raw text, logical lines, wrapped visual
-output, and visual-to-logical mapping are delegated without modification to the
-``VisualLogicalAdapter``. The service's only obligation for these is to ensure that no
-read operation modifies any state. (:need:`INV-MODE-001`, :need:`FR-CURSOR-001`)
+**Pass-through operations.** Read operations for wrapped visual output, and visual-to-logical
+mapping are delegated without modification to the ``VisualLogicalAdapter``. The service's only
+obligation for these is to ensure that no read operation modifies any state.
+(:need:`INV-MODE-001`, :need:`FR-CURSOR-001`)
 
 **Cursor representations.** The ``VisualDomainService`` is the owner of three cursor
 representation interfaces, because it holds both the cursor state and the translation

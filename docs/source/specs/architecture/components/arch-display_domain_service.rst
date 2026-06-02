@@ -22,7 +22,7 @@ Behaviour
 **Pass-through operations.** Text mutation and cursor movement operations are delegated
 directly to the ``VisualDomainService`` without modification. After any operation that
 may change the cursor's visual row, the service updates ``ViewportState`` before
-returning. This update is eager, not lazy, see below.
+returning. This update is eager, not lazy. (See :ref:`below <eager-viewport-update>`)
 
 **Viewport-truncated output.** The service exposes the subset of visual lines currently
 within the display window (:need:`FR-MODE-031`) together with metadata indicating which
@@ -34,6 +34,8 @@ not delegate this to the Visual Domain.
 to a Window coordinate for the cursor representation interface. (:need:`FR-CURSOR-005`,
 :need:`INV-CURSOR-001`, :need:`INV-CURSOR-003`) This translation is performed inline:
 ``window_y = visual_row - window_start`` and ``visual_row = window_y + window_start``.
+
+.. _eager-viewport-update:
 
 **Eager viewport update.** ``window_start`` must be updated after every operation that
 changes the cursor's visual row. It cannot be derived lazily on read, because
