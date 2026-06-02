@@ -1,0 +1,55 @@
+@startuml
+
+title insert
+
+participant Host as App #white
+participant "Text Editor" as Facade #lightGray
+participant "Display Domain" as DD #orange
+participant "Visual Domain" as VD #green
+' participant "Logical Domain" as LD #lightBlue
+
+
+App -> Facade : ""get_cursor()""
+activate Facade
+
+Facade -> DD : ""get_cursor()""
+activate DD
+
+DD -> VD : ""get_cursor()""
+activate VD
+
+return ""visual_cursor""
+return ""display_cursor""
+return ""display_cursor""
+
+
+App -> Facade : ""get_visual_cursor()""
+activate Facade
+
+Facade -> VD : ""get_cursor()""
+activate VD
+
+return ""visual_cursor""
+return ""visual_cursor""
+
+
+App -> Facade : ""get_logical_cursor()""
+activate Facade
+
+Facade -> VD : ""get_logical_cursor()""
+activate VD
+
+return ""logical_cursor""
+return ""logical_cursor""
+
+
+App -> Facade : ""get_absolute_index()""
+activate Facade
+
+Facade -> VD : ""get_absolute_index()""
+activate VD
+
+return ""absolute_index""
+return ""absolute_index""
+
+@enduml

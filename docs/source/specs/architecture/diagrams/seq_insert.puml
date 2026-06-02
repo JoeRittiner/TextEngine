@@ -1,0 +1,28 @@
+@startuml
+
+title insert
+
+participant Host as App #white
+participant "Text Editor" as Facade
+participant "Display Domain" as DD #orange
+participant "Visual Domain" as VD #green
+participant "Logical Domain" as LD #lightblue
+
+
+App -> Facade : ""insert(text)""
+
+Facade -> DD : ""insert(text)""
+activate DD
+
+DD -> VD : ""insert(text)""
+
+VD -> LD : ""insert(text, absolute_index)""
+
+DD -> VD : ""get_cursor()""
+    activate VD
+    return ""visual_cursor""
+
+deactivate DD
+
+
+@enduml

@@ -1,0 +1,25 @@
+@startuml
+
+title move_*
+
+participant Host as App #white
+participant "Text Editor" as Facade
+participant "Display Domain" as DD #orange
+participant "Visual Domain" as VD #green
+participant "Logical Domain" as LD #lightblue
+
+App -> Facade : ""move_*()""
+Facade -> DD : ""move_*()""
+activate DD
+    DD -> VD : ""move_*()""
+    activate VD
+        VD -> LD : ""get_lines()""
+            activate LD
+            return ""logical_lines""
+            deactivate VD
+        DD -> VD : ""get_cursor()""
+            activate VD
+            return ""visual_cursor""
+    deactivate DD
+
+@enduml

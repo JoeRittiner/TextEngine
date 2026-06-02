@@ -323,29 +323,17 @@ Container Diagram
 Data Flow: Representative Examples
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. TODO: Sequence diagram for insert() and move_right() — one mutation, one movement.
-   Both should illustrate the downward command / upward data pattern.
-
-**Example:** ``insert("a")``
-
-#. The host application calls ``TextEditor.insert("a")``.
-#. The Facade delegates to the Visual Domain, passing the current Visual cursor position.
-#. The Visual Domain converts the Visual position to an Absolute Index and passes the insert
-   request down to the Logical Domain.
-#. The Logical Domain mutates the text buffer and returns the updated text.
-#. The Visual Domain recomputes the wrapped line layout from the updated text.
-#. The Facade queries the Display Domain to determine whether the viewport needs to scroll to keep
-   the cursor visible, and updates Window coordinates accordingly.
-#. Control returns to the host application. No output is pushed. The host must get the updated  text
-   and display position manually.
-
 .. plantuml:: diagrams/seq_insert.puml
 
-**Example:** ``move_right()``
+.. plantuml:: diagrams/seq_delete.puml
 
-.. TODO
+.. plantuml:: diagrams/seq_backspace.puml
 
-.. plantuml:: diagrams/seq_move_right.puml
+.. plantuml:: diagrams/seq_move.puml
+
+.. plantuml:: diagrams/seq_get_lines.puml
+
+.. plantuml:: diagrams/seq_get_cursor.puml
 
 .. _arch_components:
 

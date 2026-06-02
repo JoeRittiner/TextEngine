@@ -1,0 +1,22 @@
+@startuml
+
+title insert
+
+participant Host as App #white
+participant "Text Editor" as Facade
+participant "Display Domain" as DD #orange
+participant "Visual Domain" as VD #green
+participant "Logical Domain" as LD #lightblue
+
+
+App -> Facade : ""backspace()""
+Facade -> DD : ""backspace()""
+DD -> VD : ""backspace()""
+VD -> LD : ""delete(absolute_index)""
+activate LD
+    return ""deleted_chars""
+
+deactivate DD
+
+
+@enduml

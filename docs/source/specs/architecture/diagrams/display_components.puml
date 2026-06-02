@@ -5,9 +5,9 @@ title Text Editor Architecture - Display Layer
 interface DisplayLayer as "\nDisplayLayer"
 interface VisualLayer
 
-rectangle "Visual Domain" #Orange {
+rectangle "Display Domain" #Orange {
    component DisplayDomainService
-   component DisplayCoordinateTranslator
+   ' component DisplayCoordinateTranslator
    component ViewportState
    'Stateless?
    ' component CoordinateTranslator
@@ -15,10 +15,10 @@ rectangle "Visual Domain" #Orange {
 
 DisplayDomainService -up-|> DisplayLayer
 
-DisplayDomainService *--> DisplayCoordinateTranslator
-DisplayDomainService *--> ViewportState
-DisplayCoordinateTranslator .> ViewportState
+' DisplayDomainService *--> DisplayCoordinateTranslator
+DisplayDomainService *-> ViewportState
+' DisplayCoordinateTranslator .> ViewportState
 
-DisplayDomainService .> VisualLayer
+DisplayDomainService ..> VisualLayer
 
 @enduml

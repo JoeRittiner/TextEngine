@@ -39,7 +39,7 @@ to a Window coordinate for the cursor representation interface. (:need:`FR-CURSO
 
 **Eager viewport update.** ``window_start`` must be updated after every operation that
 changes the cursor's visual row. It cannot be derived lazily on read, because
-``window_start`` is not a function of the cursor's current position alone. it is a
+``window_start`` is not a function of the cursor's current position alone. It is a
 function of the cursor's movement *history* relative to the viewport. A lazy
 implementation would lose the history of intermediate scroll positions and produce
 incorrect output for any caller that moves the cursor without immediately reading the
