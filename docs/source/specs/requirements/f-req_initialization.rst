@@ -115,11 +115,6 @@ Happy Path
    If no text is provided, the system must initialize the :term:`Text Buffer` to an empty string,
    equivalent to a single empty :term:`logical line`.
 
-   .. note::
-      Special characters within the initial text string are processed according to the rules defined
-      in :ref:`req_special_characters`. In particular, ``\r`` is ignored, and ``\t`` is expanded to
-      four spaces.
-
 .. freq:: Display Width Initialization
    :status: Open
    :id: FR-INIT-003

@@ -13,8 +13,6 @@ App -> Facade : ""backspace()""
 Facade -> DD : ""backspace()""
 DD -> VD : ""backspace()""
 VD -> LD : ""delete(absolute_index)""
-activate LD
-    return ""deleted_chars""
 
 deactivate DD
 

@@ -17,12 +17,11 @@ activate VS
     activate CS
         return ""visual_cursor""
     VS -> VA : ""delete(visual_cursor)""
-    activate VA
-        VA -> VA : ""translate_to_absolute(visual_cursor)""
-        VA -> LD : ""delete(absolute_index)""
-        activate LD
-            return ""deleted_chars""
-        return ""deleted_chars""
-    deactivate VS
+deactivate VS
+
+activate VA
+    VA -> VA : ""translate_to_absolute(visual_cursor)""
+    VA -> LD : ""delete(absolute_index)""
+deactivate VA
 
 @enduml

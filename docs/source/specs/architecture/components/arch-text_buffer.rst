@@ -24,17 +24,7 @@ window-clipped output) are derived from this string by other components.
 Behaviour
 .........
 
-The TextBuffer normalises certain input characters on insertion, before they enter the
-buffer. These rules are architecturally significant because they define what the raw text
-string actually contains, and therefore what all downstream components can assume.
-
-* ``\t`` is expanded to four spaces. (:need:`FR-TEXT-043`)
-* ``\r``, ``\b``, ``\f``, ``\v``, and ``\a`` are silently ignored. (:need:`FR-TEXT-042`,
-  :need:`FR-TEXT-044`, :need:`FR-TEXT-045`, :need:`FR-TEXT-046`, :need:`FR-TEXT-047`)
-* ``\n`` is stored as-is and defines logical line boundaries. (:need:`FR-TEXT-041`,
-  :need:`FR-TEXT-016`, :need:`FR-TEXT-025`)
-
-After normalisation, insertion is always a pure splice: characters are inserted at the
+Insertion is always a pure splice: characters are inserted at the
 given absolute index without overwriting existing content. (:need:`FR-TEXT-014`) Inserting
 an empty string is a no-op. (:need:`FR-TEXT-013`) Inserting a multi-character string
 produces the same buffer state as inserting each character sequentially.

@@ -15,19 +15,18 @@ app -> VS : ""backspace()""
 activate VS
     VS -> CS : ""get_cursor()""
     activate CS
-        return ""visual_cursor""
+    return ""visual_cursor""
+
     VS -> VA : ""backspace(visual_cursor - 1)""
     activate VA
         VA -> VA : ""translate_to_absolute(visual_cursor)""
         VA -> LD : ""delete(absolute_index)""
-        activate LD
-            return ""deleted_chars""
-        return ""deleted_chars""
-    hnote over VS : Update Cursor only if\nany chararacters were\nactually deleted.
+    deactivate VA
         hnote over VS, MR : Resolve new cursor position
     VS -> MR : ""move_left()""
-    activate MR #orange
-        deactivate MR
-    deactivate VS
+deactivate VS
+
+activate MR #orange
+    deactivate MR
 
 @enduml

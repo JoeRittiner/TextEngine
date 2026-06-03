@@ -220,59 +220,36 @@ Backspace
 
    Removing a newline character via backspace must merge the two adjacent :term:`logical lines <logical line>`.
 
-Special Characters
+Control Characters
 ~~~~~~~~~~~~~~~~~~
 
-Special characters as defined in :ref:`req_special_characters` are required to be handled as follows:
+Control characters are required to be handled as follows:
 
-.. freq:: New Line Character
+.. freq:: New Line
    :status: Open
    :id: FR-TEXT-041
    :tags: special
 
    The system must support the newline character (``\n``) as a :term:`character`.
 
-.. freq:: Carriage Return
+.. freq:: Other Control Characters
    :status: Open
    :id: FR-TEXT-042
-   :tags: special, no-op
-
-   The system must ignore the carriage return character (``\r``). (No-op)
-
-.. freq:: Tab
-   :status: Open
-   :id: FR-TEXT-043
    :tags: special
 
-   The system must support the tab character (``\t``) by replacing it with 4 spaces.
+   The system must handle any other Control Character as just another :term:`character`.
+   They must not be ignored/ removed. They must be inserted and returned as-is,
+   with no special behavior.
 
-.. freq:: Backspace Character
+.. freq:: Line-Ending Characters
    :status: Open
-   :id: FR-TEXT-044
-   :tags: special, no-op
+   :id: FR-TEXT-043
+   :links: FR-TEXT-041, FR-TEXT-042
+   :tags: special
 
-   The system must ignore the backspace character (``\b``). (No-op)
-
-.. freq:: Form Feed
-   :status: Open
-   :id: FR-TEXT-045
-   :tags: special, no-op
-
-   The system must ignore the form feed character (``\f``). (No-op)
-
-.. freq:: Vertical Tab
-   :status: Open
-   :id: FR-TEXT-046
-   :tags: special, no-op
-
-   The system must ignore the vertical tab character (``\v``). (No-op)
-
-.. freq:: Alert
-   :status: Open
-   :id: FR-TEXT-047
-   :tags: special, no-op
-
-   The system must ignore the alert character (``\a``). (No-op)
+   Line-ending characters (``\r`` and ``\r\n``) must be handled as regular :term:`characters <character>`.
+   ``\r\n`` is treated as two separate characters, ``\r`` and ``\n`` and handled as defined in
+   :need:`FR-TEXT-041`.
 
 4.2.6 Out of Scope
 ------------------

@@ -12,5 +12,6 @@ participant VisualDomain as VD #green
 app -> DS : ""delete()""
 activate DS
     DS -> VD : ""delete()""
+    deactivate DS
 
 @enduml

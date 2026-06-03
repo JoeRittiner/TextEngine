@@ -11,8 +11,6 @@ end box
 app -> LS : ""delete(absolute_index)""
 activate LS
     LS -> TB : ""delete(absolute_index)""
-    activate TB
-        return ""deleted_chars""
-    return ""deleted_chars""
+deactivate LS
 
 @enduml

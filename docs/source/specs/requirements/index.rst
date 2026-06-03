@@ -154,24 +154,9 @@ mathematically deterministic to prevent lag during rapid host-application input 
   (e.g., the cursor can never move into negative indices or beyond the absolute end of the text buffer).
 
 
-6. Edge Cases & Special Rules
------------------------------
+.. 6. Edge Cases & Special Rules
+.. -----------------------------
 
-.. _req_special_characters:
-
-6.1 Special Characters
-~~~~~~~~~~~~~~~~~~~~~~
-========= =============== =============================
-Character Description     Defined Behavior
-========= =============== =============================
-``\n``    New Line        Insert a newline
-``\r``    Carriage Return Ignored (No-op)
-``\t``    Tab             Insert four individual spaces
-``\b``    Backspace       Ignored (No-op)
-``\f``    Form Feed       Ignored (No-op)
-``\v``    Vertical Tab    Ignored (No-op)
-``\a``    Alert           Ignored (No-op)
-========= =============== =============================
 
 Indices and tables
 ------------------

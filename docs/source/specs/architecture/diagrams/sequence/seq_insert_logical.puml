@@ -11,10 +11,6 @@ end box
 app -> LS : ""insert(text, absolute_index)""
 activate LS
     LS -> TB : ""insert(text, absolute_index)""
-    activate TB
-        TB -> TB : ""normalize(text)""
-        TB -> TB : ""insert(text, absolute_index)""
-        return ""inserted_chars""
-    return ""inserted_chars""
+    deactivate LS
 
 @enduml
