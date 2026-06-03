@@ -28,7 +28,7 @@ The C4 hierarchy is applied as follows:
   separately deployable processes; they are bounded, cohesive units of responsibility
   within a single Python module.
 * **Component:** The individual modules within each domain (e.g. ``TextBuffer``,
-  ``WrapEngine``, ``ViewportState``).
+  ``VisualLogicalAdapter``, ``ViewportState``).
 * **Code:** The classes, functions, and data structures that implement each component.
 
 Rationale

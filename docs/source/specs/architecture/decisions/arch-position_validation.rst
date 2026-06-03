@@ -34,12 +34,12 @@ Decision
 Cursor position validation is the responsibility of the ``CursorState`` component,
 enforced lazily on read. ``CursorState`` holds a raw stored position that may be
 transiently invalid between operations. When ``get_position`` is called, ``CursorState``
-retrieves the current visual line structure from the ``WrapEngine``, clamps its stored
+retrieves the current visual line structure from the ``VisualLogicalAdapter``, clamps its stored
 position to the nearest valid coordinate, and returns the corrected value. The internal
 state is updated to the clamped value at the same time.
 
-The ``WrapEngine`` does not perform clamping. If a caller passes an out-of-bounds position
-to the ``WrapEngine`` for translation, the ``WrapEngine`` raises an exception. It is a
+The ``VisualLogicalAdapter`` does not perform clamping. If a caller passes an out-of-bounds position
+to the ``VisualLogicalAdapter`` for translation, the ``VisualLogicalAdapter`` raises an exception. It is a
 pure coordinate translator, not a position corrector.
 
 The ``MovementResolver`` is a stateless calculator that computes a new visual coordinate
@@ -61,9 +61,9 @@ the structural property that resolves the two-trigger problem: both cursor movem
 buffer mutation are handled by the same mechanism, at the same point, without special
 cases.
 
-Keeping the ``WrapEngine`` as a pure translator (throwing on invalid input rather than
+Keeping the ``VisualLogicalAdapter`` as a pure translator (throwing on invalid input rather than
 correcting it) preserves its single responsibility and prevents cursor semantics from
-leaking into the coordinate translation layer. The ``WrapEngine`` does not need to know
+leaking into the coordinate translation layer. The ``VisualLogicalAdapter`` does not need to know
 what a valid cursor position is; it only needs to know how to translate between coordinate
 spaces.
 
@@ -76,12 +76,12 @@ coupling explicit and unidirectional.
 Alternatives Considered
 .......................
 
-**WrapEngine clamps rather than throws.**
-  The ``WrapEngine`` could expose a clamp operation, accepting any position and returning
-  the nearest valid one. This was rejected because it would give the ``WrapEngine``
+**VisualLogicalAdapter clamps rather than throws.**
+  The ``VisualLogicalAdapter`` could expose a clamp operation, accepting any position and returning
+  the nearest valid one. This was rejected because it would give the ``VisualLogicalAdapter``
   knowledge of cursor semantics, what "nearest valid" means for a cursor is a
   cursor-level concept, not a coordinate-translation concept. It also would not resolve
-  the two-trigger problem on its own: the ``WrapEngine`` is unaware of cursor movement,
+  the two-trigger problem on its own: the ``VisualLogicalAdapter`` is unaware of cursor movement,
   so it could not enforce the invariant after a movement command without additional
   orchestration.
 
@@ -99,7 +99,7 @@ Alternatives Considered
   active notification path that can be missed. The lazy approach achieves the same
   outcome (the cursor is valid when read) without requiring a notification contract.
 
-**Split validation: WrapEngine validates movement, CursorState validates on read.**
+**Split validation: VisualLogicalAdapter validates movement, CursorState validates on read.**
   Validation could be split between two components, each handling one trigger. This was
   rejected because split responsibility means the invariant is only fully enforced when
   both halves work correctly together. The single lazy-read mechanism in ``CursorState``
@@ -116,7 +116,7 @@ Consequences
 * ``MovementResolver`` is a pure calculator and can be tested in complete isolation from
   cursor state. Movement logic is fully exercisable with a position, a direction, and a
   series of line lengths.
-* The ``WrapEngine`` remains a pure translator. No cursor concepts enter the coordinate
+* The ``VisualLogicalAdapter`` remains a pure translator. No cursor concepts enter the coordinate
   translation layer.
 
 **Constrained or made harder:**
@@ -126,7 +126,7 @@ Consequences
   never exposed directly. All access must go through ``get_position``. If this access
   discipline is ever broken, the invariant fails silently.
 * Every ``get_position`` call incurs the cost of retrieving visual lines from the
-  ``WrapEngine`` and checking the stored position against them. For the expected usage
+  ``VisualLogicalAdapter`` and checking the stored position against them. For the expected usage
   pattern of reading the cursor position infrequently relative to the number of operations,
   this is acceptable. If ``get_position`` were called in a tight loop, the repeated
   retrieval would be unnecessary overhead.

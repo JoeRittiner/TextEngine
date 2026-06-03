@@ -27,13 +27,13 @@ current buffer state; ``MovementResolver`` provides this guarantee for movement 
 The stored value may become stale if the buffer is subsequently mutated before the next
 read.
 
-**On get.** Before returning the stored coordinate, ``CursorState`` retrieves the current
-visual line structure from the ``WrapEngine`` and checks whether the stored position
-remains valid. If it does not, it clamps to the nearest valid position per
-:need:`INV-CURSOR-001` and :need:`FR-CURSOR-031`, updates the stored value, and returns
-the corrected coordinate. Validity is defined by the requirements; the clamping behaviour
-is architecturally significant only in that it is *lazy*. Deferred to read time rather
-than enforced eagerly after every buffer change.
+**On get.** Before returning the stored coordinate, ``CursorState`` queries the
+``VisualLogicalAdapter`` to check whether the stored position is valid. If not, the
+``CursorState`` clamps to the nearest valid position per :need:`INV-CURSOR-001` and
+:need:`FR-CURSOR-031`, updates the stored value, and returns the corrected coordinate.
+Validity is defined by the requirements; the clamping behaviour is architecturally
+significant only in that it is *lazy*. Deferred to read time rather than enforced eagerly
+after every buffer change. (See: :doc:`../decisions/arch-position_validation`)
 
 **Boundary normalisation.** One position constraint is enforced on both set and get:
 :need:`FR-CURSOR-010`. This normalisation is not a clamping concern. It is a
@@ -48,7 +48,7 @@ raises an exception and halts initialisation (:need:`FR-INIT-013`).
 Dependencies
 ............
 
-**Depends on:** The ``WrapEngine``, to retrieve the current visual line structure for
+**Depends on:** The ``VisualLogicalAdapter``, to retrieve the current visual line structure for
 coordinate validation on read. ``CursorState`` does **not** depend on ``MovementResolver``
 or the ``VisualDomainService``.
 

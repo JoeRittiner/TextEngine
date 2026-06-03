@@ -240,10 +240,10 @@ below it and is completely independent of the domains above it.
 
 .. note::
 
-   Each domain is represented at runtime by a domain service (e.g. ``VisualLayer``), which owns the domain's internal
-   components and is the sole point of contact for the layer above. This makes each domain independently instantiable
-   and unit-testable in isolation. The C4 *container* level is used here because it accurately captures this boundary
-   structure.
+   Each domain is represented at runtime by a domain service (e.g. ``VisualDomainService``), which owns the domain's
+   internal components and is the sole point of contact for the layer above. This makes each domain independently
+   instantiable and unit-testable in isolation. The C4 *container* level is used here because it accurately captures
+   this boundary structure.
 
    Though the domains are not separately deployable processes; they are bounded objects within a single Python module.
    See :doc:`decisions/arch-c4_model`.

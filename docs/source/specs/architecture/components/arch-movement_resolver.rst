@@ -36,7 +36,7 @@ Two aspects are architecturally significant and worth stating explicitly:
 Although :need:`FR-CURSOR-040` defines left/right in terms of absolute index arithmetic,
 the ``MovementResolver`` operates entirely in visual coordinates. It fulfils the
 requirement by computing the equivalent visual coordinate (including line-boundary wrapping)
-without ever referencing an absolute index. The ``WrapEngine`` is the only component in
+without ever referencing an absolute index. The ``VisualLogicalAdapter`` is the only component in
 the Visual Domain that crosses coordinate spaces.
 
 **``MovementResolver`` does not implement desired-column retention.**
