@@ -98,4 +98,4 @@ Consequences
   visible text and the Window cursor position must issue two separate queries.
   The Facade resolves this by holding direct references to all three domain services,
   allowing it to serve each output mode from its owning layer without passing concerns
-  upward.
+  upward. (See :doc:`arch-layer_reads`).

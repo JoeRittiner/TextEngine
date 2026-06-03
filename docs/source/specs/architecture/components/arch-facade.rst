@@ -44,7 +44,8 @@ invariants hold simultaneously before returning. (:need:`INV-INIT-002`)
   display-to-logical mapping (:need:`FR-MODE-032`), and cursor as Window Coordinate
   (:need:`FR-CURSOR-005`).
 
-All output operations are read-only. (:need:`INV-MODE-001`)
+All output operations are read-only. (:need:`INV-MODE-001`) This is a deliberate bypass of
+the layering. (See :doc:`../decisions/arch-layer_reads`)
 
 **Mutations and movement.** Insert, delete, backspace, and cursor movement operations
 are delegated to the ``DisplayDomainService``, which propagates them through the Visual
