@@ -57,6 +57,14 @@ in-place before returning. Consequently, a read performed through any domain ser
 observes the current state regardless of which layer is queried. Read-path bypassing
 therefore does not create a synchronisation problem.
 
+.. note::
+   In normal operation, hosts are expected to interact primarily with the display representation
+   exposed by the editor. Access to wrapped, logical, and raw representations is a specialised
+   capability intended for advanced integrations, diagnostics, testing, future features, or
+   unforeseen requirements. The software requirements mandate access to all representations for
+   these reasons. Their presence therefore reflects an intentional extensibility decision rather
+   than an expectation of frequent use.
+
 Alternatives Considered
 .......................
 
@@ -89,3 +97,5 @@ Consequences
 * Future contributors must preserve the invariant that direct access is read-only. If a
   write path bypasses the hierarchy, derived state can become stale even though the
   underlying source-of-truth state remains correct.
+* The Facade exposes capabilities that many hosts may never use. This slightly increases
+  the public API surface in exchange for flexibility and future extensibility.

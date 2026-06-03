@@ -111,8 +111,9 @@ None.
 3.3 Software Interfaces
 ~~~~~~~~~~~~~~~~~~~~~~~
 The system provides a programmatic API for external systems. External applications push commands to mutate state
-(e.g., ``insert_char()``, ``move_cursor_up()``) and use retrieval interfaces to output the text state and cursor
-position in four distinct modes: Display Mode, Wrapped Mode, Logical Mode, and Raw Mode.
+(e.g., insert_char(), move_cursor_up()). External applications are expected to interact primarily through Display
+Mode. The API also provides retrieval interfaces for Wrapped Mode, Logical Mode, and Raw Mode to support advanced
+integrations and alternative state representations.
 
 .. _req_functional_requirements:
 
