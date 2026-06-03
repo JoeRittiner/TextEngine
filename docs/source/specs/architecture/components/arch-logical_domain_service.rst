@@ -41,10 +41,10 @@ between these two spaces on demand. The cursor itself is not a Logical Domain co
 the service provides the coordinate machinery, not the cursor state.
 
 **Mutation delegation.** Insert, delete and backspace operations are validated at the
-service boundary.Inputs are type-checked, and values of incorrect types are rejected with an exception
-(:need:`FR-INIT-013`). The operation is then delegated to the TextBuffer, which applies its own
-normalisation rules before modifying the buffer. The service does not duplicate or
-override those rules.
+service boundary. Inputs are type-checked, and values of incorrect types are rejected with
+an exception (:need:`FR-INIT-013`). The operation is then delegated to the TextBuffer, which
+applies its own normalisation rules before modifying the buffer. The service does not duplicate
+or override those rules.
 
 Dependencies
 ............
