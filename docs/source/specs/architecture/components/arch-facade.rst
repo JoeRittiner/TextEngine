@@ -25,8 +25,9 @@ full set of configuration parameters: initial text, cursor position, display wid
 display height, and scrolloff. (:need:`FR-INIT-001`) If no cursor position is provided,
 the cursor defaults to the position immediately after the last character in the buffer.
 (:need:`FR-INIT-006`) The ``TextEditor`` initialises the domain services in dependency
-order (Logical first, then Visual, then Display) and verifies that all system
-invariants hold simultaneously before returning. (:need:`INV-INIT-002`)
+order (Logical first, then Visual, then Display) and verifies that all initialization
+invariants hold simultaneously before returning. (:need:`INV-INIT-002`) Else it must
+throw an exception. (:need:`FR-INIT-011`, :need:`FR-INIT-012`, :need:`FR-INIT-013`)
 
 **Output interfaces.** The facade exposes output grouped by which service handles it:
 
