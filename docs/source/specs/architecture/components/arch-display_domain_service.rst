@@ -56,7 +56,7 @@ Key Invariants
 
 * **Window output bounded by display height.** The number of lines returned by the
   viewport-truncated output interface never exceeds ``display_height``, and the content
-  always corresponds to the range ``[window_start, window_start + display_height]``.
+  always corresponds to the range ``[window_start, window_start + display_height - 1]``.
   (:need:`FR-MODE-031`)
 
 * **Coordinate synchronisation.** The Window coordinate returned for the cursor
