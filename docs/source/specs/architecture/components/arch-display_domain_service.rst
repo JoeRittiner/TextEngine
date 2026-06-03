@@ -23,8 +23,6 @@ Behaviour
 directly to the ``VisualDomainService`` without modification. After any operation that
 could change the cursor's visual row, the service updates ``ViewportState`` before
 returning. This update is eager, not lazy. (See :ref:`below <eager-viewport-update>`)
-(See :doc:`../decisions/arch-eager_viewport_update`) even
-when the row did not change.
 
 **Viewport-truncated output.** The service exposes the subset of visual lines currently
 within the display window (:need:`FR-MODE-031`) together with metadata indicating which
@@ -36,6 +34,17 @@ not delegate this to the Visual Domain.
 to a Window coordinate for the cursor representation interface. (:need:`FR-CURSOR-005`,
 :need:`INV-CURSOR-001`, :need:`INV-CURSOR-003`) This translation is performed inline:
 ``window_y = visual_row - window_start`` and ``visual_row = window_y + window_start``.
+
+.. _eager-viewport-update:
+
+**Eager viewport update.** ``window_start`` must be updated after every operation that
+changes the cursor's visual row. It cannot be derived lazily on read, because
+``window_start`` is not a function of the cursor's current position alone. It is a
+function of the cursor's movement *history* relative to the viewport. A lazy
+implementation would lose the history of intermediate scroll positions and produce
+incorrect output for any caller that moves the cursor without immediately reading the
+display state. The service enforces this by treating the viewport update as part of every
+cursor-changing operation, not as part of the read path.
 
 Dependencies
 ............
