@@ -1,13 +1,6 @@
 Display Domain
 ~~~~~~~~~~~~~~
 
-.. Aim for one record per non-obvious choice.
-   Examples of decisions worth recording for this project:
-   - Why a Facade pattern rather than a flat module of functions.
-   - Whether Cursor is a class with its own state or a value computed from TextBuffer's state.
-   - Whether WrapEngine is stateful (caches results) or stateless (recalculates on every call).
-   - Whether components may call each other directly or only through the Facade.
-
 Context
 .......
 
@@ -31,7 +24,7 @@ tracking belong in the domain structure?
 Decision
 ........
 
-And additional Display Domain is placed **above** the Visual Domain in the dependency stack.
+An additional Display Domain is placed **above** the Visual Domain in the dependency stack.
 It does not replace the Visual Domain; it extends it. The Display Domain consumes the Visual
 Domain's output (the full list of wrapped visual lines and the Visual cursor position) and
 applies a second transformation: truncating that list to the visible window and translating
@@ -102,5 +95,7 @@ Consequences
   width; the Display Domain must recompute the viewport for a new height. These are
   currently treated as re-initialisation events. (:need:`INV-VIEW-001`, :need:`INV-WRAP-001`)
 * Raw text does not cross the Display Domain boundary. Any host that needs both the
-  visible text and the Window cursor position must issue two separate queries, or the
-  Facade must aggregate them.
+  visible text and the Window cursor position must issue two separate queries.
+  The Facade resolves this by holding direct references to all three domain services,
+  allowing it to serve each output mode from its owning layer without passing concerns
+  upward.

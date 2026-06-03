@@ -1,5 +1,3 @@
-.. _arch_component_text_buffer:
-
 Text Buffer
 ~~~~~~~~~~~
 
@@ -27,16 +25,19 @@ Behaviour
 Insertion is always a pure splice: characters are inserted at the
 given absolute index without overwriting existing content. (:need:`FR-TEXT-014`) Inserting
 an empty string is a no-op. (:need:`FR-TEXT-013`) Inserting a multi-character string
-produces the same buffer state as inserting each character sequentially.
-(:need:`FR-TEXT-017`)
+produces the same buffer state as inserting each character sequentially. (:need:`FR-TEXT-017`)
 
 Delete targets the character immediately to the right of the given index. Deleting past
 the end of the buffer is a no-op.
-(:need:`FR-TEXT-021`, :need:`FR-TEXT-022` :need:`FR-TEXT-024`)
+(:need:`FR-TEXT-021`, :need:`FR-TEXT-022`, :need:`FR-TEXT-024`)
+*Note:* :need:`FR-TEXT-023` Relates to Cursor Position, which is not a concern of the TextBuffer.
 
 Backspace targets the character immediately to the left of the given index. Backspacing
 past the start of the buffer is a no-op.
 (:need:`FR-TEXT-031`, :need:`FR-TEXT-032`, :need:`FR-TEXT-034`)
+*Note:* :need:`FR-TEXT-033` Relates to Cursor Position, which is not a concern of the TextBuffer.
+*Note:* The TextBuffer does not natively support a backspace operation, only delete. This is because
+backspace also requires a cursor position, which is not a concern of the TextBuffer.
 
 Dependencies
 ............
@@ -48,17 +49,14 @@ Key Invariants
 ..............
 
 * **Buffer always exists.** The buffer always represents at least an empty buffer containing
-  zero characters.
-  (:need:`INV-TEXT-001`)
+  zero characters. (:need:`INV-TEXT-001`)
 
-* **Left-to-right processing.** The buffer is processed left-to-right. A character "in
-  front of" the cursor is to its right; a character "behind" it is to its left.
-  Characters are indexed accordingly. (:need:`INV-TEXT-002`)
+* **Left-to-right processing.** Characters are indexed 0-based from left to right. Index 0 is
+  the leftmost character in the buffer. (:need:`INV-TEXT-002`)
 
 * **Post-initialisation validity.** After initialisation, the buffer contains exactly the
   provided initial text (or is empty), and this state is indistinguishable from one
   reached through normal operation. (:need:`INV-INIT-002`)
 
 * **Output stability.** For any given buffer state, repeated queries for raw text return
-  identical results. Output is a pure function of the buffer contents.
-  (:need:`INV-MODE-002`)
+  identical results. Output is a pure function of the buffer contents. (:need:`INV-MODE-002`)

@@ -41,8 +41,8 @@ between these two spaces on demand. The cursor itself is not a Logical Domain co
 the service provides the coordinate machinery, not the cursor state.
 
 **Mutation delegation.** Insert, delete and backspace operations are validated at the
-service boundary. Type-checking inputs and rejecting incorrect types with an exception
-(:need:`FR-INIT-013`), then delegated to the TextBuffer, which applies its own
+service boundary.Inputs are type-checked, and values of incorrect types are rejected with an exception
+(:need:`FR-INIT-013`). The operation is then delegated to the TextBuffer, which applies its own
 normalisation rules before modifying the buffer. The service does not duplicate or
 override those rules.
 
@@ -67,7 +67,5 @@ Key Invariants
   current state. Repeated queries with no intervening mutation return identical results.
   (:need:`INV-MODE-002`)
 
-* **Coordinate consistency.** The absolute index used internally and the logical
-  coordinate ``(line, col)`` exposed externally must always refer to the same position in
-  the buffer. After any mutation, the service is responsible for ensuring that coordinates
-  passed back to callers reflect the post-mutation buffer state. (:need:`INV-CURSOR-003`)
+* **Coordinate consistency.** For any buffer position, the Absolute Index and ``(line, col)``
+  returned by the service always refer to the same character.  (:need:`INV-CURSOR-003`)

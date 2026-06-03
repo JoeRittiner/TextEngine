@@ -37,6 +37,9 @@ machinery needed to fulfil them:
 
 All three are read-only operations and must not modify any state. (:need:`INV-MODE-001`)
 
+The Visual Domain is a cursor-centric model and only supports text manipulation at the cursor
+position. (:need:`FR-CURSOR-001`)
+
 **Cursor movement.** Movement commands are orchestrated across three steps: retrieve the
 current valid position from ``CursorState``; pass it along with the command and the
 current visual lines to ``MovementResolver``; set the result back on ``CursorState``.
@@ -48,14 +51,15 @@ management, and the rule differs per operation, making this the service's primar
 non-trivial orchestration responsibility:
 
 * *Insert:* pass the current cursor position and the text to the ``VisualLogicalAdapter``,
-  which delegates the mutation and refreshes the wrapping map; then advance the cursor to
-  immediately after the inserted characters.
+  which delegates the mutation and refreshes the wrapping map. The Cursor is advanced by
+  the number of inserted characters, using the ``MovementResolver``, i.e. to immediately
+  after the inserted characters.
   (:need:`FR-TEXT-012`, :need:`FR-TEXT-015`, :need:`FR-TEXT-017`)
 * *Delete:* pass the current cursor position to the ``VisualLogicalAdapter`` for
   delegation; the cursor position is unchanged.
   (:need:`FR-TEXT-022`, :need:`FR-TEXT-023`)
 * *Backspace:* pass the current cursor position to the ``VisualLogicalAdapter`` for
-  delegation; then move the cursor one position to the left.
+  delegation; then move the cursor one position to the left after the mutation.
   (:need:`FR-TEXT-031`, :need:`FR-TEXT-032`, :need:`FR-TEXT-033`)
 
 In all three cases, the ``VisualLogicalAdapter`` is responsible for translating the visual

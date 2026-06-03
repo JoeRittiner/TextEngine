@@ -1,14 +1,6 @@
 Sequence Diagrams
 ~~~~~~~~~~~~~~~~~
 
-.. toctree::
-   :maxdepth: 1
-   :name: sequence_diagrams
-   :glob:
-   :hidden:
-
-   diagrams/sequence/*
-
 Display Domain
 ..............
 

@@ -14,10 +14,17 @@ participant LogicalDomain as LD #lightblue
 app -> VS : ""move_*()""
 activate VS
     VS -> VA : ""get_lines()""
-    activate VA #orange
+    activate VA #green
         hnote over VA, LD : Returns visual lines
         return ""visual_lines""
-    VS -> MR : ""move_*(visual_lines)""
+    VS -> CS : ""get_position()""
+    activate CS
+        CS -> VA : position validation
+        activate VA #green
+            hnote over CS, VA : Corrects invalid positions
+            return
+        return ""visual_cursor""
+    VS -> MR : ""move_*(visual_cursor, visual_lines)""
     activate MR
         return ""visual_cursor""
     VS -> CS : ""update(visual_cursor)""

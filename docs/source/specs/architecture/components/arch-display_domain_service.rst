@@ -21,7 +21,7 @@ Behaviour
 
 **Pass-through operations.** Text mutation and cursor movement operations are delegated
 directly to the ``VisualDomainService`` without modification. After any operation that
-may change the cursor's visual row, the service updates ``ViewportState`` before
+could change the cursor's visual row, the service updates ``ViewportState`` before
 returning. This update is eager, not lazy. (See :ref:`below <eager-viewport-update>`)
 
 **Viewport-truncated output.** The service exposes the subset of visual lines currently

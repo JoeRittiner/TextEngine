@@ -1,13 +1,6 @@
 Cursor Position Validation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. Aim for one record per non-obvious choice.
-   Examples of decisions worth recording for this project:
-   - Why a Facade pattern rather than a flat module of functions.
-   - Whether Cursor is a class with its own state or a value computed from TextBuffer's state.
-   - Whether WrapEngine is stateful (caches results) or stateless (recalculates on every call).
-   - Whether components may call each other directly or only through the Facade.
-
 Context
 .......
 

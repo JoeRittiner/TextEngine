@@ -78,6 +78,10 @@ Document Conventions
   *Functions* and *Code*.
   See :doc:`decisions/arch-c4_model` for the rationale for adopting this model.
 
+* **Coordinate Notation:** Coordinates that are relative to lines (logical or visual) are written with brackets
+  ``(line, col)``. Coordinates that are relative to the window are written as with square brackets ``[x, y]``.
+  This is to distinguish between coordinate systems.
+
 .. _arch_goals_and_constraints:
 
 Architectural Goals and Constraints
@@ -112,7 +116,7 @@ Goals
   *Rationale:* Makes all behaviour unit-testable and all bugs reproducible.
 
 * **Single Responsibility per Component:**
-  Each component within a domain  owns one clearly statable concern. If a component's responsibility cannot be
+  Each component within a domain owns one clearly statable concern. If a component's responsibility cannot be
   described in one sentence without the word "and", it is doing too much.
 
   *Rationale:* The multi-coordinate cursor system creates natural pressure toward coupling. Strict
@@ -162,9 +166,8 @@ they constrain or directly motivate specific architectural decisions.
   This requirement mandates that the Logical Domain is unaware of wrap state.
 
 * **Configurable Display Geometry** (:need:`INV-WRAP-001`, :need:`INV-VIEW-001`, :need:`INV-VIEW-002`):
-  Width, height, and scrolloff must be runtime-configurable. The Display Domain must hold no
-  hardcoded geometry assumptions, and the engine must be re-queryable after a resize without
-  re-initialising text or cursor state.
+  Width, height, and scrolloff must be runtime-configurable. The Domains must hold no
+  hardcoded geometry assumptions.
 
 .. _arch_out_of_scope:
 
@@ -172,7 +175,7 @@ Explicitly Out of Scope
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 The following concerns are deliberately excluded from the engine. The host application is
-responsible for all of the below. (If/ When required.)
+responsible for all of the below.
 
 * Rendering and display output
 * Keyboard and mouse input capture
@@ -245,7 +248,7 @@ below it and is completely independent of the domains above it.
    instantiable and unit-testable in isolation. The C4 *container* level is used here because it accurately captures
    this boundary structure.
 
-   Though the domains are not separately deployable processes; they are bounded objects within a single Python module.
+   The domains are not separately deployable processes; they are bounded objects within a single Python module.
    See :doc:`decisions/arch-c4_model`.
 
 .. Domain Services could be "interfaced" and therefore mocked for unit testing.
@@ -276,9 +279,6 @@ cross-domain operations.
   viewport to scroll, the Visual Domain is unaffected. Does not mutate cursor or text directly,
   it passes movement requests down to the Visual Domain. Translates between Window and Visual coordinates.
 
-.. **Why is Cursor in the Visual Domain, not the Logical Domain?**
-   See :doc:`decisions/arch-cursor_domain`.
-
 .. _arch_coordinate_spaces:
 
 Coordinate Systems & Output Modes
@@ -301,19 +301,19 @@ onto the output modes exposed by the public API (See :doc:`../requirements/f-req
    * - Raw
      - Logical
      - Absolute Index
-     - TBD
+     - Offset in characters from the start of the raw text string
    * - Logical
      - Logical
      - ``(line, col)``
-     - TBD
+     - Zero-based line number and column within that line
    * - Wrapped
      - Visual
      - ``(row, col)``
-     - TBD
+     - Zero-based row in the full list of visual lines after wrapping
    * - Display
      - Display
      - ``[x, y]``
-     - TBD
+     - column and row within the visible window
 
 Container Diagram
 ~~~~~~~~~~~~~~~~~
@@ -349,7 +349,7 @@ Component Descriptions
 #. :doc:`components/arch-logical_domain_service` tracks the raw text in Logical coordinates.
 #. :doc:`components/arch-visual_logical_adapter` adapts the LogicalDomain into the VisualDomain.
 #. :doc:`components/arch-cursor_state` tracks the cursor position.
-#. :doc:`components/arch-movement_resolver` computes visual coordinates, given a direction
+#. :doc:`components/arch-movement_resolver` computes visual coordinates, given a direction.
 #. :doc:`components/arch-visual_domain_service` tracks the text and cursor in Visual coordinates.
 #. :doc:`components/arch-viewport_state` truncates the visual lines to fit the window.
 #. :doc:`components/arch-display_domain_service` tracks the text and cursor in Display coordinates.
@@ -410,6 +410,8 @@ Architectural Decisions
    decisions/arch-layers
    decisions/arch-display_domain
    decisions/arch-c4_model
+   decisions/arch-cursor_domain
+   decisions/arch-position_validation
    decisions/*
 
 Open Questions
@@ -419,10 +421,6 @@ Open Questions
 
 Unresolved Questions
 ~~~~~~~~~~~~~~~~~~~~~
-
-* **Error handling contract:** What is the engine's behaviour on invalid operations?
-  Options: Generally: silently no-op with state unchanged.
-  (:ref:`arch_public_api`).
 
 * **Logging:** Should the engine emit structured logs? If so, at which layer? Facade only, or
   also internal components? Using the standard library ``logging`` module is consistent with the
@@ -440,6 +438,9 @@ Known Limitations
 
 .. Future Evolution
    ~~~~~~~~~~~~~~~~
+
+.. TODO: Fill in future evolution
+.. Currently no future evolution is planned. So omitting this section.
 
 Appendix A: Glossary
 --------------------

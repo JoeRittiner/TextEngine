@@ -41,7 +41,7 @@ isolation, without instantiating the layers above it. It also has consequences f
 reasoning: a bug in wrapping is a Visual Domain bug; a bug in scrolling is a Display
 Domain bug. The layers give errors a natural home.
 
-The unidirectional dependency rule, lower layers are unaware of higher ones, follows
+The unidirectional dependency rule (lower layers are unaware of higher ones) follows
 from the same principle. A lower layer that depends on a higher layer is no longer
 independent; it cannot be tested or understood without the layer above it.
 
@@ -87,8 +87,9 @@ Consequences
 
 * Operations that cross layer boundaries, such as inserting a character, which affects
   the text buffer, the wrap layout, and potentially the viewport, must be coordinated
-  explicitly. This coordination is the Facade's responsibility, but it means that
-  cross-cutting operations involve more moving parts than in a flat module.
+  explicitly. This coordination is distributed across the domain service chain, with
+  each service responsible for propagating the operation to the layer below it and updating
+  its own state before returning.
 * Each layer boundary is a contract that must be defined and maintained. As the
   implementation evolves, keeping those contracts stable requires discipline.
 * The layered structure requires a vocabulary to describe it consistently. This decision
