@@ -7,7 +7,6 @@ interface VisualLayer
 
 rectangle "Display Domain" #Orange {
    component DisplayDomainService
-   ' component DisplayCoordinateTranslator
    component ViewportState
    'Stateless?
    ' component CoordinateTranslator
@@ -15,9 +14,7 @@ rectangle "Display Domain" #Orange {
 
 DisplayDomainService -up-|> DisplayLayer
 
-' DisplayDomainService *--> DisplayCoordinateTranslator
 DisplayDomainService *-> ViewportState
-' DisplayCoordinateTranslator .> ViewportState
 
 DisplayDomainService ..> VisualLayer
 

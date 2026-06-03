@@ -69,8 +69,7 @@ and its own owned state. ``ViewportState`` holds no references to any other comp
 
 **Depended on by:** The ``DisplayDomainService``, which owns ``ViewportState``, supplies
 it with the current visual line count and cursor position after every operation, and uses
-the returned range to slice the displayable lines. The ``DisplayCoordinateTranslator``
-depends on ``window_start`` to translate between Visual and Window coordinates.
+the returned range to slice the displayable lines.
 
 Key Invariants
 ..............
