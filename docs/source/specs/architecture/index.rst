@@ -436,11 +436,14 @@ Known Limitations
 * **Resize Behavior:** The requirements :need:`INV-VIEW-001` and :need:`INV-WRAP-001` define that `display_width` and
   `display_height` are defined once at initialization and cannot be changed. Dynamic resizing is not supported.
 
-.. Future Evolution
-   ~~~~~~~~~~~~~~~~
+Future Evolution
+~~~~~~~~~~~~~~~~
 
-.. TODO: Fill in future evolution
-.. Currently no future evolution is planned. So omitting this section.
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   future_evolution/*
 
 Appendix A: Glossary
 --------------------
