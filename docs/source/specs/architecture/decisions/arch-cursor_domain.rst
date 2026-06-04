@@ -4,119 +4,107 @@ Cursor Belongs to the Visual Domain
 Context
 .......
 
-The editor architecture is divided into three domain layers:
+The editor architecture is divided into three domain layers. Data flows upward through these layers
+(Logical → Visual → Display), while requests flow downward.
 
-1. Logical Domain
-2. Visual Domain
-3. Display Domain
+A design question emerged regarding ownership of the cursor. At first glance, the cursor appears to
+belong naturally to the Logical Domain because its position can be represented fundamentally as an
+absolute index into the text buffer. Because this absolute index must remain valid relative to the text
+buffer, the cursor is tightly coupled to logical text mutations.
 
-Data flows upward through the layers, while requests flow downward.
+However, cursor movement requirements (such as moving vertically across wrapped lines
+(:need:`FR-CURSOR-030`)) are primarily visual in nature. This creates architectural tension between:
 
-The Logical Domain owns the text buffer and operates on absolute indices.
-The Visual Domain is responsible for visual line construction (wrapping).
-The Display Domain truncates and presents the visible window.
-
-A design question emerged regarding ownership of the cursor construct.
-
-At first glance, the cursor appears to belong naturally to the Logical Domain because it can be represented as an
-absolute index into the text buffer. A source of truth for the cursor position.
-Since the absolute index must remain valid relative to the text buffer, the cursor is tightly coupled to logical
-text state.
-
-However, cursor movement requirements are primarily visual in nature. For example, vertical cursor movement operates
-across visual lines rather than logical lines (:need:`FR-CURSOR-030`).
-
-This creates tension between:
-
-* Keeping cursor state close to the text buffer.
-* Preserving strict unidirectional dependencies between domains.
-* Avoiding unnecessary responsibilities in translation components.
+* Keeping cursor state close to the underlying text buffer source of truth.
+* Preserving strict, unidirectional dependencies between domains.
+* Avoiding unnecessary layout translation responsibilities within lower-level components.
 
 Decision
 ........
 
-The cursor construct is belongs in the Visual Domain.
+The cursor belongs in the **Visual Domain**.
 
-The Logical Domain remains responsible only for text storage and mutation through absolute indices.
+The Logical Domain remains responsible only for text storage and mutation through absolute indices;
+it does not require or expose a cursor abstraction. Text mutation operations require only an absolute
+index, meaning a cursor is not fundamental to logical text storage.
 
-The cursor may internally reference an absolute index, but cursor behavior, movement, and coordinate semantics are
-considered visual concerns.
+While the cursor may internally reference an absolute index for text modification tracking, cursor behavior,
+movement, and coordinate semantics are treated entirely as visual concerns.
+
+The cursor is not placed in the Display Domain because the Visual Domain already defines the editor-wide
+visual coordinate system. The Display Domain merely presents a truncated window of that visual
+representation.
 
 Rationale
 .........
 
-Vertical cursor movement depends on visual layout information.
+Vertical and horizontal cursor movements depend entirely on visual layout information that the Logical Domain
+has no awareness of. If the cursor were placed in the Logical Domain, calculating a simple upward or downward
+movement would incur a heavy translation cost:
 
-**Example:** Moving the cursor upward requires:
+1. Reading the current position as an absolute index from the Logical Domain.
+2. Translating that absolute index into a visual coordinate via the Visual Domain.
+3. Calculating the target visual position.
+4. Validating the target visual position against wrapped visual lines.
+5. Translating the resulting visual position back into an absolute index.
+6. Updating the logical position back in the Logical Domain.
 
-#. Reading the current position (e.g. as absolute index).
-#. Translating the absolute index into visual coordinates.
-#. Calculating the target visual position.
-#. Validating the target visual position.
-#. Translating the resulting visual position back into an absolute index.
-#. Updating the logical position.
+This flow is highly inefficient and breaks domain isolation. Because the Visual Domain already owns the
+wrapped line structures and visual coordinate systems, keeping both the cursor state and the movement
+calculation logic within the Visual Domain removes the need for index translation during live movement.
 
-The required translation logic must exist within the Visual Domain because that domain owns wrapped line structure
-and visual coordinate systems.
+The actual, streamlined movement flow operates entirely within visual space:
 
-Placing the cursor in the Logical Domain would require one of the following:
+1. **Read** the current visual coordinate from ``CursorState`` (enforcing lazy clamping).
+2. **Pass** the coordinate along with the direction and current visual lines to the ``MovementResolver``.
+3. **Compute** the new valid visual coordinate inside the ``MovementResolver``.
+4. **Update** the result back onto ``CursorState`` via the orchestration of the ``VisualDomainService``.
 
-* The Logical Domain becoming aware of visual line concepts.
-* A Logical Domain component depending on Visual Domain services.
-* A separate coordination component being introduced solely to bridge the domains.
+Placing the cursor in the Logical Domain instead would require the Logical Domain to become aware of visual
+line concepts, force a lower-layer component to depend on a higher-layer service, or necessitate a complex
+coordination layer solely to bridge the two domains.
 
-Additionally, the text buffer itself does not require a cursor abstraction. Text mutation operations only require an
-insertion or replacement index. The existence of a cursor is therefore not fundamental to logical text storage.
-
-The cursor is better understood as a visual interaction construct that references logical text positions rather than
-as part of the logical text model itself.
-
-The cursor is not placed in the Display Domain because the Visual Domain already defines the editor-wide visual
-coordinate system. The Display Domain only presents a truncated viewport of that visual representation.
+The cursor is better understood as a visual interaction construct that references logical text positions
+rather than as a fundamental property of the logical text model itself.
 
 Alternatives Considered
 .......................
 
 **Cursor in the Logical Domain**
+  The cursor could have been represented purely as an absolute index alongside the text buffer. Vertical
+  movement across visual lines would be calculated on demand based on line lengths and display width.
+  This was rejected because cursor movement semantics depend on visual layout information (e.g., wrapped
+  lines and visual coordinates). Implementing movement logic in the Logical Domain would either violate
+  the dependency direction rule or require additional translation logic to leak downwards.
 
-The cursor could have been represented purely as an absolute index alongside the text buffer.
-Vertical movement across visual lines would be calculated based on line lengths and display width.
+**Movement Controller in the Visual Domain, Cursor in the Logical Domain**
+  A dedicated movement controller component could have been introduced in the Visual Domain while leaving
+  the cursor state itself in the Logical Domain. This was rejected because it violates architectural dependency
+  rules: the Logical Domain would be exposed to Visual Domain concepts to reconcile state, or an active
+  bidirectional coordination path would be required. The resolution is to place both the state and the resolver
+  in the Visual Domain, while maintaining them as separate components to ensure testability.
 
-This was rejected because cursor movement semantics depend on visual layout information such as wrapped lines and
-visual coordinates. Implementing movement logic in the Logical Domain would either violate dependency direction or
-require additional translation logic.
-
-**Movement Controller in the Visual Domain**
-
-A dedicated movement controller component could have been introduced in the Visual Domain while leaving the cursor
-itself in the Logical Domain.
-
-This was rejected because the cursor would simply be a state with little to no logic. It would simply verify that it is
-within the bounds of the buffer. The movement controller would be the primary logic component. Combining the cursor
-state and movement controller into a single component is the proposed solution.
-
-Cursor in the Display Domain
-
-The cursor could have been modeled relative to window/ display coordinates.
-
-This was rejected because it introduces unnecessary abstraction. (Lower domain is generally preferred)
+**Cursor in the Display Domain**
+  The cursor could have been modeled relative to window or display coordinates. This was rejected because it
+  introduces unnecessary layout abstraction. Lower domains are generally preferred when satisfying an
+  architectural invariant, and the Visual Domain already accurately defines the editor-wide coordinate system.
 
 Consequences
 ............
 
-This decision keeps visual movement logic and coordinate translation within a single domain.
+**Easier:**
 
-It preserves strict dependency direction:
+* Keeps visual movement logic and coordinate translation encapsulated within a single domain layer.
+* Preserves a strict, unidirectional dependency direction: Display → Visual → Logical. The Logical Domain
+  remains completely independent of visual layout and wrapping concerns.
+* Keeps the text mutation engine flexible and clean, as text operations are not coupled to the existence
+  of a cursor abstraction.
+* Enhances testability by isolating state from calculation; ``CursorState`` and ``MovementResolver`` exist
+  as distinct, specialized components within the same domain.
 
-* Display → Visual → Logical
+**Constrained or made harder:**
 
-The Logical Domain remains independent of visual and wrapping concerns.
-
-The architecture also remains flexible because text mutation operations are not coupled to the existence of a cursor
-abstraction.
-
-However, this decision means the Visual Domain must maintain translation logic between visual coordinates and logical
-indices. The cursor therefore depends on wrapping state and visual layout recalculation.
-
-Additionally, some operations that appear logically simple, such as cursor movement, now require coordination with
-visual layout structures even when the underlying text buffer is unchanged.
+* The Visual Domain must maintain translation logic between visual coordinates and logical indices for when
+  mutations occur. The cursor inherently depends on wrapping state and visual layout recalculations.
+* Operations that appear logically simple, such as cursor movement, now require coordination with visual
+  layout structures even when the underlying text buffer remains entirely unchanged.
