@@ -28,8 +28,8 @@ The Logical Domain remains responsible only for text storage and mutation throug
 it does not require or expose a cursor abstraction. Text mutation operations require only an absolute
 index, meaning a cursor is not fundamental to logical text storage.
 
-While the cursor may internally reference an absolute index for text modification tracking, cursor behavior,
-movement, and coordinate semantics are treated entirely as visual concerns.
+The cursor stores its position as a visual coordinate; any translation to an absolute index for mutation
+purposes is performed by the ``VisualLogicalAdapter``.
 
 The cursor is not placed in the Display Domain because the Visual Domain already defines the editor-wide
 visual coordinate system. The Display Domain merely presents a truncated window of that visual
@@ -55,7 +55,8 @@ calculation logic within the Visual Domain removes the need for index translatio
 
 The actual, streamlined movement flow operates entirely within visual space:
 
-1. **Read** the current visual coordinate from ``CursorState`` (enforcing lazy clamping).
+1. **Read** the current visual coordinate from ``CursorState`` (enforcing lazy clamping;
+   see :doc:`arch-position_validation`).
 2. **Pass** the coordinate along with the direction and current visual lines to the ``MovementResolver``.
 3. **Compute** the new valid visual coordinate inside the ``MovementResolver``.
 4. **Update** the result back onto ``CursorState`` via the orchestration of the ``VisualDomainService``.
@@ -102,9 +103,11 @@ Consequences
 * Enhances testability by isolating state from calculation; ``CursorState`` and ``MovementResolver`` exist
   as distinct, specialized components within the same domain.
 
-**Constrained or made harder:**
+**Harder:**
 
 * The Visual Domain must maintain translation logic between visual coordinates and logical indices for when
-  mutations occur. The cursor inherently depends on wrapping state and visual layout recalculations.
+  mutations occur.
+* Any buffer mutation that changes the wrapping map may silently invalidate the stored visual coordinate,
+  requiring revalidation on the next cursor read.
 * Operations that appear logically simple, such as cursor movement, now require coordination with visual
   layout structures even when the underlying text buffer remains entirely unchanged.
