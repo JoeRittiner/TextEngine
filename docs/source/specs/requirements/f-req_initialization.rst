@@ -1,10 +1,10 @@
 .. _req_initialization:
 
-4.1 System Initialization
-=========================
+System Initialization
+=====================
 
-4.1.1 Description and Priority
-------------------------------
+Description and Priority
+------------------------
 **Priority: High**
 
 Initialization is the process by which the :term:`TextEditor` is created/ brought into a valid, operational state.
@@ -18,8 +18,8 @@ Initialization is a one-time operation per :term:`TextEditor` instance. To chang
 configuration parameter (e.g., :term:`Display Width`, :term:`Display Height`, or :term:`ScrollOff`),
 the host application must discard the current instance and initialize a new one.
 
-4.1.2 State Invariants
-----------------------
+State Invariants
+----------------
 
 .. inv:: Immutable Configuration
    :id: INV-INIT-001
@@ -48,14 +48,14 @@ the host application must discard the current instance and initialize a new one.
    * The :term:`Cursor` is positioned within the :term:`Viewport` or within a :term:`ScrollOff` margin,
      as permitted by :need:`FR-VIEW-001`.
 
-4.1.3 Preconditions
--------------------
+Preconditions
+-------------
 
 None. Initialization is the entry point of the system and has no preconditions beyond the parameters
 supplied by the host application.
 
-4.1.4 Stimulus/Response Sequences
-----------------------------------
+Stimulus/Response Sequences
+---------------------------
 
 * **Stimulus:** The host application requests initialization of a :term:`TextEditor` with a valid set
   of parameters (``display_width``, ``display_height``, ``scrolloff``, and optionally ``text`` and
@@ -73,8 +73,8 @@ supplied by the host application.
   **Response:** The system raises an exception describing the violated constraint. No internal state is
   constructed or mutated. The :term:`TextEditor` remains inert.
 
-4.1.5 Functional Requirements
-------------------------------
+Functional Requirements
+-----------------------
 
 Happy Path
 ~~~~~~~~~~
@@ -235,8 +235,8 @@ Conflicts and Error Conditions
    * **Exception** ``null`` (or language-equivalent absent) values for the optional parameters
      (``text``, ``cursor_index``) are allowed.
 
-4.1.6 Out of Scope
--------------------
+Out of Scope
+------------
 
 .. nreq:: Re-Initialization
    :id: NR-INIT-101

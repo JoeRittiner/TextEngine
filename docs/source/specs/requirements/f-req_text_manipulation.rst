@@ -1,10 +1,10 @@
 .. _req_text_manipulation:
 
-4.2 Text Buffer & Manipulation
-==============================
+Text Buffer & Manipulation
+==========================
 
-4.2.1 Description and Priority
-------------------------------
+Description and Priority
+------------------------
 **Priority: High**
 
 The :term:`Text Buffer` is the conceptual source of truth of the text. It is modeled as a continuous sequence
@@ -13,8 +13,8 @@ of :term:`characters <character>`.
 The :term:`buffer <Text Buffer>` defines the observable state of the text. All text manipulation operations modify
 this state.
 
-4.2.2 State Invariants
-----------------------
+State Invariants
+----------------
 
 .. inv:: Empty Buffer Definition
    :id: INV-TEXT-001
@@ -32,14 +32,14 @@ this state.
    "in front of" the :term:`cursor` is visually to the right of the :term:`cursor`. A :term:`character` "behind" the
    :term:`cursor` is visually to the left of the :term:`cursor`.
 
-4.2.3 Preconditions
--------------------
+Preconditions
+-------------
 
 All operations in this section assume a valid :term:`cursor` position as defined in
 :doc:`Cursor Specification <f-req_cursor_movement>`.
 
-4.2.4 Stimulus/Response Sequences
----------------------------------
+Stimulus/Response Sequences
+---------------------------
 
 * **Stimulus:** External system provides a sequence of :term:`characters <character>` to
   :ref:`insert <insertion_specs>`.
@@ -56,8 +56,8 @@ All operations in this section assume a valid :term:`cursor` position as defined
   **Response:** The system removes the :term:`character` immediately left of the :term:`cursor`, if present, and updates
   the :term:`cursor` position.
 
-4.2.5 Functional Requirements
------------------------------
+Functional Requirements
+-----------------------
 
 .. freq:: Text Buffer
    :status: Open
@@ -251,8 +251,8 @@ Control characters are required to be handled as follows:
    ``\r\n`` is treated as two separate characters, ``\r`` and ``\n`` and handled as defined in
    :need:`FR-TEXT-041`.
 
-4.2.6 Out of Scope
-------------------
+Out of Scope
+------------
 
 .. nreq:: Text Selection
    :id: NR-TEXT-101

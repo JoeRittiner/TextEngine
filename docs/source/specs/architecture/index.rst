@@ -1,5 +1,5 @@
-Architecture Specification
-==========================
+Architecture
+============
 
 Introduction
 ------------

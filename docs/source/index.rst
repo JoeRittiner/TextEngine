@@ -24,6 +24,7 @@ a single line of application code is written.
 .. toctree::
    :maxdepth: 2
    :caption: 1. Specifications & Design
+   :numbered: 3
 
    specs/requirements/index
    specs/architecture/index

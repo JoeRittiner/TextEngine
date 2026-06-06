@@ -1,10 +1,10 @@
 .. _req_text_wrapping:
 
-4.4 Text Wrapping
-=================
+Text Wrapping
+=============
 
-4.4.1 Description and Priority
-------------------------------
+Description and Priority
+------------------------
 **Priority: Medium**
 
 :term:`Logical lines <logical line>` that exceed the :term:`display width` are not truncated or hidden.
@@ -13,14 +13,14 @@ Instead, they are segmented into multiple :term:`visual lines <visual line>`.
 Wrapping is a purely visual transformation and does not modify the underlying :term:`text buffer`.
 No "soft" or "hard" newline characters are inserted into the :term:`text buffer` to facilitate wrapping.
 This mechanism determines the mapping between the :term:`Absolute Index` and
-:term:`Visual Coordinates <Visual Coordinate> as described in the :doc:`Cursor Specification <f-req_cursor_movement>`.
+:term:`Visual Coordinates <Visual Coordinate>` as described in the :doc:`Cursor Specification <f-req_cursor_movement>`.
 
 .. note::
    The current implementation uses "Character Wrapping" (breaking at the exact :term:`display width` boundary).
    Future iterations may introduce "Word Wrapping" logic.
 
-4.4.2 State Invariants
-----------------------
+State Invariants
+----------------
 
 .. inv:: Defined Display Width
    :id: INV-WRAP-001
@@ -48,23 +48,23 @@ This mechanism determines the mapping between the :term:`Absolute Index` and
    The sum of the lengths of all :term:`visual lines <visual line>` associated with a :term:`logical line`
    must equal the length of that :term:`logical line`.
 
-4.4.3 Preconditions
--------------------
+Preconditions
+-------------
 
 All wrapping logic assumes a valid :term:`text buffer` as defined in
 :doc:`Text Buffer Specification <f-req_text_manipulation>`. Wrapping is applied automatically whenever the
 :term:`text buffer` state changes or the system is initialized.
 
-4.4.4 Stimulus/Response Sequences
----------------------------------
+Stimulus/Response Sequences
+---------------------------
 
 * **Stimulus:** The :term:`text buffer` is modified (insertion, deletion, or initialization).
 
   **Response:** The system recalculates the break points for all affected :term:`logical lines <logical line>`
   and updates the total :term:`visual line`-count and :term:`cursor` :term:`Visual Coordinates <Visual Coordinate>`.
 
-4.4.5 Functional Requirements
------------------------------
+Functional Requirements
+-----------------------
 
 .. freq:: Non-Destructive Wrapping
    :status: Open
@@ -110,7 +110,7 @@ All wrapping logic assumes a valid :term:`text buffer` as defined in
 
 
 Out of Scope
-~~~~~~~~~~~~
+------------
 
 .. nreq:: Character Boundary Flexibility
    :id: NR-WRAP-101

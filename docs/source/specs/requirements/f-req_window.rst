@@ -1,10 +1,10 @@
 .. _req_window:
 
-4.5 Window & Scrolling
-======================
+Window & Scrolling
+==================
 
-4.5.1 Description and Priority
-------------------------------
+Description and Priority
+------------------------
 **Priority: Low**
 
 The :term:`window` defines the total visible height, limiting the maximum number of :term:`visual lines <visual line>`
@@ -22,8 +22,8 @@ the absolute start or end of the :term:`text buffer` where scrolling further is 
 The visible :term:`window` range/ the :term:`window start` is automatically updated in response to :term:`cursor`
 movement and text manipulation.
 
-4.5.2 State Invariants
-----------------------
+State Invariants
+----------------
 
 .. inv:: Display Dimensions
    :id: INV-VIEW-001
@@ -65,14 +65,14 @@ movement and text manipulation.
 
    The :term:`viewport height` is strictly ``display_height - (2 * scrolloff)`` and positive.
 
-4.5.3 Preconditions
--------------------
+Preconditions
+-------------
 
 The system requires an initialized :term:`text buffer` that has been successfully mapped into
 :term:`visual lines <visual line>` according to the :doc:`Wrapping Specification <f-req_text_wrapping>`.
 
-4.5.4 Stimulus/Response Sequences
----------------------------------
+Stimulus/Response Sequences
+---------------------------
 
 * **Stimulus:** The :term:`cursor` is moved to a new position within the bounds of the current :term:`viewport`.
 
@@ -90,8 +90,8 @@ The system requires an initialized :term:`text buffer` that has been successfull
   **Response:** The system automatically shifts the :term:`window start` upwards (decreasing the value) until the
   :term:`window` bounds are valid again.
 
-4.5.5 Functional Requirements
------------------------------
+Functional Requirements
+-----------------------
 
 .. freq:: Cursor Window Constraint
    :status: Open

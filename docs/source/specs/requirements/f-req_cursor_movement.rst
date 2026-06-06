@@ -1,10 +1,11 @@
 .. _req_cursor_and_movement:
 
-4.3 Cursor & Movement
-=====================
+Cursor & Movement
+=================
 
-4.3.1 Description and Priority
-------------------------------
+Description and Priority
+------------------------
+
 **Priority: High**
 
 The :term:`cursor` is a position in the :term:`text buffer` that determines where text manipulation operations
@@ -13,17 +14,17 @@ occur.
 The :term:`cursor` can be represented in multiple coordinate systems to serve different functional layers,
 corresponding to the four :doc:`output modes <f-req_output_modes>`:
 
-1. **Absolute Index** (``index``) - Source of truth for text manipulation.
-2. **Logical Coordinate** (``[row, col]``) - Relevant for distinguishing :term:`logical lines <logical line>`
+#. **Absolute Index** (``index``) - Source of truth for text manipulation.
+#. **Logical Coordinate** (``[row, col]``) - Relevant for distinguishing :term:`logical lines <logical line>`
    (e.g., line numbers).
-3. **Visual Coordinate** (``[v_row, v_col]``) - Relevant for text layout, rendering, and visual navigation.
-4. **Window Coordinate** (``[x, y]``) - Relevant for displaying text within a :term:`viewport`.
+#. **Visual Coordinate** (``[v_row, v_col]``) - Relevant for text layout, rendering, and visual navigation.
+#. **Window Coordinate** (``[x, y]``) - Relevant for displaying text within a :term:`viewport`.
    **Note:** ``[x, y]`` are not pixel coordinates. The system does not operate with pixels. ``y`` denotes the visible
    line index within the :term:`viewport` (where ``y=0`` is the first :term:`display line`, not necessarily the first
    visible line). ``x`` denotes the column/character index.
 
-4.3.2 State Invariants
-----------------------
+State Invariants
+----------------
 
 .. inv:: Valid Coordinate Ranges
    :id: INV-CURSOR-001
@@ -62,8 +63,8 @@ corresponding to the four :doc:`output modes <f-req_output_modes>`:
 
    **Exception:** :need:`FR-CURSOR-010` boundary case.
 
-4.3.3 Preconditions
--------------------
+Preconditions
+-------------
 
 All operations in this section assume a valid, initialized :term:`text buffer` as defined in
 :doc:`Text Buffer Specification <f-req_text_manipulation>`.
@@ -72,8 +73,8 @@ Operations relying on visual representations (:term:`Visual Coordinates <Visual 
 :term:`Window Coordinates <Window Coordinate>`, Cursor Movement) assume valid, initialized :term:`viewport`,
 :term:`display height` and :term:`display width`.
 
-4.3.4 Stimulus/Response Sequences
----------------------------------
+Stimulus/Response Sequences
+---------------------------
 
 * **Stimulus:** An external system or user triggers a horizontal :term:`cursor` movement (e.g., left, right).
 
@@ -95,8 +96,8 @@ Operations relying on visual representations (:term:`Visual Coordinates <Visual 
   **Response:** The text is manipulated, and the :term:`cursor` implicitly updates its coordinates to remain logically
   consistent with the surrounding text boundary.
 
-4.3.5 Functional Requirements
------------------------------
+Functional Requirements
+-----------------------
 
 Cursor Position & Coordinates
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -292,8 +293,8 @@ Boundary Behaviors
 
    Equivalent to setting the :term:`absolute index` to the length of the :term:`text buffer`.
 
-4.3.6 Out of Scope
-------------------
+Out of Scope
+------------
 
 .. nreq:: Desired Column Retention
    :id: NR-CURSOR-101
