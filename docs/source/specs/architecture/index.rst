@@ -251,7 +251,12 @@ below it and is completely independent of the domains above it.
    The domains are not separately deployable processes; they are bounded objects within a single Python module.
    See :doc:`decisions/arch-c4_model`.
 
-.. Domain Services could be "interfaced" and therefore mocked for unit testing.
+.. note::
+
+   Because each domain is represented by a single domain service instance, the domain service
+   interface is the natural mock boundary for unit testing. A test for the Display Domain can
+   supply a mock ``VisualDomainService`` without instantiating the Visual or Logical Domains.
+   The same principle applies at every layer boundary.
 
 Data flows *up* through the layers in response to queries. Commands flow *down*: the caller
 instructs a domain, which delegates further down as needed. No domain notifies the domain above it
@@ -308,7 +313,7 @@ onto the output modes exposed by the public API (See :doc:`../requirements/f-req
      - Zero-based line number and column within that line
    * - Wrapped
      - Visual
-     - ``(row, col)``
+     - ``(v_row, v_col)``
      - Zero-based row in the full list of visual lines after wrapping
    * - Display
      - Display
@@ -386,10 +391,12 @@ are in :ref:`arch_component_descriptions`.
   within the Visual Domain, ``Cursor`` may request data from and depend on ``LineWrapper``, but
   ``LineWrapper`` must not depend on ``Cursor``.
 
-* **No cross-domain direct calls:** Components do not call components in non-adjacent domains. (The Display Domain is
-  unaware of the Logical Domain.)
+* **No cross-domain direct calls:** Internal components do not call components in non-adjacent domains.
+  (The Display Domain is unaware of the Logical Domain.)
   Each domain exposes a single internal interface (a domain service).
   Internal coordination within a domain is the domain service's responsibility.
+  This rule applies to components within domains; the ``TextEditor`` facade is the designated
+  cross-domain coordinator and is explicitly exempt. (See :doc:`decisions/arch-layer_reads`.)
 
 Component Diagram
 ~~~~~~~~~~~~~~~~~
@@ -414,17 +421,35 @@ Architectural Decisions
    decisions/arch-position_validation
    decisions/*
 
-Open Questions
+.. _arch_error_contract:
+
+Error Contract
 --------------
 
-.. _arch_error_contract:
+The engine uses standard Python exception types. No custom exception hierarchy is defined.
+
+* ``TypeError`` is raised when a parameter is of the wrong Python type (e.g. a non-integer
+  ``display_width``, a non-string insert argument).
+* ``ValueError`` is raised when a parameter has the correct type but an invalid value
+  (e.g. a negative ``display_height``, a ``scrolloff`` that violates
+  ``2 * scrolloff < display_height``).
+* ``IndexError`` is raised when a cursor or index position is outside the valid range for the
+  current buffer state.
+
+The ``TextEditor`` facade is the sole exception boundary visible to the host application.
+Internal components raise the above exceptions when they detect a contract violation;
+the facade catches these and either resolves them (where the violation can be corrected at the
+boundary without surfacing it to the host) or re-raises them with sufficient context for the
+host to act on. The host application never receives a raw exception from an internal component
+directly.
+
+Open Questions
+--------------
 
 Unresolved Questions
 ~~~~~~~~~~~~~~~~~~~~~
 
-* **Logging:** Should the engine emit structured logs? If so, at which layer? Facade only, or
-  also internal components? Using the standard library ``logging`` module is consistent with the
-  dependency constraint, but the scope is unresolved.
+There are no open architectural questions at this time.
 
 Known Limitations
 ~~~~~~~~~~~~~~~~~
