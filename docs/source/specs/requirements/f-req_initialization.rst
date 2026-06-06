@@ -40,7 +40,7 @@ State Invariants
 
    Specifically, the following must hold:
 
-   * The :term:`Text Buffer` contains the provided initial text (or is empty).
+   * The :term:`Text Buffer` contains the provided initial text (or is empty: :need:`INV-TEXT-001`).
    * The :term:`Cursor` :term:`Absolute Index` is within ``[0, len(text_buffer)]``.
    * All coordinate representations of the :term:`Cursor` are consistent with each other and with the
      :term:`Text Buffer` contents (:need:`INV-CURSOR-003`).

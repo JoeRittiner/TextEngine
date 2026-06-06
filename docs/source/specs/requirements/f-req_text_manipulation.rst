@@ -204,7 +204,8 @@ Backspace
    :tags: backspace
    :links: FR-CURSOR-001
 
-   If a :term:`character` is removed, the :term:`cursor` must move one position to the left.
+   If a :term:`character` to the left of the :term:`cursor` is removed, the :term:`cursor` must move one position
+   to the left.
 
 .. freq:: Backspace Boundary Behavior
    :status: Open

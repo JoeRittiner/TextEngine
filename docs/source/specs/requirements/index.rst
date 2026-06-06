@@ -93,7 +93,6 @@ The system has explicitly defined non-responsibilities that constrain its design
 Assumptions and Dependencies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
 Invariants
 ~~~~~~~~~~
 
@@ -131,6 +130,14 @@ The system provides a programmatic API for external systems. External applicatio
 Display Mode. The API also provides retrieval interfaces for Wrapped Mode, Logical Mode, and Raw Mode to support
 advanced integrations and alternative state representations.
 
+(See :doc:`f-req_output_modes` for details.)
+
+.. nfreq:: Deployment Unit
+   :id: NFREQ-DEPLOY-201
+   :tags: deploy
+
+   The engine is provided as a single importable module. ``TextEditor`` is the sole public entry point.
+
 .. _req_functional_requirements:
 
 Functional Requirements
@@ -160,23 +167,45 @@ Nonfunctional Requirements
 Performance Requirements
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-The system must ensure that text manipulation, cursor tracking, and visual wrapping remain highly performant and
-mathematically deterministic to prevent lag during rapid host-application input loops.
+.. nfreq:: Performance
+   :id: NFREQ-PERF-211
+   :tags: perf
+
+   The system must ensure that text manipulation, cursor tracking, and visual wrapping remain highly performant and
+   mathematically deterministic to prevent lag during rapid host-application input loops.
 
 .. _req_software_quality_attributes:
 
 Software Quality Attributes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-* **Testability:** Because the system produces no side effects beyond its internal state, it must be 100% unit-testable.
-* **Reliability:** State invariants must be guaranteed at all times
-  (e.g., the cursor can never move into negative indices or beyond the absolute end of the text buffer).
+.. nfreq:: Testability
+   :id: NFREQ-QA-221
+   :tags: qa
 
+   Because the system produces no side effects beyond its internal state, it must be 100% unit-testable.
+
+.. nfreq:: Reliability
+   :id: NFREQ-QA-222
+   :tags: qa
+
+   | State invariants must be guaranteed at all times.
+   | (e.g., the cursor can never move into negative indices or beyond the absolute end of the text buffer).
 
 .. 6. Edge Cases & Special Rules
 .. -----------------------------
 
-Appendix A: Glossary
+Appendix A: Requirements
+------------------------
+
+.. toctree::
+   :hidden:
+
+   req_all_requirements
+
+:doc:`req_all_requirements`
+
+Appendix B: Glossary
 --------------------
 
 :doc:`../../glossary`
