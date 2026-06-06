@@ -1,2 +1,2 @@
 sphinx-needs ~= 8.0.0
-sphinx-plantuml ~= 1.0.0
+sphinxcontrib-plantuml ~= 0.31
