@@ -47,7 +47,7 @@ Relationship to Other Documents
   requirements but does not reproduce them.
 * **Component Descriptions:** individual component pages under :ref:`arch_components`.
 * **Architectural Decisions:** individual decision pages under :ref:`arch_decisions`.
-* **Glossary:** shared terminology for all architecture documents. (:doc:`arch_glossary`)
+* **Glossary:** shared terminology for all architecture documents. (:doc:`../../glossary`)
 
 References
 ~~~~~~~~~~
@@ -448,12 +448,12 @@ Future Evolution
 Appendix A: Glossary
 --------------------
 
-.. include:: arch_glossary.rst
+:doc:`../../glossary`
 
 Appendix B: Revision History
 -----------------------------
 
-.. include:: arch_history.rst
+:doc:`arch_history`
 
 Indices and tables
 ------------------
