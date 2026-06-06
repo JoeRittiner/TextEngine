@@ -13,18 +13,23 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
+
       - name: Build HTML
         uses: ammaraskar/sphinx-action@8.2.3
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: html-docs
-          path: docs/build/html/
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v4
+
+      - name: Deploy stable docs
         if: github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: docs/build/html
+          keep_files: true
+
+      - name: Deploy WIP docs
+        if: github.ref == 'refs/heads/docs'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs/build/html
+          destination_dir: wip
+          keep_files: true
