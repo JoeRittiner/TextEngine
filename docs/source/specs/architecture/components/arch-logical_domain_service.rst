@@ -32,7 +32,7 @@ TextBuffer's raw string:
   (:need:`FR-MODE-011`, :need:`FR-TEXT-016`, :need:`FR-TEXT-025`, :need:`FR-TEXT-035`)
 
 **Coordinate translation.** The service translates between absolute indices and logical
-coordinates ``(line, col)`` for all mutation operations. Neither the TextBuffer nor the
+coordinates ``(row, col)`` for all mutation operations. Neither the TextBuffer nor the
 Visual Domain performs this translation. This translation is also the mechanism through
 which the system satisfies its cursor representation interfaces: returning the cursor as
 an absolute index (:need:`FR-CURSOR-002`) or as a logical coordinate

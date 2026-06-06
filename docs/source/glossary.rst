@@ -36,7 +36,7 @@ Glossary
       The value of :term:`Display Width` may be referred to as ``display_width``.
 
    Visual Line
-      A segment of a :term:`Logical Line` as it appears after :doc:`wrapping <f-req_text_wrapping>`.
+      A segment of a :term:`Logical Line` as it appears after :doc:`wrapping <specs/requirements/f-req_text_wrapping>`.
 
          * If a :term:`Logical Line` length exceeds the :term:`Display Width`, it is split into multiple visual lines.
 

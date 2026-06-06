@@ -36,7 +36,8 @@ significant only in that it is *lazy*. Deferred to read time rather than enforce
 after every buffer change. (See: :doc:`../decisions/arch-position_validation`)
 
 **Boundary normalisation.** One position constraint is enforced on both set and get:
-:need:`FR-CURSOR-010`. This normalisation is not a clamping concern. It is a
+:need:`FR-CURSOR-010`, where a cursor at the end of a wrapped line is normalised to
+the start of the next line. This normalisation is not a clamping concern. It is a
 representational invariant that must hold at all times, not only when the buffer has
 changed.
 
