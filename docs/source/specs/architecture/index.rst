@@ -180,7 +180,7 @@ System Context
 System Context Diagram
 ~~~~~~~~~~~~~~~~~~~~~~
 
-.. plantuml:: diagrams/system_context.puml
+.. uml:: diagrams/system_context.puml
 
 .. _arch_public_api:
 
@@ -311,22 +311,22 @@ onto the output modes exposed by the public API (See :doc:`../requirements/f-req
 Container Diagram
 ~~~~~~~~~~~~~~~~~
 
-.. plantuml:: diagrams/domain_containers.puml
+.. uml:: diagrams/domain_containers.puml
 
 Data Flow: Representative Examples
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. plantuml:: diagrams/seq_insert.puml
+.. uml:: diagrams/seq_insert.puml
 
-.. plantuml:: diagrams/seq_delete.puml
+.. uml:: diagrams/seq_delete.puml
 
-.. plantuml:: diagrams/seq_backspace.puml
+.. uml:: diagrams/seq_backspace.puml
 
-.. plantuml:: diagrams/seq_move.puml
+.. uml:: diagrams/seq_move.puml
 
-.. plantuml:: diagrams/seq_get_lines.puml
+.. uml:: diagrams/seq_get_lines.puml
 
-.. plantuml:: diagrams/seq_get_cursor.puml
+.. uml:: diagrams/seq_get_cursor.puml
 
 .. _arch_components:
 
@@ -389,9 +389,9 @@ are in :ref:`arch_component_descriptions`.
 Component Diagram
 ~~~~~~~~~~~~~~~~~
 
-.. plantuml:: diagrams/display_components.puml
-.. plantuml:: diagrams/visual_components.puml
-.. plantuml:: diagrams/logical_components.puml
+.. uml:: diagrams/display_components.puml
+.. uml:: diagrams/visual_components.puml
+.. uml:: diagrams/logical_components.puml
 
 .. _arch_decisions:
 
