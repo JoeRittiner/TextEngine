@@ -23,7 +23,8 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: docs/build/html
-          keep_files: true
+          keep_files: false
+          force_orphan: true
 
       - name: Deploy WIP docs
         if: github.ref == 'refs/heads/docs'
@@ -32,4 +33,5 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: docs/build/html
           destination_dir: wip
-          keep_files: true
+          keep_files: false
+          force_orphan: true
