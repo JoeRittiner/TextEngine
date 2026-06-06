@@ -95,3 +95,15 @@ Glossary
    System
    TextEditor
       The System. Single threaded.
+
+   Domain
+      A layer of the :term:`engine <textEditor>` that implements a distinct responsibility.
+
+   Layer
+      A layer of the :term:`engine <textEditor>` that implements a distinct responsibility.
+
+   Container
+      C4 Container: A runtime boundary around some code that is being executed or some data that is being stored.
+
+   Component
+      C4 Component: A grouping of related functionality encapsulated behind a well-defined interface.
