@@ -107,3 +107,9 @@ Glossary
 
    Component
       C4 Component: A grouping of related functionality encapsulated behind a well-defined interface.
+
+   Domain Service
+      ...
+
+   Wrapping Map
+      ...

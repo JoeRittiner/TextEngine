@@ -7,11 +7,6 @@ Introduction
 Purpose
 ~~~~~~~
 
-.. Describe the purpose of this document. An architecture document is distinct from a requirements document:
-   where the SRS defines *what* the system must do, this document defines *how* the system is internally
-   structured to fulfil those requirements. State that this document records deliberate structural decisions
-   and their rationale, so that they can be understood, reviewed, and revisited as the project evolves.
-
 This document describes the internal structure of the Text Editor Engine. Where the
 :doc:`Software Requirements Specification (SRS) <../requirements/index>` defines *what* the system must do from the
 outside, this document defines how the system is *structured* internally to fulfil those requirements.
@@ -22,10 +17,6 @@ structural decisions. It does not restate requirements, it references them.
 
 Scope
 ~~~~~
-
-.. Identify which parts of the system this document covers. For a project with a single top-level component
-   (e.g. TextEditor), this is straightforward. If the architecture document covers only a subset of the
-   system, say so explicitly and reference the documents that cover the remainder.
 
 This document covers the entire Text Editor Engine: the public-facing ``TextEditor`` facade and all
 internal components. It does not cover host application concerns such as rendering, input handling,
@@ -86,9 +77,6 @@ Document Conventions
 
 Architectural Goals and Constraints
 -----------------------------------
-
-.. All goals below are pursued within the standard engineering constraints of SOLID, DRY, and KISS.
-   These are assumed, not repeated under each point.
 
 Goals
 ~~~~~
