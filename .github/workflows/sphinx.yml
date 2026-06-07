@@ -22,9 +22,6 @@ jobs:
       - name: Build HTML
         uses: ammaraskar/sphinx-action@8.2.3
 
-      - name: Fix file permissions
-        run: chmod -R u+w docs/build/html
-
       - name: Deploy stable docs
         if: github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v4

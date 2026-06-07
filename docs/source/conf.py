@@ -42,3 +42,6 @@ needs_types = [
     dict(directive="nfreq", title="Non-Functional Requirement", prefix="NFR-", style="node"),
     dict(directive="nreq", title="Non-Requirement", prefix="NR-", style="node"),
 ]
+
+plantuml = "plantuml"
+plantuml_output_format = 'png'
