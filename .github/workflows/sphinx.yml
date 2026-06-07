@@ -14,8 +14,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install PlantUML
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y plantuml
+
       - name: Build HTML
         uses: ammaraskar/sphinx-action@8.2.3
+
+      - name: Fix file permissions
+        run: chmod -R u+w docs/build/html
 
       - name: Deploy stable docs
         if: github.ref == 'refs/heads/main'
