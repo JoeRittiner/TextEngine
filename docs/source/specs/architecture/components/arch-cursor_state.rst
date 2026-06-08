@@ -22,16 +22,16 @@ and ``backspace`` commands.
 Behaviour
 .........
 
-**On set.** ``CursorState`` accepts a new absolute index and stores it without
-validation. The caller is responsible for passing a position that is correct given the
-current buffer state.
+**On set.** ``CursorState`` accepts a new absolute index and stores it. It operates under the invariant
+that the ``LogicalDomainService`` pre-validates explicit sets, throwing an error before invalid indices
+reach this component.
 
 **On get.** The ``CursorState`` returns the stored absolute index without validation.
 The caller is responsible for ensuring the position is valid given the current buffer state.
 
-**Move** ``CursorState`` offers an interface for moving horizontally and to ends. (``move_home``
-and ``move_end``) These function similarly to ``set_position`` in that they do not validate
-the position, but they do update the state.
+**Move.** ``CursorState`` offers an interface for moving horizontally and to ends. (``move_home``
+and ``move_end``) These are coordinated by the ``LogicalDomainService``, which treats out-of-bounds results
+as no-ops to ensure this state component never holds an invalid absolute index.
 
 **Initialisation.** The initial cursor position is supplied as an Absolute Index by the
 host application (:need:`FR-INIT-001`, :need:`FR-INIT-006`). An out-of-range value or incorrect type

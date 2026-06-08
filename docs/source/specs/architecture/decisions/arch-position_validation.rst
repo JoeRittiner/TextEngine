@@ -25,9 +25,15 @@ component itself is completely decoupled from validation logic and functions as 
 The ``LogicalDomainService`` intercepts all operations to enforce the boundary check ``0 <= k <= len(text)`` at the
 service boundary under two strict modes of execution:
 
-1. **On Set:** Whenever the cursor position is updated (via external requests or following a buffer mutation),
-   the ``LogicalDomainService`` checks the target index. If the value falls outside valid text bounds, the service
-   safely **clamps or ignores** the value to preserve a continuous, valid state.
+1. **On Set / Move:** The ``LogicalDomainService`` intercepts all position modifications and branches its validation
+   behavior based on the command type:
+
+   * *Explicit Sets:* An explicit ``set(k)`` command validates the index. If ``k`` falls outside
+     ``0 <= k <= len(text)``, the service strictly throws an exception (e.g., ``ValueError`` or ``IndexError``)
+     and rejects the write.
+   * *Movement Commands:* Relative or structural logical adjustments (``move_*``) evaluate the target index before
+     committing. If the target falls out of bounds, the service intercepts it and processes the command as a safe
+     **no-op**, leaving the cursor state unchanged.
 2. **On Get:** Whenever the cursor position is read, the ``LogicalDomainService`` checks the stored absolute index
    against the current text length. Under normal conditions, mutations and sets keep this index completely
    synchronized. If an out-of-bounds index is detected during a read operation, it indicates a critical state anomaly,
@@ -66,8 +72,11 @@ Consequences
 * **O(1) Boundary Evaluation:** Validating against a flat buffer sequence length bypasses line wrapping maps entirely.
 * **Isolated Component Testing:** ``CursorState`` contains zero branching logic or dependencies, allowing it to be
   tested or swapped effortlessly.
-* **Defensive Fail-Fast Behavior:** Raising an explicit exception (like ``ValueError``) if a read breaks boundaries
-  guarantees that silent cursor drifting or out-of-bounds corruption will be caught immediately at the service perimeter.
+* **Fail-Fast Explicit Integration:** Forcing ``set(k)`` to throw an exception ensures that external domains or
+  coordinate adapters cannot accidentally supply corrupt or miscalculated indices without triggering an immediate,
+  visible error.
+* **Safe Relative Navigation:** Treating out-of-bounds ``move_*`` commands as no-ops simplifies client code in higher
+  layers, eliminating the need for callers to constantly check boundary conditions before issuing a step command.
 
 **Harder:**
 

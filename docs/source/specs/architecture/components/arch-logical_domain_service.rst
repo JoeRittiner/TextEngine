@@ -31,12 +31,17 @@ TextBuffer's raw string:
   newline characters themselves excluded from the returned strings.
   (:need:`FR-MODE-011`, :need:`FR-TEXT-016`, :need:`FR-TEXT-025`, :need:`FR-TEXT-035`)
 
-**Cursor state.** The service provides read and write interfaces to the ``CursorState`` instance:
+**Cursor state.** The service provides read and write interfaces to the ``CursorState``,
+  enforcing strict validation checks against the current buffer length (``0 <= k <= len(text)``):
 
-* **Get & Set:** Before setting and before returning, the Service validates the cursor's
-  position in the buffer. (:need:`INV-CURSOR-001`)
-* **Move:** Horizontal movement is validated and clamped to the buffer's bounds.
-  (:need:`FR-CURSOR-020`, :need:`FR-CURSOR-052`, :need:`FR-CURSOR-053`)
+* **Explicit Position Setting:** Calling ``set_position(k)`` with an absolute index evaluates the
+  boundaries immediately. If ``k`` is less than 0 or greater than ``len(text)``, the service rejects
+  the command and raises an exception (e.g., ``ValueError`` or ``IndexError``).
+* **Movement Commands:** Calling logical movement commands
+  (``move_left()``, ``move_right()``, ``move_home()``, or ``move_end()``)
+  evaluates the target position against the buffer boundaries. If the command would cause the cursor
+  to move out of bounds, the operation results in a silent **no-op**, and the underlying ``CursorState``
+  remains unmodified.
 
 **Coordinate translation.** The service translates between absolute indices and logical
 coordinates ``(row, col)`` for all mutation operations. Neither the ``TextBuffer`` nor the
