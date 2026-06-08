@@ -1,7 +1,5 @@
 @startuml
 
-title insert
-
 participant Host as App #white
 participant "Text Editor" as Facade
 participant "Display Domain" as DD #orange
@@ -10,11 +8,15 @@ participant "Logical Domain" as LD #lightblue
 
 
 App -> Facade : ""delete()""
+activate Facade
 Facade -> DD : ""delete()""
+deactivate Facade
+activate DD
 DD -> VD : ""delete()""
-VD -> LD : ""delete(absolute_index)""
-
 deactivate DD
+activate VD
+VD -> LD : ""delete()""
+deactivate VD
 
 
 @enduml

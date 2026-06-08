@@ -1,7 +1,5 @@
 @startuml
 
-title insert
-
 participant Host as App #white
 participant "Text Editor" as Facade
 participant "Display Domain" as DD #orange
@@ -10,19 +8,32 @@ participant "Logical Domain" as LD #lightblue
 
 
 App -> Facade : ""insert(text)""
+activate Facade
 
 Facade -> DD : ""insert(text)""
+deactivate Facade
 activate DD
 
 DD -> VD : ""insert(text)""
+activate VD
 
-VD -> LD : ""insert(text, absolute_index)""
+VD -> LD : ""insert(text)""
+deactivate VD
 
 DD -> VD : ""get_cursor()""
+    activate DD
     activate VD
+
+    VD -> LD : ""get_cursor()""
+    activate LD
+        return ""abs_index""
+    VD -> VD :  ""translate(abs_index)""
+    activate VD
+       return ""visual_cursor""
     return ""visual_cursor""
 
+    DD -> DD : ""update_window()""
 deactivate DD
-
+deactivate DD
 
 @enduml

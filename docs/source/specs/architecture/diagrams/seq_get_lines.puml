@@ -1,66 +1,68 @@
 @startuml
 
-title get_lines
-
 participant Host as App #white
 participant "Text Editor" as Facade
 participant "Display Domain" as DD #orange
 participant "Visual Domain" as VD #green
 participant "Logical Domain" as LD #lightblue
 
-App -> Facade : ""get_lines()""
-activate Facade
+Group get Display Lines
+    App -> Facade : ""get_lines()""
+    activate Facade
 
-Facade -> DD : ""get_lines()""
-activate DD
+    Facade -> DD : ""get_lines()""
+    activate DD
 
-DD -> VD : ""get_lines()""
-activate VD
+    DD -> VD : ""get_lines()""
+    activate VD
 
-VD -> LD : ""get_lines()""
-activate LD
+    VD -> LD : ""get_lines()""
+    activate LD
 
-return ""logical_lines""
-return ""visual_lines""
-return ""display_lines""
-return ""display_lines""
-
-
-
-App -> Facade : ""get_visual_lines()""
-activate Facade
-
-Facade -> VD : ""get_lines()""
-activate VD
-
-VD -> LD : ""get_lines()""
-activate LD
-
-return ""logical_lines""
-return ""visual_lines""
-return ""visual_lines""
+    return ""logical_lines""
+    return ""visual_lines""
+    return ""display_lines""
+    return ""display_lines""
+end
 
 
+Group Get Visual Lines
+    App -> Facade : ""get_visual_lines()""
+    activate Facade
 
-App -> Facade : ""get_logical_lines()""
-activate Facade
+    Facade -> VD : ""get_lines()""
+    activate VD
 
-Facade -> LD : ""get_lines()""
-activate LD
+    VD -> LD : ""get_lines()""
+    activate LD
 
-return ""logical_lines""
-return ""logical_lines""
+    return ""logical_lines""
+    return ""visual_lines""
+    return ""visual_lines""
+end
 
 
+Group Get Logical Lines
+    App -> Facade : ""get_logical_lines()""
+    activate Facade
 
-App -> Facade : ""get_raw_text()""
-activate Facade
+    Facade -> LD : ""get_lines()""
+    activate LD
 
-Facade -> LD : ""get_raw_text()""
-activate LD
+    return ""logical_lines""
+    return ""logical_lines""
+end
 
-return ""raw_text""
-return ""raw_text""
 
+Group Get Raw Text
+    App -> Facade : ""get_raw_text()""
+    activate Facade
+
+    Facade -> LD : ""get_raw_text()""
+    activate LD
+
+    return ""raw_text""
+    return ""raw_text""
+end
 
 @enduml

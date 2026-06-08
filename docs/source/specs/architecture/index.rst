@@ -180,7 +180,7 @@ System Context
 System Context Diagram
 ~~~~~~~~~~~~~~~~~~~~~~
 
-.. uml:: diagrams/system_context.puml
+.. plantuml:: diagrams/system_context.puml
 
 .. _arch_public_api:
 
@@ -260,12 +260,12 @@ cross-domain operations.
 
 **Domain responsibilities:**
 
-* **LogicalDomain:** Owns the raw text string and its line index. All mutations to text content
-  occur here. This is the single source of truth for text.
+* **LogicalDomain:** Owns the raw text string its line index, and the cursor. All mutations to text content
+  occur here. This is the single source of truth for text and cursor position.
 
 * **VisualDomain:** Requests raw text from the Logical Domain and applies visual transformations
   (line wrapping). Does not mutate text directly, it passes mutation requests down to the Logical Domain.
-  Tracks the cursor in Visual coordinates. Translates between Visual and Logical coordinates.
+  Translates between Visual and Logical coordinates.
 
 * **DisplayDomain:** Manages window geometry and tracks the cursor in Window coordinates.
   Determines which subset of visual lines is returned to the host. If cursor movement causes the
@@ -311,22 +311,45 @@ onto the output modes exposed by the public API (See :doc:`../requirements/f-req
 Container Diagram
 ~~~~~~~~~~~~~~~~~
 
-.. uml:: diagrams/domain_containers.puml
+.. plantuml:: diagrams/domain_containers.puml
 
 Data Flow: Representative Examples
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. uml:: diagrams/seq_insert.puml
+Insert
+......
 
-.. uml:: diagrams/seq_delete.puml
+.. plantuml:: diagrams/seq_insert.puml
 
-.. uml:: diagrams/seq_backspace.puml
+Delete
+......
 
-.. uml:: diagrams/seq_move.puml
+.. plantuml:: diagrams/seq_delete.puml
 
-.. uml:: diagrams/seq_get_lines.puml
+Backspace
+.........
 
-.. uml:: diagrams/seq_get_cursor.puml
+.. plantuml:: diagrams/seq_backspace.puml
+
+Move Horizontally
+.................
+
+.. plantuml:: diagrams/seq_move_h.puml
+
+Move Vertically
+...............
+
+.. plantuml:: diagrams/seq_move_v.puml
+
+Get Lines
+.........
+
+.. plantuml:: diagrams/seq_get_lines.puml
+
+Get Cursor
+..........
+
+.. plantuml:: diagrams/seq_get_cursor.puml
 
 .. _arch_components:
 
@@ -368,7 +391,7 @@ Key contracts between internal components are recorded here. Full per-component 
 are in :ref:`arch_component_descriptions`.
 
 * **Visual → Logical:** The Visual Domain queries the Logical Domain for the raw text string.
-  It does not instruct the Logical Domain on how to store or represent text.
+  and Cursor position. It does not instruct the Logical Domain on how to store or represent text.
 
 * **Display → Visual:** The Display Domain queries the Visual Domain for the total number of
   wrapped visual lines and the current cursor visual position. It receives counts and indices,
@@ -389,9 +412,9 @@ are in :ref:`arch_component_descriptions`.
 Component Diagram
 ~~~~~~~~~~~~~~~~~
 
-.. uml:: diagrams/display_components.puml
-.. uml:: diagrams/visual_components.puml
-.. uml:: diagrams/logical_components.puml
+.. plantuml:: diagrams/display_components.puml
+.. plantuml:: diagrams/visual_components.puml
+.. plantuml:: diagrams/logical_components.puml
 
 .. _arch_decisions:
 
@@ -466,7 +489,7 @@ Appendix A: Glossary
 Appendix B: Revision History
 -----------------------------
 
-:doc:`arch_history`
+:doc:`arch-history`
 
 Indices and tables
 ------------------

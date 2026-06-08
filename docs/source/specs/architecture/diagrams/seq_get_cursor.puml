@@ -1,55 +1,76 @@
 @startuml
 
-title insert
-
 participant Host as App #white
 participant "Text Editor" as Facade #lightGray
 participant "Display Domain" as DD #orange
 participant "Visual Domain" as VD #green
-' participant "Logical Domain" as LD #lightBlue
+participant "Logical Domain" as LD #lightBlue
+
+group Get Display Cursor
+    App -> Facade : ""get_cursor()""
+    activate App
+    activate Facade
+
+    Facade -> DD : ""get_cursor()""
+    activate DD
+
+    DD -> VD : ""get_cursor()""
+    activate VD
+
+    VD -> LD : ""get_cursor()""
+    activate LD
+
+    return ""abs_index""
+    return ""visual_cursor""
+    return ""display_cursor""
+    return ""display_cursor""
+    deactivate App
+end
 
 
-App -> Facade : ""get_cursor()""
-activate Facade
+group Get Visual Cursor
+    App -> Facade : ""get_visual_cursor()""
+    activate App
+    activate Facade
 
-Facade -> DD : ""get_cursor()""
-activate DD
+    Facade -> VD : ""get_cursor()""
+    activate VD
 
-DD -> VD : ""get_cursor()""
-activate VD
+    VD -> LD : ""get_cursor()""
+    activate LD
 
-return ""visual_cursor""
-return ""display_cursor""
-return ""display_cursor""
-
-
-App -> Facade : ""get_visual_cursor()""
-activate Facade
-
-Facade -> VD : ""get_cursor()""
-activate VD
-
-return ""visual_cursor""
-return ""visual_cursor""
+    return ""abs_index""
+    return ""visual_cursor""
+    return ""visual_cursor""
+    deactivate App
+end
 
 
-App -> Facade : ""get_logical_cursor()""
-activate Facade
+group Get Logical Cursor
+    App -> Facade : ""get_logical_cursor()""
+        activate App
+    activate Facade
 
-Facade -> VD : ""get_logical_cursor()""
-activate VD
+    Facade -> LD : ""get_logical_cursor()""
+    activate LD
 
-return ""logical_cursor""
-return ""logical_cursor""
+    return ""logical_cursor""
+    return ""logical_cursor""
+    deactivate App
+end
 
 
-App -> Facade : ""get_absolute_index()""
-activate Facade
+group Get Absolute Index
+    App -> Facade : ""get_absolute_index()""
+        activate App
+    activate Facade
 
-Facade -> VD : ""get_absolute_index()""
-activate VD
+    Facade -> LD : ""get_cursor()""
+    activate LD
 
-return ""absolute_index""
-return ""absolute_index""
+    return ""abs_index""
+    return ""abs_index""
+    deactivate App
+end
 
 @enduml

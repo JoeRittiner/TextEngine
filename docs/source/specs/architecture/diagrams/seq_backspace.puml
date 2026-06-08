@@ -1,7 +1,5 @@
 @startuml
 
-title insert
-
 participant Host as App #white
 participant "Text Editor" as Facade
 participant "Display Domain" as DD #orange
@@ -10,11 +8,25 @@ participant "Logical Domain" as LD #lightblue
 
 
 App -> Facade : ""backspace()""
+activate Facade
 Facade -> DD : ""backspace()""
+deactivate Facade
+activate DD
 DD -> VD : ""backspace()""
-VD -> LD : ""delete(absolute_index)""
+activate VD
+VD -> LD : ""backspace()""
+deactivate VD
 
+DD -> VD : ""get_cursor()""
+activate DD
+activate VD
+VD -> LD : ""get_cursor()""
+activate LD
+return ""abs_index""
+return ""visual_cursor""
+
+DD -> DD : ""update_window()""
 deactivate DD
-
+deactivate DD
 
 @enduml

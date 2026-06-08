@@ -1,0 +1,34 @@
+@startuml
+
+participant Host as App #white
+participant "Text Editor" as Facade
+participant "Display Domain" as DD #orange
+participant "Visual Domain" as VD #green
+participant "Logical Domain" as LD #lightblue
+
+App -> Facade : ""move_left()""
+activate Facade
+Facade -> DD : ""move_left()""
+deactivate Facade
+activate DD
+    DD -> VD : ""move_left()""
+    activate VD
+    VD -> LD : ""move_left()""
+    deactivate VD
+    DD -> VD : ""get_cursor()""
+        activate DD
+        activate VD
+        VD -> LD : ""get_cursor()""
+        activate LD
+            return ""abs_index""
+        VD -> VD :  ""translate(abs_index)""
+        activate VD
+           return ""visual_cursor""
+        return ""visual_cursor""
+    deactivate DD
+
+DD -> DD : ""update_window()""
+deactivate DD
+deactivate DD
+
+@enduml
