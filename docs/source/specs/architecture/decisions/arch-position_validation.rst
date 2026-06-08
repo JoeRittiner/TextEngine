@@ -4,125 +4,73 @@ Cursor Position Validation
 Context
 .......
 
-:need:`INV-CURSOR-001` requires that the cursor always refers to a valid position within
-the bounds of the text buffer. There are two distinct events that can invalidate a
-previously valid cursor position:
+The system must guarantee that the cursor always refers to a valid position within the bounds of the text buffer.
+(:need:`INV-CURSOR-001` ) There are two distinct events that can invalidate a previously valid cursor position:
 
-* **Cursor movement.** A movement command produces a new target position that may be
-  out of bounds. For example, moving up from a longer visual line to a shorter one, or
-  moving right at the last column of a visual line.
-* **Buffer mutation.** An insert, delete or backspace operation changes the visual line
-  structure. The cursor position is not updated by the mutation itself; it may now refer
-  to a column that no longer exists on its line, or a line that no longer exists at all.
+* **Cursor movement.** A movement or set command alters the coordinate, which could potentially push it past the
+  boundaries of the text.
+* **Buffer mutation.** Insertions, or backspaces modify the text length and move the cursor. Buffer modification
+  and cursor movement must be synchronized for these events.
 
-These two triggers are independent: a movement command does not change the buffer, and a
-buffer mutation does not necessarily change the cursor's intended position. Any design that
-assigns validation responsibility to a single component must handle both cases cleanly,
-without splitting the invariant or requiring the cursor to be notified of buffer changes
-it did not cause.
+Because the cursor is tracked as a stable absolute index, (``abs_index``) a valid cursor position is strictly bounded
+by the linear sequence of characters: ``0 <= k <= len(text)``. The system needs a predictable strategy to enforce this
+boundary during state reads and writes.
 
 Decision
 ........
 
-Cursor position validation is the responsibility of the ``CursorState`` component,
-enforced lazily on read. ``CursorState`` holds a raw stored position that may be
-transiently invalid between operations. When ``get_position`` is called, ``CursorState``
-retrieves the current visual line structure from the ``VisualLogicalAdapter``, clamps its stored
-position to the nearest valid coordinate, and returns the corrected value. The internal
-state is updated to the clamped value at the same time.
+Cursor position validation is the exclusive responsibility of the **``LogicalDomainService``**. The ``CursorState``
+component itself is completely decoupled from validation logic and functions as a raw data store.
 
-The ``VisualLogicalAdapter`` does not perform clamping. If a caller passes an out-of-bounds position
-to the ``VisualLogicalAdapter`` for translation, the ``VisualLogicalAdapter`` raises an exception. It is a
-pure coordinate translator, not a position corrector.
+The ``LogicalDomainService`` intercepts all operations to enforce the boundary check ``0 <= k <= len(text)`` at the
+service boundary under two strict modes of execution:
 
-The ``MovementResolver`` is a stateless calculator that computes a new visual coordinate
-given a direction and the current visual line structure. It produces positions that are
-correct by construction. It applies line-boundary wrapping and line-length checks as part
-of movement computation. It does not set ``CursorState`` directly. The
-``VisualDomainService`` orchestrates: it retrieves the clamped current position from
-``CursorState``, passes it to ``MovementResolver``, and sets the result back on
-``CursorState``.
+1. **On Set:** Whenever the cursor position is updated (via external requests or following a buffer mutation),
+   the ``LogicalDomainService`` checks the target index. If the value falls outside valid text bounds, the service
+   safely **clamps or ignores** the value to preserve a continuous, valid state.
+2. **On Get:** Whenever the cursor position is read, the ``LogicalDomainService`` checks the stored absolute index
+   against the current text length. Under normal conditions, mutations and sets keep this index completely
+   synchronized. If an out-of-bounds index is detected during a read operation, it indicates a critical state anomaly,
+   and the service immediately raises a specific exception (e.g., ``ValueError`` or ``IndexError``).
 
 Rationale
 .........
 
-Enforcing the invariant lazily on read concentrates the validity guarantee in one place
-without requiring any component to be notified of changes it did not cause. When the
-buffer mutates, the ``CursorState``'s stored position becomes transiently stale, but no
-notification or coordination is needed. The next read corrects it automatically. This is
-the structural property that resolves the two-trigger problem: both cursor movement and
-buffer mutation are handled by the same mechanism, at the same point, without special
-cases.
+Moving validation logic out of ``CursorState`` and into the service layer aligns perfectly with a stateless,
+absolute-index-centric model. Because validation has been reduced to a trivial length check (``len(text)``), it can be
+executed eagerly with virtually zero performance overhead.
 
-Keeping the ``VisualLogicalAdapter`` as a pure translator (throwing on invalid input rather than
-correcting it) preserves its single responsibility and prevents cursor semantics from
-leaking into the coordinate translation layer. The ``VisualLogicalAdapter`` does not need to know
-what a valid cursor position is; it only needs to know how to translate between coordinate
-spaces.
-
-Making ``MovementResolver`` a pure calculator, with no reference to ``CursorState``,
-means movement logic can be tested entirely independently of cursor state management.
-A movement test needs only a position, a direction, and a set of visual lines. Having the
-``VisualDomainService`` orchestrate the handoff between the two components keeps the
-coupling explicit and unidirectional.
+* **Symmetric Service Enforcement:** Centralizing validation inside the ``LogicalDomainService`` creates a highly
+  predictable boundary. The domain guarantees that bad inputs are normalized before hitting the state layer on writes,
+  while treating un-normalized data on reads as an exceptional breach of domain logic rather than a normal operational
+  condition.
+* **Decoupling State from Context:** ``CursorState`` no longer needs access to the buffer contents or layout maps to
+  evaluate its own position. It remains an isolated primitive container that depends on nothing, making it highly
+  robust and trivial to maintain.
 
 Alternatives Considered
 .......................
 
-**VisualLogicalAdapter clamps rather than throws.**
-  The ``VisualLogicalAdapter`` could expose a clamp operation, accepting any position and returning
-  the nearest valid one. This was rejected because it would give the ``VisualLogicalAdapter``
-  knowledge of cursor semantics, what "nearest valid" means for a cursor is a
-  cursor-level concept, not a coordinate-translation concept. It also would not resolve
-  the two-trigger problem on its own: the ``VisualLogicalAdapter`` is unaware of cursor movement,
-  so it could not enforce the invariant after a movement command without additional
-  orchestration.
-
-**VisualDomainService clamps after every operation.**
-  The ``VisualDomainService`` could call a clamp function after every mutation and every
-  movement, guaranteeing the cursor is valid immediately after each operation rather than
-  lazily on read. This was rejected because it makes the validity guarantee dependent on
-  the service remembering to clamp after every operation. Adding a new operation type that
-  forgets the clamp step would silently break the invariant. The lazy approach makes the
-  guarantee self-enforcing within ``CursorState`` itself.
-
-**CursorState is notified of buffer changes by VisualDomainService.**
-  The ``VisualDomainService`` could explicitly notify ``CursorState`` whenever the buffer
-  mutates, triggering an immediate revalidation. This was rejected because it requires an
-  active notification path that can be missed. The lazy approach achieves the same
-  outcome (the cursor is valid when read) without requiring a notification contract.
-
-**Split validation: VisualLogicalAdapter validates movement, CursorState validates on read.**
-  Validation could be split between two components, each handling one trigger. This was
-  rejected because split responsibility means the invariant is only fully enforced when
-  both halves work correctly together. The single lazy-read mechanism in ``CursorState``
-  handles both triggers without coordination.
+**Lazy Validation on Read via Visual Lines (Previous Architecture)**
+  The system previously treated cursor validation as a lazy operation deferred until ``get_position()`` was called.
+  Under that model, ``CursorState`` held a raw, transiently invalid visual coordinate ``(row, col)`` and dynamically
+  verified it by querying visual lines from the ``VisualLogicalAdapter`` on every read. This was rejected because it
+  introduced a heavy circular dependency from the lowest state layer back up to layout components, resulting in
+  unnecessary complexity for a rule that is fundamentally a basic text boundary constraint.
 
 Consequences
 ............
 
 **Easier:**
 
-* The validity guarantee is self-enforcing. ``CursorState`` does not depend on being
-  notified of external changes; it corrects itself on the next read regardless of what
-  caused the staleness.
-* ``MovementResolver`` is a pure calculator and can be tested in complete isolation from
-  cursor state. Movement logic is fully exercisable with a position, a direction, and a
-  series of line lengths.
-* The ``VisualLogicalAdapter`` remains a pure translator. No cursor concepts enter the coordinate
-  translation layer.
+* **O(1) Boundary Evaluation:** Validating against a flat buffer sequence length bypasses line wrapping maps entirely.
+* **Isolated Component Testing:** ``CursorState`` contains zero branching logic or dependencies, allowing it to be
+  tested or swapped effortlessly.
+* **Defensive Fail-Fast Behavior:** Raising an explicit exception (like ``ValueError``) if a read breaks boundaries
+  guarantees that silent cursor drifting or out-of-bounds corruption will be caught immediately at the service perimeter.
 
-**Constrained or made harder:**
+**Harder:**
 
-* ``CursorState``'s stored position may be transiently invalid between a buffer mutation
-  and the next ``get_position`` call. This is acceptable as long as the stored position is
-  never exposed directly. All access must go through ``get_position``. If this access
-  discipline is ever broken, the invariant fails silently.
-* Every ``get_position`` call incurs the cost of retrieving visual lines from the
-  ``VisualLogicalAdapter`` and checking the stored position against them. For the expected usage
-  pattern of reading the cursor position infrequently relative to the number of operations,
-  this is acceptable. If ``get_position`` were called in a tight loop, the repeated
-  retrieval would be unnecessary overhead.
-* The ``VisualDomainService`` must coordinate the ``MovementResolver`` → ``CursorState``
-  handoff correctly. The two components do not know each other; the service is the only
-  place where a programming error in the handoff could corrupt the cursor state.
+* **Service Responsibility Load:** The ``LogicalDomainService`` must carefully handle every text mutation path to
+  ensure that the matching cursor index changes are applied atomically, preventing valid read paths from accidentally
+  triggering an out-of-bounds exception.
