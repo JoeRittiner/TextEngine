@@ -2,7 +2,7 @@ name: "Sphinx: Render docs"
 
 on:
   push:
-    branches: [ main, docs_actions ]
+    branches: [ main, docs ]
   pull_request:
     branches: [ main, docs ]
 
