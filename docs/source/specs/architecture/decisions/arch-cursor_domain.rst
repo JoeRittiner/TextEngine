@@ -1,5 +1,5 @@
-Cursor Belongs to the Visual Domain
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Cursor Belongs to the Logical Domain
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Context
 .......
@@ -7,76 +7,73 @@ Context
 The editor architecture is divided into three domain layers. Data flows upward through these layers
 (Logical → Visual → Display), while requests flow downward.
 
-A design question emerged regarding ownership of the cursor. At first glance, the cursor appears to
-belong naturally to the Logical Domain because its position can be represented fundamentally as an
-absolute index into the text buffer. Because this absolute index must remain valid relative to the text
-buffer, the cursor is tightly coupled to logical text mutations.
+A design question emerged regarding ownership of the cursor. The cursor's position can be fundamentally
+tracked as an absolute index into the text buffer, making it deeply tied to logical text mutations
+(such as insertions and deletions). However, vertical cursor movement across wrapped lines requirements
+(:need:`FR-CURSOR-030`), depend entirely on layout information managed by the Visual Domain.
 
-However, cursor movement requirements (such as moving vertically across wrapped lines
-(:need:`FR-CURSOR-030`)) are primarily visual in nature. This creates architectural tension between:
+This creates an architectural tension between:
 
-* Keeping cursor state close to the underlying text buffer source of truth.
-* Preserving strict, unidirectional dependencies between domains.
-* Avoiding unnecessary layout translation responsibilities within lower-level components.
+* Keeping cursor state close to the text buffer source of truth to ensure state stability during mutations.
+* Preserving strict, unidirectional dependencies between domain layers.
+* Mitigating translation overhead during directional movement operations.
 
 Decision
 ........
 
-The cursor belongs in the **Visual Domain**.
+The cursor belongs in the **Logical Domain**.
 
-The Logical Domain remains responsible only for text storage and mutation through absolute indices;
-it does not require or expose a cursor abstraction. Text mutation operations require only an absolute
-index, meaning a cursor is not fundamental to logical text storage.
+The ``CursorState`` component is owned and managed entirely by the ``LogicalDomainService``. It stores the
+cursor position using a single primitive value: an absolute index (``abs_index``) into the text buffer.
 
-The cursor stores its position as a visual coordinate; any translation to an absolute index for mutation
-purposes is performed by the ``VisualLogicalAdapter``.
+The Visual Domain contains no persistent cursor state. It borrows the cursor position on demand from the
+Logical Domain when executing visual calculations.
 
-The cursor is not placed in the Display Domain because the Visual Domain already defines the editor-wide
-visual coordinate system. The Display Domain merely presents a truncated window of that visual
-representation.
+Movement operations are split by axis:
+
+1. **Horizontal Movement:** The Visual Domain acts as a pure pass-through, delegating horizontal adjustments
+   directly to the Logical Domain to evaluate as absolute index changes.
+2. **Vertical Movement:** The ``VisualDomainService`` orchestrates visual adjustments via a multi-step
+   translation flow utilizing the ``VisualLogicalAdapter`` and the stateless ``MovementResolver``.
 
 Rationale
 .........
 
-Vertical and horizontal cursor movements depend entirely on visual layout information that the Logical Domain
-has no awareness of. If the cursor were placed in the Logical Domain, calculating a simple upward or downward
-movement would incur a heavy translation cost:
+Storing the cursor as a visual coordinate ``(row, col)`` in the Visual Domain introduces "lazy validation".
+Because a visual coordinate is a derived value dependent on a shifting wrapping map, text mutations can silently
+invalidate the cursor's coordinate, forcing a permanent and messy dependency from ``CursorState``
+back onto the ``VisualLogicalAdapter``.
 
-1. Reading the current position as an absolute index from the Logical Domain.
-2. Translating that absolute index into a visual coordinate via the Visual Domain.
-3. Calculating the target visual position.
-4. Validating the target visual position against wrapped visual lines.
-5. Translating the resulting visual position back into an absolute index.
-6. Updating the logical position back in the Logical Domain.
+Moving the cursor to the Logical Domain as an absolute index provides several structural advantages:
 
-This flow is highly inefficient and breaks domain isolation. Because the Visual Domain already owns the
-wrapped line structures and visual coordinate systems, keeping both the cursor state and the movement
-calculation logic within the Visual Domain removes the need for index translation during live movement.
+* **State Stability:** An absolute index is a stable primitive. It does not become corrupt or invalid
+  when wrapping maps or display widths change.
+* **Atomic Mutations:** Text modifications (insertions and deletions) can update both the text buffer and the
+  cursor position simultaneously within the same domain layer, eliminating complex cross-domain synchronization
+  hooks.
+* **Simplified Horizontal Movement:** Because horizontal movement does not inherently require structural layout
+  lines, delegating it straight to the Logical Domain bypasses unnecessary layout processing.
 
-The actual, streamlined movement flow operates entirely within visual space:
+While vertical movement now requires an explicit read-translate-resolve-write orchestration flow across domain
+boundaries, this overhead is accepted. The reliability of a stable, mutation-safe absolute index outweighs the
+cost of performing coordinate translation during live vertical steps.
 
-1. **Read** the current visual coordinate from ``CursorState`` (enforcing lazy clamping;
-   see :doc:`arch-position_validation`).
-2. **Pass** the coordinate along with the direction and current visual lines to the ``MovementResolver``.
-3. **Compute** the new valid visual coordinate inside the ``MovementResolver``.
-4. **Update** the result back onto ``CursorState`` via the orchestration of the ``VisualDomainService``.
+The vertical movement flow operates cleanly without storing state in the Visual Domain:
 
-Placing the cursor in the Logical Domain instead would require the Logical Domain to become aware of visual
-line concepts, force a lower-layer component to depend on a higher-layer service, or necessitate a complex
-coordination layer solely to bridge the two domains.
-
-The cursor is better understood as a visual interaction construct that references logical text positions
-rather than as a fundamental property of the logical text model itself.
+1. **Read** the current absolute index from the Logical Domain via the ``VisualLogicalAdapter``.
+2. **Translate** the absolute index into a transient visual coordinate using the adapter's wrapping map.
+3. **Resolve** the target visual coordinate by passing the position and direction to the stateless ``MovementResolver``.
+4. **Translate Back** the calculated target visual coordinate into an absolute index.
+5. **Write** the final absolute index back to the ``CursorState`` in the Logical Domain.
 
 Alternatives Considered
 .......................
 
-**Cursor in the Logical Domain**
-  The cursor could have been represented purely as an absolute index alongside the text buffer. Vertical
-  movement across visual lines would be calculated on demand based on line lengths and display width.
-  This was rejected because cursor movement semantics depend on visual layout information (e.g., wrapped
-  lines and visual coordinates). Implementing movement logic in the Logical Domain would either violate
-  the dependency direction rule or require additional translation logic to leak downwards.
+**Cursor in the Visual Domain (Previous Architecture)**
+  The cursor was previously modeled as a visual coordinate stored in the Visual Domain to avoid translation
+  overhead during directional movements. This was rejected because visual coordinates are derived values.
+  Buffer mutations constantly threatened to break the coordinate, requiring a complex lazy validation pattern
+  and forcing the state layer to depend heavily on layout components.
 
 **Movement Controller in the Visual Domain, Cursor in the Logical Domain**
   A dedicated movement controller component could have been introduced in the Visual Domain while leaving
@@ -95,19 +92,15 @@ Consequences
 
 **Easier:**
 
-* Keeps visual movement logic and coordinate translation encapsulated within a single domain layer.
-* Preserves a strict, unidirectional dependency direction: Display → Visual → Logical. The Logical Domain
-  remains completely independent of visual layout and wrapping concerns.
-* Keeps the text mutation engine flexible and clean, as text operations are not coupled to the existence
-  of a cursor abstraction.
-* Enhances testability by isolating state from calculation; ``CursorState`` and ``MovementResolver`` exist
-  as distinct, specialized components within the same domain.
+* **Stable Truth:** The cursor position is never transiently invalid or desynchronized during text mutations.
+* **Clean Visual Domain:** The Visual Domain is entirely stateless regarding the cursor, behaving as a functional
+  layout calculator.
+* **Encapsulated Mutations:** Core editor operations like text insertion and backspacing process cleanly within a
+  single domain block.
 
 **Harder:**
 
-* The Visual Domain must maintain translation logic between visual coordinates and logical indices for when
-  mutations occur.
-* Any buffer mutation that changes the wrapping map may silently invalidate the stored visual coordinate,
-  requiring revalidation on the next cursor read.
-* Operations that appear logically simple, such as cursor movement, now require coordination with visual
-  layout structures even when the underlying text buffer remains entirely unchanged.
+* **Boundary Orchestration:** Vertical movement requires a strict, multi-step orchestration sequence by the
+  ``VisualDomainService`` to safely map across the boundary.
+* **Adapter Workload:** The ``VisualLogicalAdapter`` must maintain highly accurate, bidirectional translation
+  logic (index-to-visual and visual-to-index) to prevent layout drifts during vertical steps.
