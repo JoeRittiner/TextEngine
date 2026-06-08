@@ -21,8 +21,8 @@ Behaviour
 and the current sequence of visual lines. It returns a visual coordinate that is valid
 per :need:`INV-CURSOR-001`. The returned position is correct by construction.
 ``MovementResolver`` applies all relevant boundary and truncation logic internally, so
-the caller receives a position that can be stored directly in ``CursorState`` without
-further validation.
+the caller receives a position that can be passed directly to the ``VisualLogicalAdapter``
+without further validation.
 
 The movement rules are defined in :need:`FR-CURSOR-020`, :need:`FR-CURSOR-030`,
 :need:`FR-CURSOR-031`, :need:`FR-CURSOR-040`, :need:`FR-CURSOR-050`,
@@ -31,13 +31,6 @@ The movement rules are defined in :need:`FR-CURSOR-020`, :need:`FR-CURSOR-030`,
 Movement is strictly non-destructive. :need:`FR-CURSOR-021`.
 
 Two aspects are architecturally significant and worth stating explicitly:
-
-**Horizontal movement operates in visual space, not absolute index space.**
-Although :need:`FR-CURSOR-040` defines left/right in terms of absolute index arithmetic,
-the ``MovementResolver`` operates entirely in visual coordinates. It fulfils the
-requirement by computing the equivalent visual coordinate (including line-boundary wrapping)
-without ever referencing an absolute index. The ``VisualLogicalAdapter`` is the only component in
-the Visual Domain that crosses coordinate spaces.
 
 **``MovementResolver`` does not implement desired-column retention.**
 :need:`NR-CURSOR-101` explicitly excludes this feature. Vertical movement always uses
@@ -54,16 +47,13 @@ any other component. The visual lines it requires are passed in by the
 ``VisualDomainService`` at call time.
 
 **Depended on by:** The ``VisualDomainService``, which supplies the current position and
-visual lines, calls ``MovementResolver``, and sets the result on ``CursorState``.
+visual lines, calls ``MovementResolver``, and sets the result via ``VisualLogicalAdapter``.
 
 Key Invariants
 ..............
 
 * **Output validity.** The coordinate returned by ``MovementResolver`` always satisfies
-  :need:`INV-CURSOR-001`. The ``VisualDomainService`` may store it in ``CursorState``
-  directly; no additional clamping step is required for movement commands. (Buffer
-  mutations that occur after the result is stored are handled separately by
-  ``CursorState`` on the next read.)
+  :need:`INV-CURSOR-001`.
 
 * **Non-destructive.** ``MovementResolver`` does not modify any component state. It
   computes and returns; nothing else. (:need:`FR-CURSOR-021`)

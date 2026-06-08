@@ -40,24 +40,29 @@ defined in :need:`FR-WRAP-001` through :need:`FR-WRAP-005`. Reads are non-destru
 querying visual output never modifies the buffer, the wrapping map, or any other state.
 (:need:`INV-MODE-001`)
 
+The adapter also exposes the current cursor position in visual coordinates, by retrieving
+it from the ``LogicalDomainService`` and translating it to visual coordinates using the
+wrapping map. (:need:`FR-CURSOR-004`, :need:`FR-CURSOR-010`)
+
 **Outbound: Visual to Logical (mutations).** The adapter accepts mutation operations
-(insert, delete, backspace) expressed in visual coordinates. It translates the given
-visual coordinate to the absolute index required by the ``LogicalDomainService``, issues
-the mutation, and immediately updates the wrapping map to reflect the new buffer state.
-The map is guaranteed consistent before any subsequent read or coordinate translation is
-served. (:need:`INV-WRAP-003`) Invalid visual coordinates are rejected with an exception;
+(``insert``, ``delete``, ``backspace``) expressed in visual coordinates. It translates the
+given visual coordinate to the absolute index required by the ``LogicalDomainService``,
+issues the mutation, and immediately updates the wrapping map to reflect the new buffer
+state. The map is guaranteed consistent before any subsequent read or coordinate translation
+is served. (:need:`INV-WRAP-003`) Invalid visual coordinates are rejected with an exception;
 the adapter does not clamp or correct positions it receives.
+
+The adapter also accepts direct cursor setting, and horizontal movement commands. These
+are passed to the ``LogicalDomainService``. Invalid visual coordinates are rejected with an
+exception; the adapter does not clamp or correct positions it receives. Movement commands
+are non-destructive: they do not modify the buffer, or any other state and don't warrant updating
+the map. (:need:`FR-CURSOR-021`)
 
 **Coordinate translation.** The adapter translates on demand between visual coordinates
 ``(v_row, v_col)`` and absolute indices in both directions. This is the only component in
-the Visual Domain that crosses coordinate spaces; ``CursorState`` and ``MovementResolver``
-operate exclusively in visual coordinates and rely on the adapter for any translation they
-require.
-
-**Position validation.** The adapter exposes a lightweight validity check: given a visual
-coordinate, it returns whether that coordinate falls within the current wrapping map. This
-is used by ``CursorState`` on read to determine whether clamping is required, without
-``CursorState`` needing to retrieve and interpret the full visual line structure itself.
+the Visual Domain that crosses coordinate spaces; ``MovementResolver`` operates exclusively in
+visual coordinates and relies on the adapter for any translation it requires.
+(:need:`FR-CURSOR-004`)
 
 Dependencies
 ............
@@ -70,14 +75,13 @@ Domain.
 
 * The ``VisualDomainService``, which owns the adapter instance and routes all mutation
   operations and visual-line reads through it.
-* ``CursorState``, which queries the adapter for position validity on every read.
 
 Key Invariants
 ..............
 
 * **Sole domain boundary.** The ``VisualLogicalAdapter`` is the only component in the
   Visual Domain permitted to call the ``LogicalDomainService``. Any direct call from
-  ``VisualDomainService``, ``CursorState``, or ``MovementResolver`` to the Logical Domain
+  ``VisualDomainService`` or ``MovementResolver`` to the Logical Domain
   bypasses the adapter and breaks the boundary.
 
 * **Wrapping map consistency.** The wrapping map always reflects the current buffer state.

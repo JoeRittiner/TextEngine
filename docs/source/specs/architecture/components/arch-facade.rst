@@ -31,29 +31,24 @@ throw an exception. (:need:`FR-INIT-011`, :need:`FR-INIT-012`, :need:`FR-INIT-01
 
 **Output interfaces.** The facade exposes output grouped by which service handles it:
 
-* *Text reads,* delegated to the ``LogicalDomainService``: raw text (:need:`FR-MODE-001`)
-  and logical lines (:need:`FR-MODE-011`).
-* *Visual reads and non-window cursor representations,* delegated to the
-  ``VisualDomainService``: wrapped visual output (:need:`FR-MODE-021`), visual-to-logical
-  mapping (:need:`FR-MODE-022`), cursor as Visual Coordinate (:need:`FR-CURSOR-004`),
-  cursor as Absolute Index (:need:`FR-CURSOR-002`), and cursor as Logical Coordinate
-  (:need:`FR-CURSOR-003`). The ``VisualDomainService`` fulfils all three non-window cursor
-  representations because it holds both ``CursorState`` and the translation machinery of
-  the ``VisualLogicalAdapter``. These do not pass through the Display Domain.
-* *Display reads and window cursor representation,* delegated to the
-  ``DisplayDomainService``: viewport-truncated output (:need:`FR-MODE-031`),
+* *Raw and Logical Mode:** Delegated to the ``LogicalDomainService``: raw text (:need:`FR-MODE-001`)
+  and logical lines (:need:`FR-MODE-011`) as well as cursor as Absolute Index (:need:`FR-CURSOR-002`)
+  and as Logical Coordinate (:need:`FR-CURSOR-003`).
+* *Visual Mode:* Delegated to the ``VisualDomainService``: wrapped visual output (:need:`FR-MODE-021`),
+  visual-to-logical mapping (:need:`FR-MODE-022`), cursor as Visual Coordinate (:need:`FR-CURSOR-004`).
+* *Display Mode:* Delegated to the ``DisplayDomainService``: viewport-truncated output (:need:`FR-MODE-031`),
   display-to-logical mapping (:need:`FR-MODE-032`), and cursor as Window Coordinate
   (:need:`FR-CURSOR-005`).
 
 All output operations are read-only. (:need:`INV-MODE-001`) This is a deliberate bypass of
 the layering. (See :doc:`../decisions/arch-layer_reads`)
 
-**Mutations and movement.** Insert, delete, backspace, and cursor movement operations
+**Mutations and movement.** ``insert``, ``delete``, ``backspace``, and cursor movement operations
 are delegated to the ``DisplayDomainService``, which propagates them through the Visual
 and Logical Domains in turn. The facade adds no logic of its own to these operations.
 (:need:`FR-CURSOR-020`)
 
-**No logic beyond delegation.** The facade does not implement business logic, coordinate
+**Minimum logic.** The facade does implements minimal business logic, and no coordinate
 translation, or domain-specific behaviour. If the facade contains anything other than
 delegation and initialisation sequencing, that logic belongs in a domain service.
 
@@ -61,10 +56,9 @@ Dependencies
 ............
 
 **Depends on:** All three domain services directly: ``LogicalDomainService`` for raw
-and logical text output; ``VisualDomainService`` for wrapped visual output, visual-to-logical
-mapping, and all non-window cursor representations;
-``DisplayDomainService`` for display-mode output, window cursor representation, mutations,
-and movement. The facade does not depend on any component inside a domain.
+and logical output; ``VisualDomainService`` for wrapped visual output, visual-to-logical
+mapping. ``DisplayDomainService`` for display-mode output, window cursor representation,
+mutations, and movement. The facade does not depend on any component inside a domain.
 
 **Depended on by:** The host application exclusively. No internal component depends on
 the ``TextEditor``.

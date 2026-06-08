@@ -4,71 +4,52 @@ CursorState
 Responsibility
 ..............
 
-``CursorState`` is the authoritative store for the cursor's position, expressed in visual
-coordinates. It guarantees that the position it returns is always valid, clamping its
-stored value against the current visual line structure on every read.
+``CursorState`` is the authoritative store for the cursor's position, expressed as an Absolute Index.
 (:need:`FR-CURSOR-001`)
 
 Owned State
 ...........
 
-``CursorState`` owns one piece of state: the cursor's visual coordinate
-``(v_row, v_col)``. This is the ground truth for cursor position within the Visual Domain.
-The stored value may be transiently invalid between a buffer mutation and the next read;
-the valid, corrected value is only guaranteed at the point of retrieval via
-``get_position``. The raw stored coordinate must never be exposed directly.
+``CursorState`` owns one piece of state: the cursor's position ``abs_index``.
+This is the ground truth for cursor position within the Logical Domain.
+
+This state is updated upon ``move_*`` commands, as well when the buffer is mutated by
+``insert`` or ``backspace``. (:need:`FR-CURSOR-020`, :need:`FR-TEXT-011`, :need:`FR-TEXT-021`)
+
+Though it holds no reference to the buffer. It must be informed of buffer mutations for ``insert``
+and ``backspace`` commands.
 
 Behaviour
 .........
 
-**On set.** ``CursorState`` accepts a new visual coordinate and stores it without
+**On set.** ``CursorState`` accepts a new absolute index and stores it without
 validation. The caller is responsible for passing a position that is correct given the
-current buffer state; ``MovementResolver`` provides this guarantee for movement commands.
-The stored value may become stale if the buffer is subsequently mutated before the next
-read.
+current buffer state.
 
-**On get.** Before returning the stored coordinate, ``CursorState`` queries the
-``VisualLogicalAdapter`` to check whether the stored position is valid. If not, the
-``CursorState`` clamps to the nearest valid position per :need:`INV-CURSOR-001` and
-:need:`FR-CURSOR-031`, updates the stored value, and returns the corrected coordinate.
-Validity is defined by the requirements; the clamping behaviour is architecturally
-significant only in that it is *lazy*. Deferred to read time rather than enforced eagerly
-after every buffer change. (See: :doc:`../decisions/arch-position_validation`)
+**On get.** The ``CursorState`` returns the stored absolute index without validation.
+The caller is responsible for ensuring the position is valid given the current buffer state.
 
-**Boundary normalisation.** One position constraint is enforced on both set and get:
-:need:`FR-CURSOR-010`, where a cursor at the end of a wrapped line is normalised to
-the start of the next line. This normalisation is not a clamping concern. It is a
-representational invariant that must hold at all times, not only when the buffer has
-changed.
+**Move** ``CursorState`` offers an interface for moving horizontally and to ends. (``move_home``
+and ``move_end``) These function similarly to ``set_position`` in that they do not validate
+the position, but they do update the state.
 
 **Initialisation.** The initial cursor position is supplied as an Absolute Index by the
-host application and translated to a visual coordinate during initialisation
-(:need:`FR-INIT-001`, :need:`FR-INIT-006`). An out-of-range value or incorrect type
+host application (:need:`FR-INIT-001`, :need:`FR-INIT-006`). An out-of-range value or incorrect type
 raises an exception and halts initialisation (:need:`FR-INIT-013`).
 
 Dependencies
 ............
 
-**Depends on:** The ``VisualLogicalAdapter``, to retrieve the current visual line structure for
-coordinate validation on read. ``CursorState`` does **not** depend on ``MovementResolver``
-or the ``VisualDomainService``.
+**Depends on:** Nothing.
 
-**Depended on by:** The ``VisualDomainService``, which is the only component that calls
+**Depended on by:** The ``LogicalDomainService``, which is the only component that calls
 ``get_position`` or sets a new position on ``CursorState``.
 
 Key Invariants
 ..............
-
-* **Valid on read.** The coordinate returned by ``get_position`` always satisfies the
-  valid visual coordinate ranges defined in :need:`INV-CURSOR-001`. The stored coordinate
-  may be transiently outside these ranges, but this is never visible to callers.
 
 * **Inter-character positioning.** The cursor always refers to a position between
   characters, never on a character. (:need:`INV-CURSOR-002`)
 
 * **Non-destructive.** Reading or updating the cursor position never modifies the text
   buffer. (:need:`FR-CURSOR-021`)
-
-* **No direct state exposure.** The raw stored coordinate must only ever be accessed
-  through ``get_position``. Any path that exposes it directly bypasses the validity
-  guarantee and breaks :need:`INV-CURSOR-001`.
