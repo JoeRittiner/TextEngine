@@ -2,7 +2,7 @@ name: "Sphinx: Render docs"
 
 on:
   push:
-    branches: [ main, docs ]
+    branches: [ main, docs_actions ]
   pull_request:
     branches: [ main, docs ]
 
@@ -13,6 +13,12 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
       - name: Install PlantUML
         run: |
