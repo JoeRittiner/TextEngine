@@ -5,12 +5,19 @@ title LogicalDomain.insert(text, absolute_index)
 participant Actor as app #white
 box "LogicalDomain" #white
     participant LogicalDomainService as LS
+    participant CursorState as CS
     participant TextBuffer as TB
 end box
 
-app -> LS : ""insert(text, absolute_index)""
+app -> LS : ""insert(text)""
 activate LS
-    LS -> TB : ""insert(text, absolute_index)""
+    LS -> CS : ""get_cursor()""
+    activate CS
+        return ""abs_index""
+    LS -> TB : ""insert(text, abs_index)""
+
+    LS -> CS : ""set_cursor(abs_index + text.length)""
+
     deactivate LS
 
 @enduml

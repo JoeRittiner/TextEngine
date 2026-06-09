@@ -6,28 +6,23 @@ participant Actor as app #white
 box "VisualDomain" #white
     participant VisualDomainService as VS
     participant MovementResolver as MR
-    participant CursorState as CS
     participant VisualLogicalAdapter as VA
 end box
 participant LogicalDomain as LD #lightblue
 
 app -> VS : ""insert(text)""
 activate VS
-    VS -> CS : ""get_cursor()""
-    activate CS
-    return ""visual_cursor""
-
-    VS -> VA : ""insert(text, visual_cursor)""
-    activate VA
-        VA -> VA : ""translate_to_absolute(visual_cursor)""
-        VA -> LD : ""insert(text, absolute_index)""
-    deactivate VA
-    hnote over VS, MR : Movement depends on inserted text. (E.g. if it contained ""\\n"" characters.)
-    VS -> MR : ""move_*(visual_cursor, visual_lines)""
-    activate MR
-    return ""visual_cursor""
-
-    VS -> CS : ""update(visual_cursor)""
+    VS -> VA : ""insert(text)""
     deactivate VS
+
+activate VA
+    VA -> LD : ""insert(text)""
+
+    VA -> LD : ""get_text()""
+    activate LD
+        return ""text""
+
+    VA -> VA : ""update_map()""
+    deactivate VA
 
 @enduml
