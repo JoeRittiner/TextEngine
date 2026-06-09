@@ -13,8 +13,8 @@ app -> LS : ""get_lines()""
 activate LS
     LS -> TB : ""get_text()""
     activate TB
-        return ""raw_text""
-    LS -> LS : ""split_lines(raw_text)""
+        return ""text""
+    LS -> LS : ""split_lines(text)""
     activate LS
         return ""logical_lines""
     return ""logical_lines""

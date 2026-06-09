@@ -13,13 +13,13 @@ app -> DS : ""get_cursor()""
 activate DS
     DS -> VD : ""get_cursor()""
     activate VD
-        return ""visual_cursor""
-    DS -> DS : ""translate(visual_cursor)""
+        return ""visual_position""
+    DS -> DS : ""translate(visual_position)""
     activate DS
         DS -> VS : ""get_range()""
         activate VS
             return ""start, end""
-        return ""display_cursor""
-    return ""display_cursor""
+        return ""display_position""
+    return ""display_position""
 
 @enduml

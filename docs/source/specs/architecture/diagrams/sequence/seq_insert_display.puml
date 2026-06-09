@@ -14,8 +14,8 @@ activate DS
     DS -> VD : ""insert(text)""
     DS -> VD : ""get_cursor()""
     activate VD
-        return ""visual_cursor""
-    DS -> VS : ""update(visual_cursor)""
+        return ""visual_position""
+    DS -> VS : ""update(visual_position)""
     deactivate DS
 
 @enduml

@@ -1,6 +1,6 @@
 @startuml
 
-title LogicalDomain.insert(text, absolute_index)
+title LogicalDomain.insert(text)
 
 participant Actor as app #white
 box "LogicalDomain" #white

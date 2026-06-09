@@ -9,11 +9,11 @@ box "LogicalDomain" #white
     participant TextBuffer as TB
 end box
 
-app -> LS : ""get_cursor()""
+app -> LS : ""get_absolute_index()""
 activate LS
     LS -> CS : ""get_cursor()""
     activate CS
-        return ""absolute_index""
-    return ""absolute_index""
+        return ""abs_index""
+    return ""abs_index""
 
 @enduml

@@ -12,7 +12,7 @@ app -> LS : ""get_text()""
 activate LS
     LS -> TB : ""get_text()""
     activate TB
-        return ""raw_text""
-    return ""raw_text""
+        return ""text""
+    return ""text""
 
 @enduml

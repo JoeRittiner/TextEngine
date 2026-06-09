@@ -19,7 +19,7 @@ activate VS
             return ""abs_index""
         VA -> VA : ""translate(abs_index)""
         activate VA
-            return ""visual_cursor""
-        return ""visual_cursor""
-    return ""visual_cursor""
+            return ""visual_position""
+        return ""visual_position""
+    return ""visual_position""
 @enduml

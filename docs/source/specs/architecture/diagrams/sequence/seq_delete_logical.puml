@@ -1,6 +1,6 @@
 @startuml
 
-title LogicalDomain.delete(absolute_index)
+title LogicalDomain.delete()
 
 participant Actor as app #white
 box "LogicalDomain" #white
@@ -14,9 +14,9 @@ activate LS
 
     LS -> CS : ""get_cursor()""
     activate CS
-        return ""absolute_index""
+        return ""abs_index""
 
-    LS -> TB : ""delete(absolute_index)""
+    LS -> TB : ""delete(abs_index)""
     deactivate LS
 
 @enduml

@@ -1,6 +1,6 @@
 @startuml
 
-title LogicalDomain.move_right(abs_index)
+title LogicalDomain.move_right()
 
 participant Actor as app #white
 box "LogicalDomain" #white
