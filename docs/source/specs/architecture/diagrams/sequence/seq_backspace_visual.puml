@@ -6,27 +6,22 @@ participant Actor as app #white
 box "VisualDomain" #white
     participant VisualDomainService as VS
     participant MovementResolver as MR
-    participant CursorState as CS
     participant VisualLogicalAdapter as VA
 end box
 participant LogicalDomain as LD #lightblue
 
 app -> VS : ""backspace()""
 activate VS
-    VS -> CS : ""get_cursor()""
-    activate CS
-    return ""visual_cursor""
+    VS -> VA : ""backspace()""
+    deactivate VS
 
-    VS -> VA : ""backspace(visual_cursor - 1)""
-    activate VA
-        VA -> VA : ""translate_to_absolute(visual_cursor)""
-        VA -> LD : ""delete(absolute_index)""
+activate VA
+    VA -> LD : ""backspace()""
+    VA -> LD : ""get_text()""
+    activate LD
+        return ""text""
+
+    VA -> VA : ""update_map()""
     deactivate VA
-        hnote over VS, MR : Resolve new cursor position
-    VS -> MR : ""move_left()""
-deactivate VS
-
-activate MR #orange
-    deactivate MR
 
 @enduml

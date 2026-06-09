@@ -1,0 +1,24 @@
+@startuml
+
+title LogicalDomain.backspace()
+
+participant Actor as app #white
+box "LogicalDomain" #white
+    participant LogicalDomainService as LS
+    participant CursorState as CS
+    participant TextBuffer as TB
+end box
+
+app -> LS : ""backspace()""
+activate LS
+
+    LS -> CS : ""move_left()""
+
+    LS -> CS : ""get_cursor()""
+    activate CS
+        return ""absolute_index""
+
+    LS -> TB : ""delete(absolute_index)""
+    deactivate LS
+
+@enduml
