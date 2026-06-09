@@ -33,7 +33,7 @@ query type with the domain that natively owns that representation:
    logical state onto its internal wrapping map layout.
 3. **Display Reads:** Queried directly from the ``DisplayDomainService``.
    The Display Domain provides viewport-truncated text arrays and window-relative coordinates based on its
-    active scrolling offset.
+   active scrolling offset.
 
 The bypass is strictly limited to read operations. Write operations (insert, delete, backspace,
 and cursor movement) must continue to flow sequentially through the domain hierarchy. Each layer in the write
