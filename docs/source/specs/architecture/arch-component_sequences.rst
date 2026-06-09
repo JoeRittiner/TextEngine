@@ -29,9 +29,9 @@ Visual Domain
 
 .. plantuml:: diagrams/sequence/seq_backspace_visual.puml
 
-.. plantuml:: diagrams/sequence/seq_get_cursor_logical.puml
-.. plantuml:: diagrams/sequence/seq_get_abs_index.puml
-.. plantuml:: diagrams/sequence/seq_move_visual.puml
+.. plantuml:: diagrams/sequence/seq_move_horizontal_visual.puml
+
+.. plantuml:: diagrams/sequence/seq_move_vertical_visual.puml
 
 Logical Domain
 ..............
@@ -39,7 +39,17 @@ Logical Domain
 .. plantuml:: diagrams/sequence/seq_get_lines_logical.puml
 .. plantuml:: diagrams/sequence/seq_get_raw_text.puml
 
+.. plantuml:: diagrams/sequence/seq_get_abs_index.puml
+.. plantuml:: diagrams/sequence/seq_get_cursor_logical.puml
+
 .. plantuml:: diagrams/sequence/seq_insert_logical.puml
 
 .. plantuml:: diagrams/sequence/seq_delete_logical.puml
+
+.. plantuml:: diagrams/sequence/seq_backspace_logical.puml
+
+.. plantuml:: diagrams/sequence/seq_set_cursor_logical.puml
+
+.. plantuml:: diagrams/sequence/seq_move_horizontal_logical.puml
+
 
