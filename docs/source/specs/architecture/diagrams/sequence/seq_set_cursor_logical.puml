@@ -1,0 +1,21 @@
+@startuml
+
+title LogicalDomain.set_cursor(abs_index)
+
+participant Actor as app #white
+box "LogicalDomain" #white
+    participant LogicalDomainService as LS
+    participant CursorState as CS
+    participant TextBuffer as TB
+end box
+
+app -> LS : ""set_cursor(abs_index)""
+activate LS
+    LS -> TB : ""get_text()""
+    activate TB
+        return ""text""
+    LS -> LS : ""verify(abs_index, text)""
+    LS -> CS : ""set_cursor(abs_index)""
+    deactivate LS
+
+@enduml

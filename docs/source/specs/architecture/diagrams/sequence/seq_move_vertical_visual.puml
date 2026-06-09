@@ -1,0 +1,46 @@
+@startuml
+
+title VisualDomain.move_up()
+
+participant Actor as app #white
+box "VisualDomain" #white
+    participant VisualDomainService as VS
+    participant MovementResolver as MR
+    participant VisualLogicalAdapter as VA
+end box
+participant LogicalDomain as LD #lightblue
+
+app -> VS : ""move_up()""
+activate VS
+    VS -> VA : ""get_lines()""
+    activate VA
+        VA -> LD : ""get_lines()""
+        activate LD
+            return ""logical_lines""
+        VA -> VA : ""translate(logical_lines)""
+            activate VA
+            return ""visual_lines""
+        return ""visual_lines""
+
+    VS -> VA : ""get_cursor()""
+    activate VA
+        VA -> LD : ""get_cursor()""
+        activate LD
+            return ""abs_index""
+        VA -> VA : ""translate(abs_index)""
+            activate VA
+            return ""visual_position""
+        return ""visual_position""
+    VS -> MR : ""move_up(visual_lines, visual_position)""
+    activate MR
+        return ""visual_position""
+    VS -> VA : ""set_cursor(visual_position)""
+    deactivate VS
+
+activate VA
+    VA -> VA : ""translate(visual_position)""
+    activate VA
+        return ""abs_index""
+    VA -> LD : ""set_cursor(abs_index)""
+    deactivate VA
+@enduml

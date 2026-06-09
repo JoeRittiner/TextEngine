@@ -1,0 +1,23 @@
+@startuml
+
+title VisualDomain.move_right()
+
+participant Actor as app #white
+box "VisualDomain" #white
+    participant VisualDomainService as VS
+    participant MovementResolver as MR
+    participant VisualLogicalAdapter as VA
+end box
+participant LogicalDomain as LD #lightblue
+
+
+app -> VS : ""move_right()""
+activate VS
+    VS -> VA : ""move_right()""
+    deactivate VS
+
+activate VA
+    VA -> LD : ""move_right()""
+    deactivate VA
+
+@enduml

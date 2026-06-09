@@ -1,0 +1,23 @@
+@startuml
+
+title LogicalDomain.move_right(abs_index)
+
+participant Actor as app #white
+box "LogicalDomain" #white
+    participant LogicalDomainService as LS
+    participant CursorState as CS
+    participant TextBuffer as TB
+end box
+
+app -> LS : ""move_right()""
+activate LS
+    LS -> TB : ""get_text""
+    activate TB
+        return ""text""
+
+    LS -> LS : ""verify(abs_index, text)""
+
+    LS -> CS : ""move_right()""
+    deactivate LS
+
+@enduml
