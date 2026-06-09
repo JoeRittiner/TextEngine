@@ -20,9 +20,6 @@ activate DS
         activate VS
             return ""start, end""
         return ""display_cursor""
-
-
-
     return ""display_cursor""
 
 @enduml
