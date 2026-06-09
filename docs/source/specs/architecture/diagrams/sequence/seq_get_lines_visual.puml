@@ -6,7 +6,6 @@ participant Actor as app #white
 box "VisualDomain" #white
     participant VisualDomainService as VS
     participant MovementResolver as MR
-    participant CursorState as CS
     participant VisualLogicalAdapter as VA
 end box
 participant LogicalDomain as LD #lightblue
@@ -17,8 +16,8 @@ activate VS
     activate VA
         VA -> LD : ""get_lines()""
         activate LD
-            return ""logical_lines""
-        VA -> VA : ""wrap(logical_lines)""
+            return ""text""
+        VA -> VA : ""wrap(text)""
         note left: Wraps lines using internal ""wrapping_map""
         activate VA
             return ""visual_lines""

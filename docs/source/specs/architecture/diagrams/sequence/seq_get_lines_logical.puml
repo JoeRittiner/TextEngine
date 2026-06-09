@@ -5,6 +5,7 @@ title LogicalDomain.get_lines()
 participant Actor as app #white
 box "LogicalDomain" #white
     participant LogicalDomainService as LS
+    participant CursorState as CS
     participant TextBuffer as TB
 end box
 
