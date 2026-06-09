@@ -37,7 +37,7 @@ TextBuffer's raw string:
 * **Explicit Position Setting:** Calling ``set_position(k)`` with an absolute index evaluates the
   boundaries immediately. If ``k`` is less than 0 or greater than ``len(text)``, the service rejects
   the command and raises an exception (e.g., ``ValueError`` or ``IndexError``).
-* **Movement Commands:** Calling logical movement commands
+* **Movement Commands:** Calling horizontal movement commands
   (``move_left()``, ``move_right()``, ``move_home()``, or ``move_end()``)
   evaluates the target position against the buffer boundaries. If the command would cause the cursor
   to move out of bounds, the operation results in a silent **no-op**, and the underlying ``CursorState``
@@ -65,9 +65,8 @@ Dependencies
 **Depends on:** The ``TextBuffer`` and ``CursorState`` components for all text storage and
 mutation and cursor state management. The service has no other engine dependencies.
 
-**Depended on by:** The Visual Domain. The Visual Domain calls the ``LogicalDomainService``
-for all text reads and writes and horizontal cursor movement. It never accesses the
-``TextBuffer`` or ``CursorState`` directly.
+**Depended on by:** The ``Visual Domain`` (via ``VisualLogicalAdapter``) and the ``TextEditor``
+facade (directly, for read-only output).
 
 Key Invariants
 ..............

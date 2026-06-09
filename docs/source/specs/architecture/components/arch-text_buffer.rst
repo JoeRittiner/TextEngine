@@ -9,6 +9,9 @@ accepts mutation operations (insert, delete, backspace) at a given absolute inde
 exposes the resulting text as a raw string. It is the only component permitted to hold
 or modify the underlying text. (:need:`FR-TEXT-001`, :need:`FR-TEXT-002`)
 
+``TextBuffer`` receives operations with an explicit index from LogicalDomainService
+internally, while the service's own public API is cursor-centric and takes no index.
+
 Owned State
 ...........
 
@@ -37,7 +40,8 @@ past the start of the buffer is a no-op.
 (:need:`FR-TEXT-031`, :need:`FR-TEXT-032`, :need:`FR-TEXT-034`)
 *Note:* :need:`FR-TEXT-033` Relates to Cursor Position, which is not a concern of the TextBuffer.
 *Note:* The TextBuffer does not natively support a backspace operation, only delete. This is because
-backspace also requires a cursor position, which is not a concern of the TextBuffer.
+backspace also requires a cursor position, which is not a concern of the TextBuffer. A backspace
+operation is orchestrated by the ``LogicalDomainService``.
 
 Dependencies
 ............

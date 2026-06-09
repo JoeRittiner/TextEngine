@@ -42,7 +42,7 @@ querying visual output never modifies the buffer, the wrapping map, or any other
 
 The adapter also exposes the current cursor position in visual coordinates, by retrieving
 it from the ``LogicalDomainService`` and translating it to visual coordinates using the
-wrapping map. (:need:`FR-CURSOR-004`, :need:`FR-CURSOR-010`)
+wrapping map and translation rules. (:need:`FR-CURSOR-004`, :need:`FR-CURSOR-010`)
 
 **Outbound: Visual to Logical (mutations).** The adapter accepts mutation operations
 (``insert``, ``delete``, ``backspace``) expressed in visual coordinates. It translates the
@@ -53,7 +53,7 @@ is served. (:need:`INV-WRAP-003`) Invalid visual coordinates are rejected with a
 the adapter does not clamp or correct positions it receives.
 
 The adapter also accepts direct cursor setting, and horizontal movement commands. These
-are passed to the ``LogicalDomainService``. Invalid visual coordinates are rejected with an
+are passed to the ``LogicalDomainService``. An invalid position is rejected with an
 exception; the adapter does not clamp or correct positions it receives. Movement commands
 are non-destructive: they do not modify the buffer, or any other state and don't warrant updating
 the map. (:need:`FR-CURSOR-021`)

@@ -14,7 +14,7 @@ Owned State
 This is the ground truth for cursor position within the Logical Domain.
 
 This state is updated upon ``move_*`` commands, as well when the buffer is mutated by
-``insert`` or ``backspace``. (:need:`FR-CURSOR-020`, :need:`FR-TEXT-011`, :need:`FR-TEXT-021`)
+``insert`` or ``backspace``. (:need:`FR-CURSOR-020`, :need:`FR-TEXT-011`, :need:`FR-TEXT-031`)
 
 Though it holds no reference to the buffer. It must be informed of buffer mutations for ``insert``
 and ``backspace`` commands.

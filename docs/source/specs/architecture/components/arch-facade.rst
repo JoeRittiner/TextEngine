@@ -31,7 +31,7 @@ throw an exception. (:need:`FR-INIT-011`, :need:`FR-INIT-012`, :need:`FR-INIT-01
 
 **Output interfaces.** The facade exposes output grouped by which service handles it:
 
-* *Raw and Logical Mode:** Delegated to the ``LogicalDomainService``: raw text (:need:`FR-MODE-001`)
+* *Raw and Logical Mode:* Delegated to the ``LogicalDomainService``: raw text (:need:`FR-MODE-001`)
   and logical lines (:need:`FR-MODE-011`) as well as cursor as Absolute Index (:need:`FR-CURSOR-002`)
   and as Logical Coordinate (:need:`FR-CURSOR-003`).
 * *Visual Mode:* Delegated to the ``VisualDomainService``: wrapped visual output (:need:`FR-MODE-021`),

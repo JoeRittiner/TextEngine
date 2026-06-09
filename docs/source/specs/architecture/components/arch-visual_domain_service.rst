@@ -21,8 +21,8 @@ Behaviour
 .........
 
 **Pass-through operations.** The service delegates horizontal movement, and text mutation commands
-to the ``VisualLogicalAdapter``. The service's only obligation for these is to ensure that no read
-operation modifies any state.
+to the Logical Domain via the ``VisualLogicalAdapter``. The service's only obligation for these is
+to ensure that no read operation modifies any state.
 
 **Vertical movement.** Vertical movement commands are orchestrated across three steps: retrieve the
 current visual position from ``VisualLogicalAdapter``; pass it, along with the direction and the
