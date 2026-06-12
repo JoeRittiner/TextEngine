@@ -361,6 +361,14 @@ Get Cursor
 Components
 ----------
 
+Component Diagrams
+~~~~~~~~~~~~~~~~~~
+
+.. plantuml:: diagrams/display_components.puml
+.. plantuml:: diagrams/visual_components.puml
+.. plantuml:: diagrams/logical_components.puml
+
+
 .. _arch_component_descriptions:
 
 Component Descriptions
@@ -434,13 +442,6 @@ which implementation begins.
    :hidden:
 
    code/index
-
-Component Diagram
-~~~~~~~~~~~~~~~~~
-
-.. plantuml:: diagrams/display_components.puml
-.. plantuml:: diagrams/visual_components.puml
-.. plantuml:: diagrams/logical_components.puml
 
 .. _arch_decisions:
 
