@@ -1,0 +1,93 @@
+@startuml
+
+interface LogicalDomain
+
+interface VisualDomain {
+    + insert(text : str)
+    + delete()
+    + backspace()
+
+    + get_lines() : List[VisualLine]
+    + get_cursor() : VisualPosition
+
+    + move_up()
+    + move_down()
+    + move_left()
+    + move_right()
+    + move_home()
+    + move_end()
+}
+
+class VisualDomainService {
+    - _adapter : VisualLogicalAdapter
+
+    + __init__(display_width: int)
+}
+
+class MovementResolver {
+   + move_up(lines: List[VisualLine], cursor: VisualPosition) : VisualPosition
+   + move_down(lines: List[VisualLine], cursor: VisualPosition) : VisualPosition
+}
+
+class VisualLogicalAdapter {
+    - _logical_domain : LogicalDomain
+    - _wrap_map : WrapMap
+    - _display_width : int
+
+    + __init__(display_width: int)
+
+    + insert(text: str)
+    + delete()
+    + backspace()
+
+    + get_text() : WrappedText
+    + get_cursor() : VisualPosition
+
+    + set_cursor(position: VisualPosition)
+
+    + move_left()
+    + move_right()
+    + move_home()
+    + move_end()
+
+    - _to_visual(abs_index: int): VisualPosition
+    - _to_abs(VisualPosition): int
+}
+
+class WrapMap {
+    - _map: List[WrapLogicalLine]
+
+    + __init__(display_width: int)
+
+    + wrap(List[LogicalLine]): List[WrapLogicalLine]
+    + get_map(): List[WrapLogicalLine]
+
+    - _update(List[LogicalLine]): List[WrapLogicalLine]
+}
+
+class WrapLogicalLine {
+    - length: int
+    - sub_lines: List[WrapLine]
+}
+
+class WrapLine {
+    - length: int
+}
+
+' ----
+
+VisualDomain <|-- VisualDomainService
+
+VisualDomainService o-- VisualLogicalAdapter
+
+VisualDomainService .> MovementResolver : uses
+
+VisualLogicalAdapter o-- LogicalDomain
+
+VisualLogicalAdapter *- WrapMap
+WrapMap *- WrapLogicalLine
+WrapLogicalLine *- WrapLine
+
+' Both MovementResolver and VisualLogicalAdapter need to understand FR-CURSOR-010
+
+@enduml

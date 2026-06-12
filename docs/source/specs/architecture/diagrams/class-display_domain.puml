@@ -1,0 +1,52 @@
+@startuml
+
+interface VisualDomain
+
+interface DisplayDomain {
+    + insert(text : str)
+    + delete()
+    + backspace()
+
+    + get_lines() : List[DisplayLine]
+    + get_cursor() : DisplayPosition
+
+    + move_up()
+    + move_down()
+    + move_left()
+    + move_right()
+    + move_home()
+    + move_end()
+}
+
+class DisplayDomainService {
+    - _visual_domain : VisualDomain
+    - _viewport : ViewportState
+
+    + __init__(display_height: int, scrolloff: int)
+
+    - _translate(position: VisualPosition) : DisplayPosition
+    - _truncate(lines: List[VisualLine]): List[DisplayLine]
+
+}
+
+class ViewportState {
+    - _display_height : int
+    - _scrolloff: int
+    - _window_start : int
+
+    + __init__(display_height: int, scrolloff: int)
+
+    + get_range(): Tuple[int, int]
+    ' [window_start, window_start + _display_height]
+    + update(position: VisualPosition, lines: int)
+    ' lines = number of visual lines
+}
+
+' DisplayDomain --|> VisualDomain
+
+DisplayDomain <|-- DisplayDomainService
+
+DisplayDomainService *- ViewportState
+DisplayDomainService o-- VisualDomain
+
+@enduml
