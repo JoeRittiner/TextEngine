@@ -465,21 +465,21 @@ Error Contract
 --------------
 
 The engine uses standard Python exception types. No custom exception hierarchy is defined.
-
-* ``TypeError`` is raised when a parameter is of the wrong Python type (e.g. a non-integer
-  ``display_width``, a non-string insert argument).
-* ``ValueError`` is raised when a parameter has the correct type but an invalid value
-  (e.g. a negative ``display_height``, a ``scrolloff`` that violates
-  ``2 * scrolloff < display_height``).
-* ``IndexError`` is raised when a cursor or index position is outside the valid range for the
-  current buffer state.
-
 The ``TextEditor`` facade is the sole exception boundary visible to the host application.
-Internal components raise the above exceptions when they detect a contract violation;
-the facade catches these and either resolves them (where the violation can be corrected at the
-boundary without surfacing it to the host) or re-raises them with sufficient context for the
-host to act on. The host application never receives a raw exception from an internal component
-directly.
+
+.. list-table::
+   :widths: 20 80
+   :header-rows: 1
+
+   * - Exception
+     - When raised
+   * - ``TypeError``
+     - A parameter is of the wrong Python type (e.g. a float ``display_width``, a non-string insert argument).
+   * - ``ValueError``
+     - A parameter has the correct type but an invalid value (e.g. a negative ``display_height``,
+       a ``scrolloff`` that violates ``2 * scrolloff < display_height``).
+   * - ``IndexError``
+     - A cursor or index position is outside the valid range for the current buffer state.
 
 Open Questions
 --------------
