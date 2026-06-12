@@ -7,7 +7,7 @@ interface LogicalDomain {
     ..
     +get_text(): str
     +get_cursor(): int
-    +set_cursor(abs_index: int)
+    +set_cursor(position: int)
     ..
     +get_lines(): List[str]
     +get_logical_cursor(): LogicalPosition
@@ -29,7 +29,7 @@ class LogicalDomainService {
 }
 
 class TextBuffer {
-    -text : str
+    -_text : str
     __
     +__init__(text: str)
     ..
@@ -41,15 +41,20 @@ class TextBuffer {
 }
 
 class CursorState {
-    -position : int
+    -_position : int
     __
     +__init__(position: int)
     ..
-    +get_position(): int
+    +get_position() : int
     +set_position(position: int)
     ..
     +move_left()
     +move_right()
+}
+
+dataclass LogicalPosition {
+    +row: int
+    +col: int
 }
 
 ' ----
@@ -60,5 +65,9 @@ LogicalDomain <|-- LogicalDomainService
 
 LogicalDomainService *-- TextBuffer
 LogicalDomainService *-- CursorState
+
+' ----
+
+LogicalDomain ..> LogicalPosition : returns
 
 @enduml
