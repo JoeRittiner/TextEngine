@@ -38,7 +38,8 @@ Relationship to Other Documents
   requirements but does not reproduce them.
 * **Component Descriptions:** individual component pages under :ref:`arch_components`.
 * **Architectural Decisions:** individual decision pages under :ref:`arch_decisions`.
-* **Glossary:** shared terminology for all architecture documents. (:doc:`../../glossary`)
+* **Code (C4 Level 4):** class diagrams and method-level interface contracts: :doc:`code/index`.
+* **Glossary:** shared terminology for all architecture documents: :doc:`../../glossary`.
 
 References
 ~~~~~~~~~~
@@ -217,6 +218,10 @@ The caller never observes a partially-updated state.
 **Content Query**
   Returns the current text content in a caller-specified form (logical lines, visual lines, or display lines).
   (:doc:`../requirements/f-req_output_modes`)
+
+.. seealso::
+
+   Full method signatures, parameters, and return types: :doc:`code/index`.
 
 .. _arch_containers:
 
@@ -408,6 +413,27 @@ are in :ref:`arch_component_descriptions`.
   Internal coordination within a domain is the domain service's responsibility.
   This rule applies to components within domains; the ``TextEditor`` facade is the designated
   cross-domain coordinator and is explicitly exempt. (See :doc:`decisions/arch-layer_reads`.)
+
+
+.. _arch_code:
+
+Code (C4 Level 4)
+-----------------
+
+The Code level describes the internal structure of individual components: class diagrams, method
+signatures, and the interface contracts that components publish to one another. This is the level at
+which implementation begins.
+
+.. seealso::
+
+   Full class diagrams, method signatures, and interface contracts: :doc:`code/index`.
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Code
+   :hidden:
+
+   code/index
 
 Component Diagram
 ~~~~~~~~~~~~~~~~~
