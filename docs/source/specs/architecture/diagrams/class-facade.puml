@@ -1,41 +1,42 @@
 @startuml
 
 interface AbstractTextEditor {
-    + raw : RawAccess
-    + logic : LogicalAccess
-    + visual : VisualAccess
-
-    + __init__(width: int, height: int, scrolloff: int, text: str, cursor: int)
-
-    + insert(text: str)
-    + delete()
-    + backspace()
-
-    + get_text() : List[DisplayLine]
+    +raw : RawAccess
+    +logic : LogicalAccess
+    +visual : VisualAccess
+    __
+    +__init__(width: int, height: int, scrolloff: int, text: str, cursor: int)
+    ..
+    +insert(text: str)
+    +delete()
+    +backspace()
+    ..
+    +get_text() : List[DisplayLine]
     ' DisplayLine contains text and corresponding Logical Line index
-    + get_cursor() : DisplayPosition
+    +get_cursor() : DisplayPosition
     ' [x, y]
-
-    + move_up()
-    + move_down()
-    + move_left()
-    + move_right()
-    + move_home()
-    + move_end()
-
-    + raw.text() : str
-    + raw.cursor() : int
-    + logic.text() : List[str]
-    + logic.cursor() : LogicalPosition
-    + visual.text() : List[VisualLine]
-    + visual.cursor() : VisualPosition
+    +set_cursor(position: DisplayPosition)
+    ..
+    +move_up()
+    +move_down()
+    +move_left()
+    +move_right()
+    +move_home()
+    +move_end()
+    ==
+    +raw.text() : str
+    +raw.cursor() : int
+    +logic.text() : List[str]
+    +logic.cursor() : LogicalPosition
+    +visual.text() : List[VisualLine]
+    +visual.cursor() : VisualPosition
 }
 
 
 class TextEditor {
-    - _display_domain : DisplayDomain
-    - _logical_domain : LogicalDomain
-    - _visual_domain : VisualDomain
+    -_display_domain : DisplayDomain
+    -_logical_domain : LogicalDomain
+    -_visual_domain : VisualDomain
 }
 
 interface DisplayDomain

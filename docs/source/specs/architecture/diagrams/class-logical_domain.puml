@@ -1,53 +1,55 @@
 @startuml
 
 interface LogicalDomain {
-    + insert(text: str)
-    + delete()
-    + backspace()
-
-    + get_text(): str
-    + get_lines(): List[str]
-
-    + get_cursor(): int
-    + get_logical_cursor(): LogicalPosition
-    + set_cursor(abs_index: int)
-
-    + move_left()
-    + move_right()
-    + move_home()
-    + move_end()
+    +insert(text: str)
+    +delete()
+    +backspace()
+    ..
+    +get_text(): str
+    +get_cursor(): int
+    +set_cursor(abs_index: int)
+    ..
+    +get_lines(): List[str]
+    +get_logical_cursor(): LogicalPosition
+    ..
+    +move_left()
+    +move_right()
+    +move_home()
+    +move_end()
 }
 
 class LogicalDomainService {
-    - _text_buffer : TextBuffer
-    - _cursor : CursorState
-
-    + __init__(text: str, index: int)
+    -_text_buffer : TextBuffer
+    -_cursor : CursorState
+    __
+    +__init__(text: str, index: int)
+    __
+    -_verify_position(position: int) : bool
+    -_to_logical(position: int) : LogicalPosition
 }
 
 class TextBuffer {
-    - text : str
-
-    + __init__(text: str)
-
-    + insert(text: str, index: int)
-    + delete(index: int)
+    -text : str
+    __
+    +__init__(text: str)
+    ..
+    +insert(text: str, index: int)
+    +delete(index: int)
     ' backspace is not a buffer operation
-
-    + get_text(): str
+    ..
+    +get_text(): str
 }
 
 class CursorState {
-    - position : int
-
-    + __init__(position: int)
-
-    + get_position(): int
-
-    + set_position(position: int)
-
-    + move_left()
-    + move_right()
+    -position : int
+    __
+    +__init__(position: int)
+    ..
+    +get_position(): int
+    +set_position(position: int)
+    ..
+    +move_left()
+    +move_right()
 }
 
 ' ----

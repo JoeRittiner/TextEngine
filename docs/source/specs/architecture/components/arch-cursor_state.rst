@@ -29,9 +29,9 @@ reach this component.
 **On get.** The ``CursorState`` returns the stored absolute index without validation.
 The caller is responsible for ensuring the position is valid given the current buffer state.
 
-**Move.** ``CursorState`` offers an interface for moving horizontally and to ends. (``move_home``
-and ``move_end``) These are coordinated by the ``LogicalDomainService``, which treats out-of-bounds results
-as no-ops to ensure this state component never holds an invalid absolute index.
+**Move.** ``CursorState`` offers an interface for moving horizontally only. These are coordinated by the
+``LogicalDomainService``, which treats out-of-bounds results as no-ops to ensure this state component
+never holds an invalid absolute index.
 
 **Initialisation.** The initial cursor position is supplied as an Absolute Index by the
 host application (:need:`FR-INIT-001`, :need:`FR-INIT-006`). An out-of-range value or incorrect type
