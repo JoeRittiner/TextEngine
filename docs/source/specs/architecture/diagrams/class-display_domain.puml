@@ -35,9 +35,9 @@ class ViewportState {
     __
     +__init__(display_height: int, scrolloff: int, initial_cursor: VisualPosition, num_visual_lines: int)
     ..
-    +get_range() : Tuple[int, int]
+    +get_range() : Span
     ' Returns [window_start, window_start + display_height - 1]
-    +update(cursor: VisualPosition, num_visual_lines: int)
+    +update(cursor: VisualPosition, num_visual_lines: int): int
 }
 
 class WindowPosition <<NamedTuple>> {
@@ -47,14 +47,14 @@ class WindowPosition <<NamedTuple>> {
 
 ' ----
 
-DisplayDomain <|. DisplayDomainService
+DisplayDomain <|.down. DisplayDomainService
 
 DisplayDomainService *- ViewportState
 DisplayDomainService o-- VisualDomain
 
 ' ----
 
-DisplayDomain ..> WindowPosition : returns
-DisplayDomain ..> VisualLineGroup : returns
+DisplayDomain .right.> WindowPosition : returns
+DisplayDomain .left.> VisualLineGroup : returns
 
 @enduml

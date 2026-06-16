@@ -52,7 +52,7 @@ class VisualLogicalAdapter {
     __
     -_to_visual(abs_index: int) : VisualPosition
     -_to_abs(position: VisualPosition) : int
-    -_rebuild_wrap_map()
+    -_rebuild_wrap_map() : List[List[Span]]
 }
 
 class VisualLineGroup <<dataclass>> {

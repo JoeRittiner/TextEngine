@@ -26,8 +26,8 @@ class LogicalDomainService {
     __
     +__init__(text: str, cursor_index: int)
     __
-    -_validate_position(position: int) : bool
     -_to_logical(position: int) : LogicalPosition
+    -_to_abs(position: LogicalPosition) : int
 }
 
 class TextBuffer {
@@ -52,6 +52,8 @@ class CursorState {
     ..
     +move_left()
     +move_right()
+    +move_home(len_text: int)
+    +move_end(len_text: int)
 }
 
 class LogicalPosition <<NamedTuple>> {
