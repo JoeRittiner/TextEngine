@@ -61,7 +61,7 @@ State Invariants
    :tags: viewport, boundaries
 
    The :term:`viewport` is the subset of the :term:`display lines <display line>` excluding the top and bottom :term:`scrollOff` lines:
-   ``[scroloff, viewport_height + scrolloff]``.
+   ``[scrolloff, viewport_height + scrolloff]``.
 
    The :term:`viewport height` is strictly ``display_height - (2 * scrolloff)`` and positive.
 
