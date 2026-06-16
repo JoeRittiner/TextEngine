@@ -5,12 +5,14 @@ interface LogicalDomain {
     +delete()
     +backspace()
     ..
-    +get_text(): str
-    +get_cursor(): int
+    ' Raw / Absolute Values
+    +get_text() : str
+    +get_cursor() : int
     +set_cursor(position: int)
     ..
-    +get_lines(): List[str]
-    +get_logical_cursor(): LogicalPosition
+    ' Logical Values
+    +get_lines() : List[str]
+    +get_logical_cursor() : LogicalPosition
     ..
     +move_left()
     +move_right()
@@ -22,9 +24,9 @@ class LogicalDomainService {
     -_text_buffer : TextBuffer
     -_cursor : CursorState
     __
-    +__init__(text: str, index: int)
+    +__init__(text: str, cursor_index: int)
     __
-    -_verify_position(position: int) : bool
+    -_validate_position(position: int) : bool
     -_to_logical(position: int) : LogicalPosition
 }
 
@@ -35,13 +37,13 @@ class TextBuffer {
     ..
     +insert(text: str, index: int)
     +delete(index: int)
-    ' backspace is not a buffer operation
+    ' backspace is orchestrated by LogicalDomainService, not a buffer operation
     ..
-    +get_text(): str
+    +get_text() : str
 }
 
 class CursorState {
-    -_position : int
+    -_abs_index : int
     __
     +__init__(position: int)
     ..
@@ -52,22 +54,20 @@ class CursorState {
     +move_right()
 }
 
-dataclass LogicalPosition {
-    +row: int
-    +col: int
+class LogicalPosition <<NamedTuple>> {
+    +row : int
+    +col : int
 }
 
 ' ----
 
-LogicalDomain <|-- LogicalDomainService
-
-' ----
+LogicalDomain <|.. LogicalDomainService
 
 LogicalDomainService *-- TextBuffer
 LogicalDomainService *-- CursorState
 
 ' ----
 
-LogicalDomain ..> LogicalPosition : returns
+LogicalDomain .> LogicalPosition : returns
 
 @enduml

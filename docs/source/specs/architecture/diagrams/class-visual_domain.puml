@@ -3,11 +3,11 @@
 interface LogicalDomain
 
 interface VisualDomain {
-    +insert(text : str)
+    +insert(text: str)
     +delete()
     +backspace()
     ..
-    +get_lines() : List[VisualLine]
+    +get_lines() : List[VisualLineGroup]
     +get_cursor() : VisualPosition
     +set_cursor(position: VisualPosition)
     ..
@@ -22,26 +22,26 @@ interface VisualDomain {
 class VisualDomainService {
     -_adapter : VisualLogicalAdapter
     __
-    +__init__(display_width: int)
+    +__init__(logical_domain: LogicalDomain, display_width: int)
 }
 
-class MovementResolver {
-   +move_up(lines: List[VisualLine], cursor: VisualPosition) : VisualPosition
-   +move_down(lines: List[VisualLine], cursor: VisualPosition) : VisualPosition
+class MovementResolver <<static>>{
+    {static} +move_up(line_lengths: List[int], cursor: VisualPosition) : VisualPosition
+    {static} +move_down(line_lengths: List[int], cursor: VisualPosition) : VisualPosition
 }
 
 class VisualLogicalAdapter {
     -_logical_domain : LogicalDomain
-    -_wrap_map : WrapMap
     -_display_width : int
+    -_wrap_map : List[List[Span]]
     __
-    +__init__(display_width: int)
+    +__init__(logical_domain: LogicalDomain, display_width: int)
     ..
     +insert(text: str)
     +delete()
     +backspace()
     ..
-    +get_text() : WrappedText
+    +get_lines() : List[VisualLineGroup]
     +get_cursor() : VisualPosition
     +set_cursor(position: VisualPosition)
     ..
@@ -50,42 +50,42 @@ class VisualLogicalAdapter {
     +move_home()
     +move_end()
     __
-    -_to_visual(abs_index: int): VisualPosition
-    -_to_abs(VisualPosition): int
+    -_to_visual(abs_index: int) : VisualPosition
+    -_to_abs(position: VisualPosition) : int
+    -_rebuild_wrap_map()
 }
 
-class WrapMap {
-    -_map: List[WrapLogicalLine]
+class VisualLineGroup <<dataclass>> {
+    +segments : List[str]
     __
-    +__init__(display_width: int)
-    ..
-    +wrap(List[LogicalLine]): List[WrapLogicalLine]
-    +get_map(): List[WrapLogicalLine]
-    __
-    -_update(List[LogicalLine]): List[WrapLogicalLine]
+    +__iter__() : Iterator[str]
+    +__len__() : int
+    +__getitem__(index: int) : str
 }
 
-class WrapLogicalLine {
-    -length: int
-    -sub_lines: List[WrapLine]
+class VisualPosition <<NamedTuple>> {
+    +row : int
+    +col : int
 }
 
-class WrapLine {
-    -length: int
+class Span <<NamedTuple>> {
+    +start : int
+    +end : int
 }
 
 ' ----
 
-VisualDomain <|-- VisualDomainService
+VisualDomain <|.down. VisualDomainService
 
-VisualDomainService o-- VisualLogicalAdapter
-
-VisualDomainService .> MovementResolver : uses
+VisualDomainService *-down- VisualLogicalAdapter
+VisualDomainService .right.> MovementResolver : uses
 
 VisualLogicalAdapter o-- LogicalDomain
+VisualLogicalAdapter .right.> Span : uses
 
-VisualLogicalAdapter *- WrapMap
-WrapMap *- WrapLogicalLine
-WrapLogicalLine *- WrapLine
+' ----
+
+VisualDomain .right.> VisualPosition : returns
+VisualDomain .left.> VisualLineGroup : returns
 
 @enduml

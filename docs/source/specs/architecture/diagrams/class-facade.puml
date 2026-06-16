@@ -1,21 +1,13 @@
 @startuml
 
 interface AbstractTextEditor {
-    +raw : RawAccess
-    +logic : LogicalAccess
-    +visual : VisualAccess
-    __
-    +__init__(width: int, height: int, scrolloff: int, text: str, cursor: int)
-    ..
+    ' --- Primary Display Interface ---
     +insert(text: str)
     +delete()
     +backspace()
     ..
-    +get_text() : List[DisplayLine]
-    ' DisplayLine contains text and corresponding Logical Line index
-    +get_cursor() : DisplayPosition
-    ' [x, y]
-    +set_cursor(position: DisplayPosition)
+    +get_lines() : List[VisualLineGroup]
+    +get_cursor() : WindowPosition
     ..
     +move_up()
     +move_down()
@@ -24,19 +16,23 @@ interface AbstractTextEditor {
     +move_home()
     +move_end()
     ==
-    +raw.text() : str
-    +raw.cursor() : int
-    +logic.text() : List[str]
-    +logic.cursor() : LogicalPosition
-    +visual.text() : List[VisualLine]
-    +visual.cursor() : VisualPosition
+    ' --- Extended Output Interfaces ---
+    +raw_text() : str
+    +raw_cursor() : int
+    ..
+    +logical_lines() : List[str]
+    +logical_cursor() : LogicalPosition
+    ..
+    +visual_lines() : List[VisualLineGroup]
+    +visual_cursor() : VisualPosition
 }
 
-
 class TextEditor {
-    -_display_domain : DisplayDomain
     -_logical_domain : LogicalDomain
     -_visual_domain : VisualDomain
+    -_display_domain : DisplayDomain
+    __
+    +__init__(width: int, height: int, scrolloff: int, text: str = "", cursor_index: int = None)
 }
 
 interface DisplayDomain
@@ -45,7 +41,7 @@ interface VisualDomain
 
 ' ----
 
-TextEditor -|> AbstractTextEditor
+TextEditor .up.|> AbstractTextEditor
 
 TextEditor *-- LogicalDomain
 TextEditor *-- VisualDomain

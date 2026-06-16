@@ -3,13 +3,12 @@
 interface VisualDomain
 
 interface DisplayDomain {
-    +insert(text : str)
+    +insert(text: str)
     +delete()
     +backspace()
     ..
-    +get_lines() : List[DisplayLine]
-    +get_cursor() : DisplayPosition
-    +set_cursor(position: DisplayPosition)
+    +get_lines() : List[VisualLineGroup]
+    +get_cursor() : WindowPosition
     ..
     +move_up()
     +move_down()
@@ -23,30 +22,39 @@ class DisplayDomainService {
     -_visual_domain : VisualDomain
     -_viewport : ViewportState
     __
-    +__init__(display_height: int, scrolloff: int)
+    +__init__(visual_domain: VisualDomain, display_height: int, scrolloff: int)
     __
-    -_translate(position: VisualPosition) : DisplayPosition
-    -_truncate(lines: List[VisualLine]): List[DisplayLine]
+    -_to_window(position: VisualPosition) : WindowPosition
+    -_clip_to_window(lines: List[VisualLineGroup]) : List[VisualLineGroup]
 }
 
 class ViewportState {
     -_display_height : int
-    -_scrolloff: int
+    -_scrolloff : int
     -_window_start : int
     __
-    +__init__(display_height: int, scrolloff: int)
+    +__init__(display_height: int, scrolloff: int, initial_cursor: VisualPosition, num_visual_lines: int)
     ..
-    +get_range(): Tuple[int, int]
-    ' [window_start, window_start + _display_height]
-    +update(position: VisualPosition, lines: int)
-    ' lines = number of visual lines
+    +get_range() : Tuple[int, int]
+    ' Returns [window_start, window_start + display_height - 1]
+    +update(cursor: VisualPosition, num_visual_lines: int)
 }
 
-' DisplayDomain --|> VisualDomain
+class WindowPosition <<NamedTuple>> {
+    +x : int
+    +y : int
+}
 
-DisplayDomain <|-- DisplayDomainService
+' ----
+
+DisplayDomain <|. DisplayDomainService
 
 DisplayDomainService *- ViewportState
 DisplayDomainService o-- VisualDomain
+
+' ----
+
+DisplayDomain ..> WindowPosition : returns
+DisplayDomain ..> VisualLineGroup : returns
 
 @enduml
