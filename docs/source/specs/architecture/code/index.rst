@@ -16,16 +16,14 @@ parameter types, return types, and the precise interface contracts that componen
 one another.
 
 This is the authoritative reference for anyone writing or reviewing implementation code. It is
-updated in tandem with the code, not after the fact.
+updated in tandem with the code, not after the fact. It is hand-authored, design-first,
+specifies intent and contracts.
 
 Relationship to Other Documents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * **Architecture Components (C4 Level 3):** :doc:`../index` - the layer above; describes
   responsibilities and ownership without prescribing class structure.
-* **API Reference:** :doc:`../../../reference/index` - auto-generated from docstrings;
-  the runtime truth of what is implemented. If this document and the reference diverge,
-  the reference is correct and this document must be updated.
 * **Requirements:** :doc:`../../requirements/index` - the behavioural contracts that the
   classes below must satisfy.
 
