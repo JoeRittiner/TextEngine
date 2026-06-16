@@ -1,3 +1,5 @@
+.. _req_index:
+
 Requirements
 ============
 
@@ -38,7 +40,9 @@ tracking, and visual wrapping remain deterministic and testable across any runti
 References
 ~~~~~~~~~~
 
-None at this time.
+* :doc:`../architecture/index`: describes how the system is structured to fulfil these requirements.
+* :doc:`../architecture/arch-error_contract`: specifies the exception types raised when requirements are violated.
+* :doc:`../../testing/index`: records how these requirements are verified and which are covered by the test suite.
 
 .. _req_overall_description:
 
@@ -209,6 +213,22 @@ Appendix B: Glossary
 --------------------
 
 :doc:`../../glossary`
+
+Appendix C: Related Documents
+------------------------------
+
+.. list-table::
+   :widths: 30 70
+   :header-rows: 1
+
+   * - Document
+     - Relationship
+   * - :doc:`../architecture/index`
+     - Describes the internal decomposition chosen to satisfy these requirements.
+   * - :doc:`../architecture/code/index`
+     - C4 Level 4: class diagrams and method-level interface contracts.
+   * - :doc:`../architecture/arch-error_contract`
+     - Specifies which exception types the engine raises when requirement contracts are violated.
 
 Indices and tables
 ------------------
