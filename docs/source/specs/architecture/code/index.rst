@@ -243,3 +243,99 @@ Public Return Types
         col: int
 
 .. _code_internal_interfaces:
+
+Internal Component Interfaces
+-----------------------------
+
+.. note::
+
+   These are internal contracts between components. They are not part of the public API and
+   may change without notice to host applications. They are recorded here to support
+   implementation and testing of individual components in isolation.
+
+``TextBuffer``
+~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+    def insert(self, text: str, index: int) -> None:
+        """Insert ``text`` at ``index``."""
+
+    def delete(self, index: int) -> None:
+        """Delete the character at ``index``."""
+
+    def get_text(self) -> str:
+        """Return the buffer contents as a single string."""
+
+``CursorState``
+~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+    def get_position(self) -> int:
+        """Return the current cursor position as an absolute index."""
+
+    def set_position(self, position: int) -> None:
+        """Set the cursor position to an absolute index."""
+
+       def move_left(self) -> None:
+           """Move cursor one character left."""
+
+       def move_right(self) -> None:
+           """Move cursor one character right."""
+
+       def move_home(self, len_text) -> None:
+           """Move cursor to the absolute start of the buffer (index 0)."""
+
+       def move_end(self, len_text) -> None:
+           """Move cursor to the absolute end of the buffer (index len_text)."""
+
+``LogicalDomainService``
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+    def _to_logical(self, position: int) -> LogicalPosition:
+        """Convert absolute index to logical coordinate."""
+
+    def _to_abs(self, position: LogicalPosition) -> int:
+        """Convert logical coordinate to absolute index."""
+
+``VisualLogicalAdapter``
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+    def _to_visual(self, abs_index: int) -> VisualPosition:
+        """Convert absolute index to visual coordinate."""
+
+    def _to_abs(self, position: VisualPosition) -> int:
+        """Convert visual coordinate to absolute index."""
+
+    def _rebuild_wrap_map(self) -> List[List[Span]]:
+        """Rebuild and return the internal wrapping map."""
+
+``MovementResolver``
+~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+    @staticmethod
+    def move_up(line_lengths: List[int], cursor: VisualPosition) -> VisualPosition:
+        """Return new cursor position after moving up one visual line."""
+
+    @staticmethod
+    def move_down(line_lengths: List[int], cursor: VisualPosition) -> VisualPosition:
+        """Return new cursor position after moving down one visual line."""
+
+
+``ViewportState``
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+    def get_range(): Span
+        """Return [window_start, window_start + display_height - 1]"""
+
+    def update(cursor: VisualPosition, num_visual_lines: int) -> int:
+        """Calculate and return the new window_start"""
