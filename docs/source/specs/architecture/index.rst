@@ -522,7 +522,12 @@ Appendix A: Glossary
 Appendix B: Revision History
 -----------------------------
 
-:doc:`arch-history`
+.. toctree::
+   :hidden:
+
+   arch-history
+
+* :doc:`arch-history`: Architecture revision history.
 
 Appendix C: Supporting Documents
 ----------------------------------
@@ -532,7 +537,7 @@ Appendix C: Supporting Documents
 
    arch-error_contract
 
-* :doc:`arch-error_contract` — full error contract and per-operation failure modes.
+* :doc:`arch-error_contract`: full error contract and per-operation failure modes.
 
 Indices and tables
 ------------------

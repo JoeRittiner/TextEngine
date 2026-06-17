@@ -56,6 +56,11 @@ The four sections below form a deliberate reading order:
    :maxdepth: 2
    :caption: 4. Testing & Development (TDD)
 
+.. toctree::
+   :hidden:
+
+   glossary
+
 Indices and tables
 ==================
 
