@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>1.4.2. Text Buffer &amp; Manipulation &#8212; TextEditor 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-data-viewer/jsonview.bundle.css?v=f6ef2277" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/libs/html/datatables.min.css?v=4b4fd840" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/common_css/needstable.css?v=5e1b6797" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/common_css/need_links.css?v=2150a916" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/common_css/need_style.css?v=92936fa5" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/common_css/need_core.css?v=f5b60a78" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/common_css/need_toggle.css?v=5c6620df" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/modern.css?v=803738c0" />
+    <script src="../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/sphinx-data-viewer/jsonview.bundle.js?v=18cd53c5"></script>
+    <script src="../../_static/sphinx-data-viewer/jsonview_loader.js?v=f7ff7e7d"></script>
+    <script src="../../_static/sphinx-needs/libs/html/datatables.min.js?v=8a4aee21"></script>
+    <script src="../../_static/sphinx-needs/libs/html/datatables_loader.js?v=a2cae175"></script>
+    <script src="../../_static/sphinx-needs/libs/html/sphinx_needs_collapse.js?v=dca66431"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="1.4.3. Cursor &amp; Movement" href="f-req_cursor_movement.html" />
+    <link rel="prev" title="1.4.1. System Initialization" href="f-req_initialization.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="text-buffer-manipulation">
+<span id="req-text-manipulation"></span><h1><span class="section-number">1.4.2. </span>Text Buffer &amp; Manipulation<a class="headerlink" href="#text-buffer-manipulation" title="Link to this heading">¶</a></h1>
+<section id="description-and-priority">
+<h2>Description and Priority<a class="headerlink" href="#description-and-priority" title="Link to this heading">¶</a></h2>
+<p><strong>Priority: High</strong></p>
+<p>The <a class="reference internal" href="../../glossary.html#term-Text-Buffer"><span class="xref std std-term">Text Buffer</span></a> is the conceptual source of truth of the text. It is modeled as a continuous sequence
+of <a class="reference internal" href="../../glossary.html#term-Character"><span class="xref std std-term">characters</span></a>.</p>
+<p>The <a class="reference internal" href="../../glossary.html#term-Text-Buffer"><span class="xref std std-term">buffer</span></a> defines the observable state of the text. All text manipulation operations modify
+this state.</p>
+</section>
+<section id="state-invariants">
+<h2>State Invariants<a class="headerlink" href="#state-invariants" title="Link to this heading">¶</a></h2>
+<div class="need_container docutils container" id="SNCB-fdbe8c08">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_inv docutils align-default" id="INV-TEXT-001">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Invariant</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Empty Buffer Definition</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#INV-TEXT-001" title="INV-TEXT-001">INV-TEXT-001</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">buffer</span></span></span></div>
+</span></span></div>
+<div class="line"><span></span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>The <a class="reference internal" href="../../glossary.html#term-Text-Buffer"><span class="xref std std-term">buffer</span></a> must always represent at least one <a class="reference internal" href="../../glossary.html#term-Logical-Line"><span class="xref std std-term">logical line</span></a>.
+An empty <a class="reference internal" href="../../glossary.html#term-Text-Buffer"><span class="xref std std-term">buffer</span></a> is defined as a <a class="reference internal" href="../../glossary.html#term-Text-Buffer"><span class="xref std std-term">buffer</span></a> containing zero
+<a class="reference internal" href="../../glossary.html#term-Character"><span class="xref std std-term">characters</span></a>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-9e7fefde">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_inv docutils align-default" id="INV-TEXT-002">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Invariant</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Left-to-right Script</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#INV-TEXT-002" title="INV-TEXT-002">INV-TEXT-002</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">buffer</span></span></span></div>
+</span></span></div>
+<div class="line"><span></span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>The <a class="reference internal" href="../../glossary.html#term-Text-Buffer"><span class="xref std std-term">buffer</span></a> must be processed in a left-to-right manner. Therefore a <a class="reference internal" href="../../glossary.html#term-Character"><span class="xref std std-term">character</span></a>
+“in front of” the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> is visually to the right of the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a>. A <a class="reference internal" href="../../glossary.html#term-Character"><span class="xref std std-term">character</span></a> “behind” the
+<a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> is visually to the left of the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="preconditions">
+<h2>Preconditions<a class="headerlink" href="#preconditions" title="Link to this heading">¶</a></h2>
+<p>All operations in this section assume a valid <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> position as defined in
+<a class="reference internal" href="f-req_cursor_movement.html"><span class="doc">Cursor Specification</span></a>.</p>
+</section>
+<section id="stimulus-response-sequences">
+<h2>Stimulus/Response Sequences<a class="headerlink" href="#stimulus-response-sequences" title="Link to this heading">¶</a></h2>
+<ul>
+<li><p><strong>Stimulus:</strong> External system provides a sequence of <a class="reference internal" href="../../glossary.html#term-Character"><span class="xref std std-term">characters</span></a> to
+<a class="reference internal" href="#insertion-specs"><span class="std std-ref">insert</span></a>.</p>
+<p><strong>Response:</strong> The system inserts the <a class="reference internal" href="../../glossary.html#term-Character"><span class="xref std std-term">characters</span></a> at the current <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> position and updates
+the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> position accordingly.</p>
+</li>
+<li><p><strong>Stimulus:</strong> External system triggers <a class="reference internal" href="#delete-specs"><span class="std std-ref">delete</span></a>.</p>
+<p><strong>Response:</strong> The system removes the <a class="reference internal" href="../../glossary.html#term-Character"><span class="xref std std-term">character</span></a> immediately right of the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a>, if present.</p>
+</li>
+<li><p><strong>Stimulus:</strong> External system triggers <a class="reference internal" href="#backspace-specs"><span class="std std-ref">backspace</span></a>.</p>
+<p><strong>Response:</strong> The system removes the <a class="reference internal" href="../../glossary.html#term-Character"><span class="xref std std-term">character</span></a> immediately left of the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a>, if present, and updates
+the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> position.</p>
+</li>
+</ul>
+</section>
+<section id="functional-requirements">
+<h2>Functional Requirements<a class="headerlink" href="#functional-requirements" title="Link to this heading">¶</a></h2>
+<div class="need_container docutils container" id="SNCB-8c6ad2bf">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-TEXT-001">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Text Buffer</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-TEXT-001" title="FR-TEXT-001">FR-TEXT-001</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">text</span></span></span></div>
+</span></span></div>
+<div class="line"><span></span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>The system must maintain an internal representation of text that is not externally mutable.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-2f56b046">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-TEXT-002">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Text Buffer Mutation</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-TEXT-002" title="FR-TEXT-002">FR-TEXT-002</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">text</span></span></span></div>
+</span></span></div>
+<div class="line"><span></span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>The <a class="reference internal" href="../../glossary.html#term-Text-Buffer"><span class="xref std std-term">text buffer</span></a> must only be modified through defined system operations.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<section id="insertion">
+<span id="insertion-specs"></span><h3>Insertion<a class="headerlink" href="#insertion" title="Link to this heading">¶</a></h3>
+<div class="need_container docutils container" id="SNCB-802c9d49">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-TEXT-011">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Insert Operation Support</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-TEXT-011" title="FR-TEXT-011">FR-TEXT-011</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">insert</span></span></span></div>
+</span></span></div>
+<div class="line"><span></span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>The system must support insertion of a sequence of <a class="reference internal" href="../../glossary.html#term-Character"><span class="xref std std-term">characters</span></a>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-4a4ecae3">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-TEXT-012">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Insert at Cursor Position</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-TEXT-012" title="FR-TEXT-012">FR-TEXT-012</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">insert</span></span></span></div>
+</span></span></div>
+<div class="line"><span><div class="line">links outgoing: <span class="links"><span><a class="reference internal" href="f-req_cursor_movement.html#FR-CURSOR-001" title="FR-TEXT-012">FR-CURSOR-001</a></span></span></div>
+</span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p><a class="reference internal" href="../../glossary.html#term-Character"><span class="xref std std-term">Characters</span></a> must be inserted at the current <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> position.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-821029d2">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-TEXT-013">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Inserting Nothing</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-TEXT-013" title="FR-TEXT-013">FR-TEXT-013</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">insert</span><span class="needs_spacer">, </span><span class="needs_data">no-op</span></span></span></div>
+</span></span></div>
+<div class="line"><span></span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>Inserting zero <a class="reference internal" href="../../glossary.html#term-Character"><span class="xref std std-term">characters</span></a> must result in a no-op.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-1482c223">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-TEXT-014">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">No Overwrite</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-TEXT-014" title="FR-TEXT-014">FR-TEXT-014</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">insert</span></span></span></div>
+</span></span></div>
+<div class="line"><span></span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>Insertion must not overwrite existing <a class="reference internal" href="../../glossary.html#term-Character"><span class="xref std std-term">characters</span></a>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-7a6fbb8f">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-TEXT-015">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Cursor Update After Insert</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-TEXT-015" title="FR-TEXT-015">FR-TEXT-015</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">insert</span></span></span></div>
+</span></span></div>
+<div class="line"><span><div class="line">links outgoing: <span class="links"><span><a class="reference internal" href="f-req_cursor_movement.html#FR-CURSOR-001" title="FR-TEXT-015">FR-CURSOR-001</a></span></span></div>
+</span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>After insertion, the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> must be positioned immediately after the inserted <a class="reference internal" href="../../glossary.html#term-Character"><span class="xref std std-term">characters</span></a>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-9b44964d">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-TEXT-016">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Inserting Newline</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-TEXT-016" title="FR-TEXT-016">FR-TEXT-016</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">insert</span></span></span></div>
+</span></span></div>
+<div class="line"><span></span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>Newline <a class="reference internal" href="../../glossary.html#term-Character"><span class="xref std std-term">characters</span></a> (<code class="docutils literal notranslate"><span class="pre">\n</span></code>) may be inserted and must introduce a new <a class="reference internal" href="../../glossary.html#term-Logical-Line"><span class="xref std std-term">logical line</span></a>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-4d7f9ca1">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-TEXT-017">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Insert Atomicity</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-TEXT-017" title="FR-TEXT-017">FR-TEXT-017</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">insert</span></span></span></div>
+</span></span></div>
+<div class="line"><span><div class="line">links incoming: <span class="links"><span><a class="reference internal" href="f-req_initialization.html#FR-INIT-002" title="FR-TEXT-017">FR-INIT-002</a></span></span></div>
+</span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>Inserting a sequence of multiple <a class="reference internal" href="../../glossary.html#term-Character"><span class="xref std std-term">characters</span></a> must produce the same resulting
+<a class="reference internal" href="../../glossary.html#term-Text-Buffer"><span class="xref std std-term">buffer</span></a> state and <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> position as inserting each <a class="reference internal" href="../../glossary.html#term-Character"><span class="xref std std-term">character</span></a> of
+the sequence sequentially.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="delete">
+<span id="delete-specs"></span><h3>Delete<a class="headerlink" href="#delete" title="Link to this heading">¶</a></h3>
+<div class="need_container docutils container" id="SNCB-b451ca91">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-TEXT-021">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Delete Operation Support</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-TEXT-021" title="FR-TEXT-021">FR-TEXT-021</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">delete</span></span></span></div>
+</span></span></div>
+<div class="line"><span><div class="line">links outgoing: <span class="links"><span><a class="reference internal" href="f-req_cursor_movement.html#FR-CURSOR-001" title="FR-TEXT-021">FR-CURSOR-001</a></span></span></div>
+</span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>The system must support a delete operation that targets the <a class="reference internal" href="../../glossary.html#term-Character"><span class="xref std std-term">character</span></a> immediately right of the
+<a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-9505a7a8">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-TEXT-022">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Single Character Deletion</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-TEXT-022" title="FR-TEXT-022">FR-TEXT-022</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">delete</span></span></span></div>
+</span></span></div>
+<div class="line"><span><div class="line">links outgoing: <span class="links"><span><a class="reference internal" href="f-req_cursor_movement.html#FR-CURSOR-001" title="FR-TEXT-022">FR-CURSOR-001</a></span></span></div>
+</span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>The delete operation must remove exactly one <a class="reference internal" href="../../glossary.html#term-Character"><span class="xref std std-term">character</span></a> immediately right of the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a>, if such a
+<a class="reference internal" href="../../glossary.html#term-Character"><span class="xref std std-term">character</span></a> exists.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-a6ebb8fb">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-TEXT-023">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Cursor Position on Delete</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-TEXT-023" title="FR-TEXT-023">FR-TEXT-023</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+</span></span></div>
+<div class="line"><span><div class="line">links outgoing: <span class="links"><span><a class="reference internal" href="f-req_cursor_movement.html#FR-CURSOR-001" title="FR-TEXT-023">FR-CURSOR-001</a></span></span></div>
+</span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>The delete operation must not change the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> position.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-fca89aba">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-TEXT-024">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Delete Boundary Behavior</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-TEXT-024" title="FR-TEXT-024">FR-TEXT-024</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">delete</span><span class="needs_spacer">, </span><span class="needs_data">no-op</span></span></span></div>
+</span></span></div>
+<div class="line"><span></span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>If no <a class="reference internal" href="../../glossary.html#term-Character"><span class="xref std std-term">character</span></a> exists to the right of the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a>, the delete operation must result in a no-op.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-b14bda46">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-TEXT-025">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Newline Character Deletion</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-TEXT-025" title="FR-TEXT-025">FR-TEXT-025</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">delete</span></span></span></div>
+</span></span></div>
+<div class="line"><span><div class="line">links incoming: <span class="links"><span><a class="reference internal" href="f-req_cursor_movement.html#FR-CURSOR-012" title="FR-TEXT-025">FR-CURSOR-012</a></span></span></div>
+</span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>Deleting a newline <a class="reference internal" href="../../glossary.html#term-Character"><span class="xref std std-term">character</span></a> must merge the two adjacent <a class="reference internal" href="../../glossary.html#term-Logical-Line"><span class="xref std std-term">logical lines</span></a>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="backspace">
+<span id="backspace-specs"></span><h3>Backspace<a class="headerlink" href="#backspace" title="Link to this heading">¶</a></h3>
+<div class="need_container docutils container" id="SNCB-e0910dbd">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-TEXT-031">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Backspace Operation Support</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-TEXT-031" title="FR-TEXT-031">FR-TEXT-031</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">backspace</span></span></span></div>
+</span></span></div>
+<div class="line"><span><div class="line">links outgoing: <span class="links"><span><a class="reference internal" href="f-req_cursor_movement.html#FR-CURSOR-001" title="FR-TEXT-031">FR-CURSOR-001</a></span></span></div>
+</span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>The system must support a backspace operation that targets the <a class="reference internal" href="../../glossary.html#term-Character"><span class="xref std std-term">character</span></a> immediately left of the
+<a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-d99d1bb3">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-TEXT-032">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Single Character Deletion</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-TEXT-032" title="FR-TEXT-032">FR-TEXT-032</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">backspace</span></span></span></div>
+</span></span></div>
+<div class="line"><span><div class="line">links outgoing: <span class="links"><span><a class="reference internal" href="f-req_cursor_movement.html#FR-CURSOR-001" title="FR-TEXT-032">FR-CURSOR-001</a></span></span></div>
+</span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>The backspace operation must remove exactly one <a class="reference internal" href="../../glossary.html#term-Character"><span class="xref std std-term">character</span></a> immediately left of the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a>, if such a
+<a class="reference internal" href="../../glossary.html#term-Character"><span class="xref std std-term">character</span></a> exists.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-cb5a931b">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-TEXT-033">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Cursor Position on Backspace</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-TEXT-033" title="FR-TEXT-033">FR-TEXT-033</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">backspace</span></span></span></div>
+</span></span></div>
+<div class="line"><span><div class="line">links outgoing: <span class="links"><span><a class="reference internal" href="f-req_cursor_movement.html#FR-CURSOR-001" title="FR-TEXT-033">FR-CURSOR-001</a></span></span></div>
+</span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>If a <a class="reference internal" href="../../glossary.html#term-Character"><span class="xref std std-term">character</span></a> to the left of the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> is removed, the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> must move one position
+to the left.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-51bcf361">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-TEXT-034">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Backspace Boundary Behavior</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-TEXT-034" title="FR-TEXT-034">FR-TEXT-034</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">backspace</span></span></span></div>
+</span></span></div>
+<div class="line"><span></span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>If no <a class="reference internal" href="../../glossary.html#term-Character"><span class="xref std std-term">character</span></a> exists to the left of the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a>, the backspace operation must result in a no-op.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-aa2baa8c">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-TEXT-035">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Newline Character Backspace</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-TEXT-035" title="FR-TEXT-035">FR-TEXT-035</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">backspace</span></span></span></div>
+</span></span></div>
+<div class="line"><span><div class="line">links incoming: <span class="links"><span><a class="reference internal" href="f-req_cursor_movement.html#FR-CURSOR-012" title="FR-TEXT-035">FR-CURSOR-012</a></span></span></div>
+</span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>Removing a newline character via backspace must merge the two adjacent <a class="reference internal" href="../../glossary.html#term-Logical-Line"><span class="xref std std-term">logical lines</span></a>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="control-characters">
+<h3>Control Characters<a class="headerlink" href="#control-characters" title="Link to this heading">¶</a></h3>
+<p>Control characters are required to be handled as follows:</p>
+<div class="need_container docutils container" id="SNCB-3aba8ebc">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-TEXT-041">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">New Line</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-TEXT-041" title="FR-TEXT-041">FR-TEXT-041</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">special</span></span></span></div>
+</span></span></div>
+<div class="line"><span><div class="line">links incoming: <span class="links"><span><a class="reference internal" href="#FR-TEXT-043" title="FR-TEXT-041">FR-TEXT-043</a></span></span></div>
+</span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>The system must support the newline character (<code class="docutils literal notranslate"><span class="pre">\n</span></code>) as a <a class="reference internal" href="../../glossary.html#term-Character"><span class="xref std std-term">character</span></a>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-cd98f9c7">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-TEXT-042">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Other Control Characters</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-TEXT-042" title="FR-TEXT-042">FR-TEXT-042</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">special</span></span></span></div>
+</span></span></div>
+<div class="line"><span><div class="line">links incoming: <span class="links"><span><a class="reference internal" href="#FR-TEXT-043" title="FR-TEXT-042">FR-TEXT-043</a></span></span></div>
+</span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>The system must handle any other Control Character as just another <a class="reference internal" href="../../glossary.html#term-Character"><span class="xref std std-term">character</span></a>.
+They must not be ignored/ removed. They must be inserted and returned as-is,
+with no special behavior.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-5961192f">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-TEXT-043">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Line-Ending Characters</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-TEXT-043" title="FR-TEXT-043">FR-TEXT-043</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">special</span></span></span></div>
+</span></span></div>
+<div class="line"><span><div class="line">links outgoing: <span class="links"><span><a class="reference internal" href="#FR-TEXT-041" title="FR-TEXT-043">FR-TEXT-041</a>, <a class="reference internal" href="#FR-TEXT-042" title="FR-TEXT-043">FR-TEXT-042</a></span></span></div>
+</span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>Line-ending characters (<code class="docutils literal notranslate"><span class="pre">\r</span></code> and <code class="docutils literal notranslate"><span class="pre">\r\n</span></code>) must be handled as regular <a class="reference internal" href="../../glossary.html#term-Character"><span class="xref std std-term">characters</span></a>.
+<code class="docutils literal notranslate"><span class="pre">\r\n</span></code> is treated as two separate characters, <code class="docutils literal notranslate"><span class="pre">\r</span></code> and <code class="docutils literal notranslate"><span class="pre">\n</span></code> and handled as defined in
+<a class="reference internal" href="#FR-TEXT-041" title="FR-TEXT-041"><em class="xref need">New Line (FR-TEXT-041)</em></a>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="out-of-scope">
+<h2>Out of Scope<a class="headerlink" href="#out-of-scope" title="Link to this heading">¶</a></h2>
+<div class="need_container docutils container" id="SNCB-d8aa5eaa">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_nreq docutils align-default" id="NR-TEXT-101">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Non-Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Text Selection</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#NR-TEXT-101" title="NR-TEXT-101">NR-TEXT-101</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">out-of-scope</span></span></span></div>
+</span></span></div>
+<div class="line"><span></span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>The system must not support text selection.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-f9dc4982">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_nreq docutils align-default" id="NR-TEXT-102">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Non-Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Clipboard Functions</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#NR-TEXT-102" title="NR-TEXT-102">NR-TEXT-102</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">out-of-scope</span></span></span></div>
+</span></span></div>
+<div class="line"><span></span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>The system must not support copy, cut, or paste operations.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-11d39684">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_nreq docutils align-default" id="NR-TEXT-103">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Non-Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Undo / Redo</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#NR-TEXT-103" title="NR-TEXT-103">NR-TEXT-103</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">out-of-scope</span></span></span></div>
+</span></span></div>
+<div class="line"><span></span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>The system must not support undo or redo functionality.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">TextEditor</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">1. Specifications &amp; Design</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">1. Requirements</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#introduction">1.1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#overall-description">1.2. Overall Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#external-interface-requirements">1.3. External Interface Requirements</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#functional-requirements">1.4. Functional Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#nonfunctional-requirements">1.5. Nonfunctional Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#appendix-a-requirements">1.6. Appendix A: Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#appendix-b-glossary">1.7. Appendix B: Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#appendix-c-related-documents">1.8. Appendix C: Related Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#indices-and-tables">1.9. Indices and tables</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture/index.html">2. Architecture</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../glossary.html">Glossary</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="index.html"><span class="section-number">1. </span>Requirements</a><ul>
+      <li>Previous: <a href="f-req_initialization.html" title="previous chapter"><span class="section-number">1.4.1. </span>System Initialization</a></li>
+      <li>Next: <a href="f-req_cursor_movement.html" title="next chapter"><span class="section-number">1.4.3. </span>Cursor &amp; Movement</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Joe Rittiner.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../_sources/specs/requirements/f-req_text_manipulation.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

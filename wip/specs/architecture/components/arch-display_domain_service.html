@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Display Domain Service &#8212; TextEditor 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=27fed22d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-data-viewer/jsonview.bundle.css?v=f6ef2277" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/libs/html/datatables.min.css?v=4b4fd840" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/needstable.css?v=5e1b6797" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_links.css?v=2150a916" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_style.css?v=92936fa5" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_core.css?v=f5b60a78" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_toggle.css?v=5c6620df" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/modern.css?v=803738c0" />
+    <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../../_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/sphinx-data-viewer/jsonview.bundle.js?v=18cd53c5"></script>
+    <script src="../../../_static/sphinx-data-viewer/jsonview_loader.js?v=f7ff7e7d"></script>
+    <script src="../../../_static/sphinx-needs/libs/html/datatables.min.js?v=8a4aee21"></script>
+    <script src="../../../_static/sphinx-needs/libs/html/datatables_loader.js?v=a2cae175"></script>
+    <script src="../../../_static/sphinx-needs/libs/html/sphinx_needs_collapse.js?v=dca66431"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="TextEditor" href="arch-facade.html" />
+    <link rel="prev" title="CursorState" href="arch-cursor_state.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="display-domain-service">
+<h1>Display Domain Service<a class="headerlink" href="#display-domain-service" title="Link to this heading">¶</a></h1>
+<section id="responsibility">
+<h2>Responsibility<a class="headerlink" href="#responsibility" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">DisplayDomainService</span></code> is the sole external interface of the Display Domain. It
+exposes the displayable subset of visual lines and the cursor in Window coordinates, and
+propagates all text mutation and cursor movement operations from the host application to
+the Visual Domain, updating the viewport after every operation that changes the cursor
+position.</p>
+</section>
+<section id="owned-state">
+<h2>Owned State<a class="headerlink" href="#owned-state" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">DisplayDomainService</span></code> owns the <code class="docutils literal notranslate"><span class="pre">ViewportState</span></code> instance. All persistent state in
+the Display Domain lives inside it.</p>
+</section>
+<section id="behaviour">
+<h2>Behaviour<a class="headerlink" href="#behaviour" title="Link to this heading">¶</a></h2>
+<p><strong>Pass-through operations.</strong> Text mutation and cursor movement operations are delegated
+directly to the <code class="docutils literal notranslate"><span class="pre">VisualDomainService</span></code> without modification. After any operation that
+could change the cursor’s visual row, the service updates <code class="docutils literal notranslate"><span class="pre">ViewportState</span></code> before
+returning. This update is eager, not lazy. (See <a class="reference internal" href="#eager-viewport-update"><span class="std std-ref">below</span></a>)</p>
+<p><strong>Viewport-truncated output.</strong> The service exposes the subset of visual lines currently
+within the display window (<a class="reference internal" href="../../requirements/f-req_output_modes.html#FR-MODE-031" title="FR-MODE-031"><em class="xref need">Viewport-Truncated Output (FR-MODE-031)</em></a>) together with metadata indicating which
+display lines belong to which logical line. (<a class="reference internal" href="../../requirements/f-req_output_modes.html#FR-MODE-032" title="FR-MODE-032"><em class="xref need">Display-to-Logical Mapping (FR-MODE-032)</em></a>) The slicing is
+performed by the service using the range returned by <code class="docutils literal notranslate"><span class="pre">ViewportState</span></code>; the service does
+not delegate this to the Visual Domain.</p>
+<p><strong>Window coordinate translation.</strong> The service translates the cursor’s Visual coordinate
+to a Window coordinate for the cursor representation interface. (<a class="reference internal" href="../../requirements/f-req_cursor_movement.html#FR-CURSOR-005" title="FR-CURSOR-005"><em class="xref need">Window Coordinate Represent... (FR-CURSOR-005)</em></a>,
+<a class="reference internal" href="../../requirements/f-req_cursor_movement.html#INV-CURSOR-001" title="INV-CURSOR-001"><em class="xref need">Valid Coordinate Ranges (INV-CURSOR-001)</em></a>, <a class="reference internal" href="../../requirements/f-req_cursor_movement.html#INV-CURSOR-003" title="INV-CURSOR-003"><em class="xref need">Coordinate Synchronization (INV-CURSOR-003)</em></a>) This translation is performed inline:
+<code class="docutils literal notranslate"><span class="pre">window_y</span> <span class="pre">=</span> <span class="pre">visual_row</span> <span class="pre">-</span> <span class="pre">window_start</span></code> and <code class="docutils literal notranslate"><span class="pre">visual_row</span> <span class="pre">=</span> <span class="pre">window_y</span> <span class="pre">+</span> <span class="pre">window_start</span></code>.</p>
+<p id="eager-viewport-update"><strong>Eager viewport update.</strong> <code class="docutils literal notranslate"><span class="pre">window_start</span></code> must be updated after every operation that
+changes the cursor’s visual row. It cannot be derived lazily on read, because
+<code class="docutils literal notranslate"><span class="pre">window_start</span></code> is not a function of the cursor’s current position alone. It is a
+function of the cursor’s movement <em>history</em> relative to the viewport. A lazy
+implementation would lose the history of intermediate scroll positions and produce
+incorrect output for any caller that moves the cursor without immediately reading the
+display state. The service enforces this by treating the viewport update as part of every
+cursor-changing operation, not as part of the read path.</p>
+</section>
+<section id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading">¶</a></h2>
+<p><strong>Depends on:</strong> The <code class="docutils literal notranslate"><span class="pre">VisualDomainService</span></code>, for all text reads, mutations, and cursor
+operations. <code class="docutils literal notranslate"><span class="pre">ViewportState</span></code>, which it owns.</p>
+<p><strong>Depended on by:</strong> The <code class="docutils literal notranslate"><span class="pre">TextEditor</span></code> facade, which is the sole caller of the
+<code class="docutils literal notranslate"><span class="pre">DisplayDomainService</span></code>.</p>
+</section>
+<section id="key-invariants">
+<h2>Key Invariants<a class="headerlink" href="#key-invariants" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><strong>Viewport current after every operation.</strong> After any operation that changes the cursor
+position, <code class="docutils literal notranslate"><span class="pre">window_start</span></code> is updated before any value is returned to the caller.
+The viewport is never stale at the service boundary. (<a class="reference internal" href="../../requirements/f-req_window.html#INV-VIEW-003" title="INV-VIEW-003"><em class="xref need">Window Bounds (INV-VIEW-003)</em></a>,
+<a class="reference internal" href="../../requirements/f-req_window.html#FR-VIEW-001" title="FR-VIEW-001"><em class="xref need">Cursor Window Constraint (FR-VIEW-001)</em></a>)</p></li>
+<li><p><strong>Window output bounded by display height.</strong> The number of lines returned by the
+viewport-truncated output interface never exceeds <code class="docutils literal notranslate"><span class="pre">display_height</span></code>, and the content
+always corresponds to the range <code class="docutils literal notranslate"><span class="pre">[window_start,</span> <span class="pre">window_start</span> <span class="pre">+</span> <span class="pre">display_height</span> <span class="pre">-</span> <span class="pre">1]</span></code>.
+(<a class="reference internal" href="../../requirements/f-req_output_modes.html#FR-MODE-031" title="FR-MODE-031"><em class="xref need">Viewport-Truncated Output (FR-MODE-031)</em></a>)</p></li>
+<li><p><strong>Coordinate synchronisation.</strong> The Window coordinate returned for the cursor
+bijectively maps to the same underlying buffer position as the Absolute Index, Logical,
+and Visual representations. (<a class="reference internal" href="../../requirements/f-req_cursor_movement.html#INV-CURSOR-003" title="INV-CURSOR-003"><em class="xref need">Coordinate Synchronization (INV-CURSOR-003)</em></a>)</p></li>
+<li><p><strong>Read-only operations are non-destructive.</strong> No read — display output, cursor
+representation, coordinate translation — modifies the text buffer, cursor position, or
+<code class="docutils literal notranslate"><span class="pre">window_start</span></code>. (<a class="reference internal" href="../../requirements/f-req_output_modes.html#INV-MODE-001" title="INV-MODE-001"><em class="xref need">Read-Only Operations (INV-MODE-001)</em></a>)</p></li>
+</ul>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">TextEditor</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">1. Specifications &amp; Design</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../requirements/index.html">1. Requirements</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">2. Architecture</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#introduction">2.1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#architectural-goals-and-constraints">2.2. Architectural Goals and Constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#system-context">2.3. System Context</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#containers">2.4. Containers</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#components">2.5. Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#code-c4-level-4">2.6. Code (C4 Level 4)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#architectural-decisions">2.7. Architectural Decisions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#error-contract">2.8. Error Contract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#open-questions">2.9. Open Questions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#appendix-a-glossary">2.10. Appendix A: Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#appendix-b-revision-history">2.11. Appendix B: Revision History</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#appendix-c-supporting-documents">2.12. Appendix C: Supporting Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#indices-and-tables">2.13. Indices and tables</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../glossary.html">Glossary</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html"><span class="section-number">2. </span>Architecture</a><ul>
+      <li>Previous: <a href="arch-cursor_state.html" title="previous chapter">CursorState</a></li>
+      <li>Next: <a href="arch-facade.html" title="next chapter">TextEditor</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Joe Rittiner.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../../_sources/specs/architecture/components/arch-display_domain_service.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

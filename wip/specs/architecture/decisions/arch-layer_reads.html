@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>2.7.6. Layer Reads &#8212; TextEditor 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=27fed22d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-data-viewer/jsonview.bundle.css?v=f6ef2277" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/libs/html/datatables.min.css?v=4b4fd840" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/needstable.css?v=5e1b6797" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_links.css?v=2150a916" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_style.css?v=92936fa5" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_core.css?v=f5b60a78" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_toggle.css?v=5c6620df" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/modern.css?v=803738c0" />
+    <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../../_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/sphinx-data-viewer/jsonview.bundle.js?v=18cd53c5"></script>
+    <script src="../../../_static/sphinx-data-viewer/jsonview_loader.js?v=f7ff7e7d"></script>
+    <script src="../../../_static/sphinx-needs/libs/html/datatables.min.js?v=8a4aee21"></script>
+    <script src="../../../_static/sphinx-needs/libs/html/datatables_loader.js?v=a2cae175"></script>
+    <script src="../../../_static/sphinx-needs/libs/html/sphinx_needs_collapse.js?v=dca66431"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Cursor State and Movement" href="../future_evolution/arch-cursor_state_and_movement.html" />
+    <link rel="prev" title="2.7.5. Cursor Position Validation" href="arch-position_validation.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="layer-reads">
+<h1><span class="section-number">2.7.6. </span>Layer Reads<a class="headerlink" href="#layer-reads" title="Link to this heading">¶</a></h1>
+<section id="context">
+<h2>Context<a class="headerlink" href="#context" title="Link to this heading">¶</a></h2>
+<p><a class="reference internal" href="../../requirements/index.html#req-software-interfaces"><span class="std std-ref">Software Interfaces</span></a> requires the Facade to expose read interfaces in all four
+representations of the editor state:</p>
+<ul class="simple">
+<li><p><strong>Display representation.</strong> Content and cursor position as currently visible within the viewport window.</p></li>
+<li><p><strong>Wrapped representation.</strong> Content and cursor position after line wrapping has been applied.</p></li>
+<li><p><strong>Logical representation.</strong> Content and cursor position expressed in logical coordinates.</p></li>
+<li><p><strong>Raw representation.</strong> The underlying text buffer contents and absolute inex of the cursor position.</p></li>
+</ul>
+<p>The architecture is organised into three domains: Logical, Visual, and Display. The
+Display Domain depends on the Visual Domain, which depends on the Logical Domain. A
+design decision is required regarding whether read operations must follow this hierarchy
+strictly, or whether the Facade may query lower layers directly when exposing state to
+the host application.</p>
+</section>
+<section id="decision">
+<h2>Decision<a class="headerlink" href="#decision" title="Link to this heading">¶</a></h2>
+<p>The Facade holds direct references to the Logical, Visual, and Display domain services.
+It queries the appropriate domain service directly for read operations, aligning each
+query type with the domain that natively owns that representation:</p>
+<ol class="arabic simple">
+<li><p><strong>Raw and Logical Reads:</strong> Queried directly from the <code class="docutils literal notranslate"><span class="pre">LogicalDomainService</span></code>.
+Because the Logical Domain owns both the text buffer and the <code class="docutils literal notranslate"><span class="pre">CursorState</span></code>, it is the sole authority for
+evaluating raw text strings, logical line blocks, absolute indices, and logical <code class="docutils literal notranslate"><span class="pre">(line,</span> <span class="pre">col)</span></code> coordinates.</p></li>
+<li><p><strong>Wrapped Reads:</strong> Queried directly from the <code class="docutils literal notranslate"><span class="pre">VisualDomainService</span></code>.
+The Visual Domain provides wrapped text lines and visual <code class="docutils literal notranslate"><span class="pre">(v_row,</span> <span class="pre">v_col)</span></code> coordinates by projecting the
+logical state onto its internal wrapping map layout.</p></li>
+<li><p><strong>Display Reads:</strong> Queried directly from the <code class="docutils literal notranslate"><span class="pre">DisplayDomainService</span></code>.
+The Display Domain provides viewport-truncated text arrays and window-relative coordinates based on its
+active scrolling offset.</p></li>
+</ol>
+<p>The bypass is strictly limited to read operations. Write operations (insert, delete, backspace,
+and cursor movement) must continue to flow sequentially through the domain hierarchy. Each layer in the write
+path acts as an orchestrator or contains derived state that must be refreshed dynamically as part of the transaction.</p>
+</section>
+<section id="rationale">
+<h2>Rationale<a class="headerlink" href="#rationale" title="Link to this heading">¶</a></h2>
+<p>Allowing the Facade to read directly from the appropriate domain preserves the clean, single-responsibility separation
+of each layer. If all reads were forced to traverse upward through the Display Domain, intermediate layers would be
+cluttered with pass-through forwarding interfaces for data they do not use, care about, or conceptually understand.</p>
+<p>A potential concern with bypassing layers for reads is whether different read paths could
+observe inconsistent or stale state. This architecture avoids that risk because all
+persistent state is eagerly updated in-place during write transactions. Text modifications instantly update both
+the text buffer and the absolute cursor index within the Logical Domain. The write path ensures that the Visual
+Domain’s wrapping map and the Display Domain’s viewport boundary are updated synchronously before the write
+transaction yields control back to the caller. Consequently, a read performed through any domain service immediately
+observes an internally consistent, up-to-date state snapshot regardless of which layer is targeted.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In normal operation, hosts are expected to interact primarily with the display representation
+exposed by the editor. Access to wrapped, logical, and raw representations is a specialised
+capability intended for advanced integrations, diagnostics, testing, or custom host plugins.
+The software requirements mandate access to all representations for these reasons.
+Their presence therefore reflects an intentional extensibility decision rather than an expectation of frequent use.</p>
+</div>
+</section>
+<section id="alternatives-considered">
+<h2>Alternatives Considered<a class="headerlink" href="#alternatives-considered" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt><strong>Strict Sequential Delegation</strong></dt><dd><p>The Facade could interact exclusively with the Display Domain, with every read request
+delegated through Display → Visual → Logical as necessary. This was rejected because it
+would require the upper domains to expose and effectively forward capabilities completely unrelated to their
+concerns (such as raw buffer access). This violates single responsibility and weakens the modularity of the
+architectural layers.</p>
+</dd>
+</dl>
+</section>
+<section id="consequences">
+<h2>Consequences<a class="headerlink" href="#consequences" title="Link to this heading">¶</a></h2>
+<p><strong>Easier:</strong></p>
+<ul class="simple">
+<li><p><strong>Strict Domain Coherence:</strong> Each domain exposes only the information it owns. Intermediate layers do not need
+forwarding interfaces for unrelated concepts.</p></li>
+<li><p><strong>Clear Domain Boundaries:</strong> Domain boundaries remain aligned with domain responsibilities, improving clarity and
+maintainability</p></li>
+<li><p><strong>No Unnecessary Delegation Chains:</strong> The Facade obtains information directly from the authoritative source of truth
+for that representation, reducing boilerplate forwarding methods across boundaries.</p></li>
+</ul>
+<p><strong>Constrained or made harder:</strong></p>
+<ul class="simple">
+<li><p><strong>Explicit Architecture Discipline:</strong> Because the architecture permits layer bypassing for reads, the functional
+distinction between read and write operations must remain explicit and consistently enforced by future developers.</p></li>
+<li><p><strong>No Write Path Shortcuts:</strong> Write operations cannot use the same direct shortcut. All mutations must continue to
+flow sequentially through the full domain hierarchy to ensure that layout caches, wrapping maps, and viewport window
+offsets remain strictly synchronized and aligned.</p></li>
+<li><p><strong>Future Contributors:</strong> Future contributors must preserve the invariant that direct access is read-only. If a
+write path bypasses the hierarchy, derived state can become stale even though the
+underlying source-of-truth state remains correct.</p></li>
+<li><p><strong>Public API Surface:</strong> The Facade exposes capabilities that many hosts may never use. This slightly increases
+the public API surface in exchange for flexibility and future extensibility.</p></li>
+</ul>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">TextEditor</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">1. Specifications &amp; Design</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../requirements/index.html">1. Requirements</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">2. Architecture</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#introduction">2.1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#architectural-goals-and-constraints">2.2. Architectural Goals and Constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#system-context">2.3. System Context</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#containers">2.4. Containers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#components">2.5. Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#code-c4-level-4">2.6. Code (C4 Level 4)</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#architectural-decisions">2.7. Architectural Decisions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#error-contract">2.8. Error Contract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#open-questions">2.9. Open Questions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#appendix-a-glossary">2.10. Appendix A: Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#appendix-b-revision-history">2.11. Appendix B: Revision History</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#appendix-c-supporting-documents">2.12. Appendix C: Supporting Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#indices-and-tables">2.13. Indices and tables</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../glossary.html">Glossary</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html"><span class="section-number">2. </span>Architecture</a><ul>
+      <li>Previous: <a href="arch-position_validation.html" title="previous chapter"><span class="section-number">2.7.5. </span>Cursor Position Validation</a></li>
+      <li>Next: <a href="../future_evolution/arch-cursor_state_and_movement.html" title="next chapter">Cursor State and Movement</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Joe Rittiner.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../../_sources/specs/architecture/decisions/arch-layer_reads.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

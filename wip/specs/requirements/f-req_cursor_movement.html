@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>1.4.3. Cursor &amp; Movement &#8212; TextEditor 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-data-viewer/jsonview.bundle.css?v=f6ef2277" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/libs/html/datatables.min.css?v=4b4fd840" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/common_css/needstable.css?v=5e1b6797" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/common_css/need_links.css?v=2150a916" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/common_css/need_style.css?v=92936fa5" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/common_css/need_core.css?v=f5b60a78" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/common_css/need_toggle.css?v=5c6620df" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/modern.css?v=803738c0" />
+    <script src="../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/sphinx-data-viewer/jsonview.bundle.js?v=18cd53c5"></script>
+    <script src="../../_static/sphinx-data-viewer/jsonview_loader.js?v=f7ff7e7d"></script>
+    <script src="../../_static/sphinx-needs/libs/html/datatables.min.js?v=8a4aee21"></script>
+    <script src="../../_static/sphinx-needs/libs/html/datatables_loader.js?v=a2cae175"></script>
+    <script src="../../_static/sphinx-needs/libs/html/sphinx_needs_collapse.js?v=dca66431"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="1.4.4. Text Wrapping" href="f-req_text_wrapping.html" />
+    <link rel="prev" title="1.4.2. Text Buffer &amp; Manipulation" href="f-req_text_manipulation.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="cursor-movement">
+<span id="req-cursor-and-movement"></span><h1><span class="section-number">1.4.3. </span>Cursor &amp; Movement<a class="headerlink" href="#cursor-movement" title="Link to this heading">¶</a></h1>
+<section id="description-and-priority">
+<h2>Description and Priority<a class="headerlink" href="#description-and-priority" title="Link to this heading">¶</a></h2>
+<p><strong>Priority: High</strong></p>
+<p>The <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> is a position in the <a class="reference internal" href="../../glossary.html#term-Text-Buffer"><span class="xref std std-term">text buffer</span></a> that determines where text manipulation operations
+occur.</p>
+<p>The <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> can be represented in multiple coordinate systems to serve different functional layers,
+corresponding to the four <a class="reference internal" href="f-req_output_modes.html"><span class="doc">output modes</span></a>:</p>
+<ol class="arabic simple">
+<li><p><strong>Absolute Index</strong> (<code class="docutils literal notranslate"><span class="pre">index</span></code>) - Source of truth for text manipulation.</p></li>
+<li><p><strong>Logical Coordinate</strong> (<code class="docutils literal notranslate"><span class="pre">[row,</span> <span class="pre">col]</span></code>) - Relevant for distinguishing <a class="reference internal" href="../../glossary.html#term-Logical-Line"><span class="xref std std-term">logical lines</span></a>
+(e.g., line numbers).</p></li>
+<li><p><strong>Visual Coordinate</strong> (<code class="docutils literal notranslate"><span class="pre">[v_row,</span> <span class="pre">v_col]</span></code>) - Relevant for text layout, rendering, and visual navigation.</p></li>
+<li><p><strong>Window Coordinate</strong> (<code class="docutils literal notranslate"><span class="pre">[x,</span> <span class="pre">y]</span></code>) - Relevant for displaying text within a <a class="reference internal" href="../../glossary.html#term-Viewport"><span class="xref std std-term">viewport</span></a>.
+<strong>Note:</strong> <code class="docutils literal notranslate"><span class="pre">[x,</span> <span class="pre">y]</span></code> are not pixel coordinates. The system does not operate with pixels. <code class="docutils literal notranslate"><span class="pre">y</span></code> denotes the visible
+line index within the <a class="reference internal" href="../../glossary.html#term-Viewport"><span class="xref std std-term">viewport</span></a> (where <code class="docutils literal notranslate"><span class="pre">y=0</span></code> is the first <a class="reference internal" href="../../glossary.html#term-Display-Line"><span class="xref std std-term">display line</span></a>, not necessarily the first
+visible line). <code class="docutils literal notranslate"><span class="pre">x</span></code> denotes the column/character index.</p></li>
+</ol>
+</section>
+<section id="state-invariants">
+<h2>State Invariants<a class="headerlink" href="#state-invariants" title="Link to this heading">¶</a></h2>
+<div class="need_container docutils container" id="SNCB-d0931e86">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_inv docutils align-default" id="INV-CURSOR-001">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Invariant</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Valid Coordinate Ranges</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#INV-CURSOR-001" title="INV-CURSOR-001">INV-CURSOR-001</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span></span></span></div>
+<div class="line"><span><div class="line">links outgoing: <span class="links"><span><a class="reference internal" href="f-req_text_wrapping.html#INV-WRAP-001" title="INV-CURSOR-001">INV-WRAP-001</a>, <a class="reference internal" href="f-req_window.html#INV-VIEW-001" title="INV-CURSOR-001">INV-VIEW-001</a></span></span></div>
+<div class="line">links incoming: <span class="links"><span><a class="reference internal" href="#INV-CURSOR-003" title="INV-CURSOR-001">INV-CURSOR-003</a>, <a class="reference internal" href="#FR-CURSOR-002" title="INV-CURSOR-001">FR-CURSOR-002</a>, <a class="reference internal" href="#FR-CURSOR-003" title="INV-CURSOR-001">FR-CURSOR-003</a>, <a class="reference internal" href="#FR-CURSOR-004" title="INV-CURSOR-001">FR-CURSOR-004</a>, <a class="reference internal" href="#FR-CURSOR-005" title="INV-CURSOR-001">FR-CURSOR-005</a>, <a class="reference internal" href="#FR-CURSOR-010" title="INV-CURSOR-001">FR-CURSOR-010</a>, <a class="reference internal" href="f-req_initialization.html#INV-INIT-002" title="INV-CURSOR-001">INV-INIT-002</a>, <a class="reference internal" href="f-req_initialization.html#FR-INIT-006" title="INV-CURSOR-001">FR-INIT-006</a></span></span></div>
+</span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>The <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> must always refer to a valid logical and visual position within the bounds of the
+<a class="reference internal" href="../../glossary.html#term-Text-Buffer"><span class="xref std std-term">text buffer</span></a>.</p>
+<p>The valid ranges for the respective coordinate systems are:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>Absolute Index</strong>:</dt><dd><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">index</span> <span class="pre">&lt;=</span> <span class="pre">len(text)</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Logical Coordinate</strong></dt><dd><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">row</span> <span class="pre">&lt;</span> <span class="pre">num_logical_lines</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">col</span> <span class="pre">&lt;=</span> <span class="pre">len(logical_line)</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Visual Coordinate</strong>:</dt><dd><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">v_row</span> <span class="pre">&lt;</span> <span class="pre">num_visual_lines</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">v_col</span> <span class="pre">&lt;=</span> <span class="pre">len(visual_line)</span> <span class="pre">&lt;=</span> <span class="pre">display_width</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Window Coordinate</strong>:</dt><dd><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">y</span> <span class="pre">&lt;</span> <span class="pre">display_height</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">x</span> <span class="pre">&lt;=</span> <span class="pre">len(visual_line)</span> <span class="pre">&lt;=</span> <span class="pre">display_width</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-04320a63">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_inv docutils align-default" id="INV-CURSOR-002">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Invariant</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Inter-Character Positioning</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#INV-CURSOR-002" title="INV-CURSOR-002">INV-CURSOR-002</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span></span></span></div>
+<div class="line"><span></span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>The <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> must always refer to a position <em>between</em> <a class="reference internal" href="../../glossary.html#term-Character"><span class="xref std std-term">characters</span></a>, not <em>on</em> a
+<a class="reference internal" href="../../glossary.html#term-Character"><span class="xref std std-term">character</span></a> itself.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-1fbba6dc">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_inv docutils align-default" id="INV-CURSOR-003">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Invariant</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Coordinate Synchronization</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#INV-CURSOR-003" title="INV-CURSOR-003">INV-CURSOR-003</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span></span></span></div>
+<div class="line"><span><div class="line">links outgoing: <span class="links"><span><a class="reference internal" href="#INV-CURSOR-001" title="INV-CURSOR-003">INV-CURSOR-001</a></span></span></div>
+<div class="line">links incoming: <span class="links"><span><a class="reference internal" href="#FR-CURSOR-040" title="INV-CURSOR-003">FR-CURSOR-040</a></span></span></div>
+</span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>Valid <a class="reference internal" href="../../glossary.html#term-Absolute-Index"><span class="xref std std-term">Absolute Index</span></a>, <a class="reference internal" href="../../glossary.html#term-Logical-Coordinate"><span class="xref std std-term">Logical Coordinate</span></a>, <a class="reference internal" href="../../glossary.html#term-Visual-Coordinate"><span class="xref std std-term">Visual Coordinate</span></a>, and <a class="reference internal" href="../../glossary.html#term-Window-Coordinate"><span class="xref std std-term">Window Coordinate</span></a>
+values must bijectively map to the exact same underlying position in the <a class="reference internal" href="../../glossary.html#term-Text-Buffer"><span class="xref std std-term">text buffer</span></a>. A change in one
+representation must be perfectly reflected in the others.</p>
+<p><strong>Exception:</strong> <a class="reference internal" href="#FR-CURSOR-010" title="FR-CURSOR-010"><em class="xref need">Virtual Position at Display... (FR-CURSOR-010)</em></a> boundary case.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="preconditions">
+<h2>Preconditions<a class="headerlink" href="#preconditions" title="Link to this heading">¶</a></h2>
+<p>All operations in this section assume a valid, initialized <a class="reference internal" href="../../glossary.html#term-Text-Buffer"><span class="xref std std-term">text buffer</span></a> as defined in
+<a class="reference internal" href="f-req_text_manipulation.html"><span class="doc">Text Buffer Specification</span></a>.</p>
+<p>Operations relying on visual representations (<a class="reference internal" href="../../glossary.html#term-Visual-Coordinate"><span class="xref std std-term">Visual Coordinates</span></a>,
+<a class="reference internal" href="../../glossary.html#term-Window-Coordinate"><span class="xref std std-term">Window Coordinates</span></a>, Cursor Movement) assume valid, initialized <a class="reference internal" href="../../glossary.html#term-Viewport"><span class="xref std std-term">viewport</span></a>,
+<a class="reference internal" href="../../glossary.html#term-Display-Height"><span class="xref std std-term">display height</span></a> and <a class="reference internal" href="../../glossary.html#term-Display-Width"><span class="xref std std-term">display width</span></a>.</p>
+</section>
+<section id="stimulus-response-sequences">
+<h2>Stimulus/Response Sequences<a class="headerlink" href="#stimulus-response-sequences" title="Link to this heading">¶</a></h2>
+<ul>
+<li><p><strong>Stimulus:</strong> An external system or user triggers a horizontal <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> movement (e.g., left, right).</p>
+<p><strong>Response:</strong> The system adjusts the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a>, implicitly wrapping across
+<a class="reference internal" href="../../glossary.html#term-Visual-Line"><span class="xref std std-term">visual lines</span></a> if necessary, and updates all coordinate representations.</p>
+</li>
+<li><p><strong>Stimulus:</strong> An external system or user triggers a vertical <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> movement (e.g., up, down).</p>
+<p><strong>Response:</strong> The system calculates the new <a class="reference internal" href="../../glossary.html#term-Visual-Coordinate"><span class="xref std std-term">Visual Coordinate</span></a> relative to the
+<a class="reference internal" href="../../glossary.html#term-Visual-Line"><span class="xref std std-term">visual lines</span></a>, truncating the visual column if the target line is shorter, and applies the update.</p>
+</li>
+<li><p><strong>Stimulus:</strong> An external system or user triggers a boundary <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> movement (e.g., home, end).</p>
+<p><strong>Response:</strong> The system updates the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> to the absolute start (<a class="reference internal" href="../../glossary.html#term-Absolute-Index"><span class="xref std std-term">index</span></a> <code class="docutils literal notranslate"><span class="pre">0</span></code>)
+or absolute end (<a class="reference internal" href="../../glossary.html#term-Absolute-Index"><span class="xref std std-term">index</span></a> <code class="docutils literal notranslate"><span class="pre">len(text)</span></code>) of the <a class="reference internal" href="../../glossary.html#term-Text-Buffer"><span class="xref std std-term">text buffer</span></a>.</p>
+</li>
+<li><p><strong>Stimulus:</strong> Text is inserted or deleted at the current <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a>.</p>
+<p><strong>Response:</strong> The text is manipulated, and the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> implicitly updates its coordinates to remain logically
+consistent with the surrounding text boundary.</p>
+</li>
+</ul>
+</section>
+<section id="functional-requirements">
+<h2>Functional Requirements<a class="headerlink" href="#functional-requirements" title="Link to this heading">¶</a></h2>
+<section id="cursor-position-coordinates">
+<h3>Cursor Position &amp; Coordinates<a class="headerlink" href="#cursor-position-coordinates" title="Link to this heading">¶</a></h3>
+<div class="need_container docutils container" id="SNCB-fd503da3">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-CURSOR-001">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Mutable Cursor Position</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-CURSOR-001" title="FR-CURSOR-001">FR-CURSOR-001</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">cursor</span><span class="needs_spacer">, </span><span class="needs_data">state</span></span></span></div>
+</span></span></div>
+<div class="line"><span><div class="line">links incoming: <span class="links"><span><a class="reference internal" href="f-req_text_manipulation.html#FR-TEXT-012" title="FR-CURSOR-001">FR-TEXT-012</a>, <a class="reference internal" href="f-req_text_manipulation.html#FR-TEXT-015" title="FR-CURSOR-001">FR-TEXT-015</a>, <a class="reference internal" href="f-req_text_manipulation.html#FR-TEXT-021" title="FR-CURSOR-001">FR-TEXT-021</a>, <a class="reference internal" href="f-req_text_manipulation.html#FR-TEXT-022" title="FR-CURSOR-001">FR-TEXT-022</a>, <a class="reference internal" href="f-req_text_manipulation.html#FR-TEXT-023" title="FR-CURSOR-001">FR-TEXT-023</a>, <a class="reference internal" href="f-req_text_manipulation.html#FR-TEXT-031" title="FR-CURSOR-001">FR-TEXT-031</a>, <a class="reference internal" href="f-req_text_manipulation.html#FR-TEXT-032" title="FR-CURSOR-001">FR-TEXT-032</a>, <a class="reference internal" href="f-req_text_manipulation.html#FR-TEXT-033" title="FR-CURSOR-001">FR-TEXT-033</a></span></span></div>
+</span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>The system must maintain a mutable <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a>. No text manipulation operation may bypass the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-25d66f0e">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-CURSOR-002">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Absolute Position Representation</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-CURSOR-002" title="FR-CURSOR-002">FR-CURSOR-002</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">cursor</span><span class="needs_spacer">, </span><span class="needs_data">position</span></span></span></div>
+</span></span></div>
+<div class="line"><span><div class="line">links outgoing: <span class="links"><span><a class="reference internal" href="#INV-CURSOR-001" title="FR-CURSOR-002">INV-CURSOR-001</a></span></span></div>
+</span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>The system must provide an interface to return the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> as an
+<a class="reference internal" href="../../glossary.html#term-Absolute-Index"><span class="xref std std-term">Absolute integer Index</span></a>.</p>
+<p>An <a class="reference internal" href="../../glossary.html#term-Absolute-Index"><span class="xref std std-term">Absolute Index</span></a> value equal to <code class="docutils literal notranslate"><span class="pre">len(text)</span></code> represents the position immediately after the last
+<a class="reference internal" href="../../glossary.html#term-Character"><span class="xref std std-term">character</span></a> in the <a class="reference internal" href="../../glossary.html#term-Text-Buffer"><span class="xref std std-term">text buffer</span></a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-2219236c">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-CURSOR-003">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Logical Coordinate Representation</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-CURSOR-003" title="FR-CURSOR-003">FR-CURSOR-003</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">cursor</span><span class="needs_spacer">, </span><span class="needs_data">coordinates</span></span></span></div>
+</span></span></div>
+<div class="line"><span><div class="line">links outgoing: <span class="links"><span><a class="reference internal" href="#INV-CURSOR-001" title="FR-CURSOR-003">INV-CURSOR-001</a></span></span></div>
+</span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>The system must provide an interface to return the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> as a <a class="reference internal" href="../../glossary.html#term-Logical-Coordinate"><span class="xref std std-term">Logical Coordinate</span></a> <code class="docutils literal notranslate"><span class="pre">[row,</span> <span class="pre">col]</span></code>.
+A <code class="docutils literal notranslate"><span class="pre">col</span></code> value equal to the <a class="reference internal" href="../../glossary.html#term-Logical-Line"><span class="xref std std-term">logical line</span></a> length represents the position immediately after the last
+<a class="reference internal" href="../../glossary.html#term-Character"><span class="xref std std-term">character</span></a> (before the newline delimiter).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-c3681ee0">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-CURSOR-004">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Visual Coordinate Representation</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-CURSOR-004" title="FR-CURSOR-004">FR-CURSOR-004</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">cursor</span><span class="needs_spacer">, </span><span class="needs_data">coordinates</span></span></span></div>
+</span></span></div>
+<div class="line"><span><div class="line">links outgoing: <span class="links"><span><a class="reference internal" href="#INV-CURSOR-001" title="FR-CURSOR-004">INV-CURSOR-001</a></span></span></div>
+</span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>The system must provide an interface to return the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> as a <a class="reference internal" href="../../glossary.html#term-Visual-Coordinate"><span class="xref std std-term">Visual Coordinate</span></a> <code class="docutils literal notranslate"><span class="pre">[v_row,</span> <span class="pre">v_col]</span></code>
+representing its location across all wrapped <a class="reference internal" href="../../glossary.html#term-Visual-Line"><span class="xref std std-term">visual lines</span></a>.
+A <code class="docutils literal notranslate"><span class="pre">v_col</span></code> value equal to the <a class="reference internal" href="../../glossary.html#term-Visual-Line"><span class="xref std std-term">visual line</span></a> length represents the position immediately after the last
+<a class="reference internal" href="../../glossary.html#term-Character"><span class="xref std std-term">character</span></a> on that visual segment.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-0b203503">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-CURSOR-005">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Window Coordinate Representation</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-CURSOR-005" title="FR-CURSOR-005">FR-CURSOR-005</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">cursor</span><span class="needs_spacer">, </span><span class="needs_data">coordinates</span></span></span></div>
+</span></span></div>
+<div class="line"><span><div class="line">links outgoing: <span class="links"><span><a class="reference internal" href="#INV-CURSOR-001" title="FR-CURSOR-005">INV-CURSOR-001</a></span></span></div>
+<div class="line">links incoming: <span class="links"><span><a class="reference internal" href="f-req_window.html#FR-VIEW-004" title="FR-CURSOR-005">FR-VIEW-004</a></span></span></div>
+</span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>The system must provide an interface to return the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> as a <a class="reference internal" href="../../glossary.html#term-Window-Coordinate"><span class="xref std std-term">Window Coordinate</span></a> <code class="docutils literal notranslate"><span class="pre">[x,</span> <span class="pre">y]</span></code>
+representing its location within the visible <a class="reference internal" href="../../glossary.html#term-Viewport"><span class="xref std std-term">viewport</span></a>.
+An <code class="docutils literal notranslate"><span class="pre">x</span></code> value equal to <code class="docutils literal notranslate"><span class="pre">display_width</span></code> represents a position resting at the extreme right edge of the
+<a class="reference internal" href="../../glossary.html#term-Window"><span class="xref std std-term">window</span></a>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="edge-case-boundary-wrapping">
+<h3>Edge Case: Boundary wrapping<a class="headerlink" href="#edge-case-boundary-wrapping" title="Link to this heading">¶</a></h3>
+<div class="need_container docutils container" id="SNCB-2d639168">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-CURSOR-010">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Virtual Position at Display Width</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-CURSOR-010" title="FR-CURSOR-010">FR-CURSOR-010</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">cursor</span><span class="needs_spacer">, </span><span class="needs_data">boundary</span><span class="needs_spacer">, </span><span class="needs_data">rendering</span></span></span></div>
+</span></span></div>
+<div class="line"><span><div class="line">links outgoing: <span class="links"><span><a class="reference internal" href="f-req_text_wrapping.html#FR-WRAP-003" title="FR-CURSOR-010">FR-WRAP-003</a>, <a class="reference internal" href="#INV-CURSOR-001" title="FR-CURSOR-010">INV-CURSOR-001</a></span></span></div>
+</span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>When the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> is positioned at the exact boundary of a wrapped <a class="reference internal" href="../../glossary.html#term-Logical-Line"><span class="xref std std-term">logical line</span></a>
+(e.g. [<code class="docutils literal notranslate"><span class="pre">row,</span> <span class="pre">N</span> <span class="pre">*</span> <span class="pre">display_width</span></code>], where <code class="docutils literal notranslate"><span class="pre">N</span></code> is a positive integer), the <a class="reference internal" href="../../glossary.html#term-Visual-Coordinate"><span class="xref std std-term">Visual Coordinate</span></a> must be
+represented as resting at the start of the next <a class="reference internal" href="../../glossary.html#term-Visual-Line"><span class="xref std std-term">visual line</span></a> (<code class="docutils literal notranslate"><span class="pre">[v_row,</span> <span class="pre">0]</span></code>).
+The system must normalize any input of <code class="docutils literal notranslate"><span class="pre">[v_row,</span> <span class="pre">display_width]</span></code> to <code class="docutils literal notranslate"><span class="pre">[v_row</span> <span class="pre">+</span> <span class="pre">1,</span> <span class="pre">0]</span></code>.</p>
+<p><strong>Exception:</strong>
+When the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> is positioned at the end of a <a class="reference internal" href="../../glossary.html#term-Logical-Line"><span class="xref std std-term">logical line</span></a>, whose final <a class="reference internal" href="../../glossary.html#term-Visual-Line"><span class="xref std std-term">visual line</span></a> is
+exactly <code class="docutils literal notranslate"><span class="pre">display_width</span></code> <a class="reference internal" href="../../glossary.html#term-Character"><span class="xref std std-term">characters</span></a> long, (<a class="reference internal" href="f-req_text_wrapping.html#FR-WRAP-003" title="FR-WRAP-003"><em class="xref need">Break Logic (Character-Based) (FR-WRAP-003)</em></a>) the
+<a class="reference internal" href="../../glossary.html#term-Visual-Coordinate"><span class="xref std std-term">Visual Coordinate</span></a> must be represented as <cite>[v_row, display_width]</cite> instead. Since the <a class="reference internal" href="../../glossary.html#term-Visual-Line"><span class="xref std std-term">visual line</span></a>
+<cite>v_row+1</cite> doesn’t exist.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-f271b373">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-CURSOR-011">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Newline Insertion at Boundary</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-CURSOR-011" title="FR-CURSOR-011">FR-CURSOR-011</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">cursor</span><span class="needs_spacer">, </span><span class="needs_data">boundary</span><span class="needs_spacer">, </span><span class="needs_data">insert</span></span></span></div>
+</span></span></div>
+<div class="line"><span></span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>Inserting a newline character when the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> is at a wrapped boundary (<code class="docutils literal notranslate"><span class="pre">[v_row</span> <span class="pre">+</span> <span class="pre">1,</span> <span class="pre">0]</span></code>) must move
+the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> to the start of the newly created <a class="reference internal" href="../../glossary.html#term-Logical-Line"><span class="xref std std-term">logical line</span></a> (<code class="docutils literal notranslate"><span class="pre">[row</span> <span class="pre">+</span> <span class="pre">1,</span> <span class="pre">0]</span></code>, <code class="docutils literal notranslate"><span class="pre">[v_row</span> <span class="pre">+</span> <span class="pre">1,</span> <span class="pre">0]</span></code>).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-59dbfda5">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-CURSOR-012">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Newline Deletion at Boundary</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-CURSOR-012" title="FR-CURSOR-012">FR-CURSOR-012</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">cursor</span><span class="needs_spacer">, </span><span class="needs_data">boundary</span><span class="needs_spacer">, </span><span class="needs_data">delete</span></span></span></div>
+</span></span></div>
+<div class="line"><span><div class="line">links outgoing: <span class="links"><span><a class="reference internal" href="f-req_text_manipulation.html#FR-TEXT-025" title="FR-CURSOR-012">FR-TEXT-025</a>, <a class="reference internal" href="f-req_text_manipulation.html#FR-TEXT-035" title="FR-CURSOR-012">FR-TEXT-035</a></span></span></div>
+</span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>Deleting a newline character (via delete) must keep the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> indices unchanged.</p>
+<p>Deleting a newline character (via backspace) when the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> is at the start of a <a class="reference internal" href="../../glossary.html#term-Logical-Line"><span class="xref std std-term">logical line</span></a>
+(<code class="docutils literal notranslate"><span class="pre">[v_row,</span> <span class="pre">0]</span></code>) must move the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> to the end of the previous <a class="reference internal" href="../../glossary.html#term-Logical-Line"><span class="xref std std-term">logical line</span></a>. (Now merged into
+one <a class="reference internal" href="../../glossary.html#term-Logical-Line"><span class="xref std std-term">logical line</span></a>.)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="id1">
+<h3>Cursor Movement<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
+<div class="need_container docutils container" id="SNCB-5fb1cb3a">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-CURSOR-020">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Movement Operations</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-CURSOR-020" title="FR-CURSOR-020">FR-CURSOR-020</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">movement</span></span></span></div>
+</span></span></div>
+<div class="line"><span></span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>The <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> must support basic movement: <code class="docutils literal notranslate"><span class="pre">up</span></code>, <code class="docutils literal notranslate"><span class="pre">down</span></code>, (see <a class="reference internal" href="#vertical-movement"><span class="std std-ref">Vertical Movement</span></a>)
+<code class="docutils literal notranslate"><span class="pre">left</span></code>, and <code class="docutils literal notranslate"><span class="pre">right</span></code>, (see <a class="reference internal" href="#horizontal-movement"><span class="std std-ref">Horizontal Movement</span></a>) as well as boundary jumps to the <code class="docutils literal notranslate"><span class="pre">home</span></code> and <code class="docutils literal notranslate"><span class="pre">end</span></code> of
+the <a class="reference internal" href="../../glossary.html#term-Text-Buffer"><span class="xref std std-term">text buffer</span></a>. (See <a class="reference internal" href="#boundary-behaviors"><span class="std std-ref">Boundary Behaviors</span></a>)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-88d7efb5">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-CURSOR-021">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Non-Destructive Movement</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-CURSOR-021" title="FR-CURSOR-021">FR-CURSOR-021</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">movement</span></span></span></div>
+</span></span></div>
+<div class="line"><span></span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>Changing the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> must strictly be a navigation operation and must not modify the <a class="reference internal" href="../../glossary.html#term-Text-Buffer"><span class="xref std std-term">text buffer</span></a>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="vertical-movement">
+<span id="id2"></span><h3>Vertical Movement<a class="headerlink" href="#vertical-movement" title="Link to this heading">¶</a></h3>
+<div class="need_container docutils container" id="SNCB-1e0535f6">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-CURSOR-030">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Visual Line Basis</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-CURSOR-030" title="FR-CURSOR-030">FR-CURSOR-030</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">movement</span><span class="needs_spacer">, </span><span class="needs_data">vertical</span></span></span></div>
+</span></span></div>
+<div class="line"><span></span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>Vertical movements (<code class="docutils literal notranslate"><span class="pre">up</span></code> or <code class="docutils literal notranslate"><span class="pre">down</span></code>) must be evaluated relative to the <a class="reference internal" href="../../glossary.html#term-Visual-Line"><span class="xref std std-term">visual lines</span></a>,
+transparently crossing wrapped boundaries without requiring distinct logic for <a class="reference internal" href="../../glossary.html#term-Logical-Line"><span class="xref std std-term">logical lines</span></a>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-261f169e">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-CURSOR-031">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Target Visual Line Truncation</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-CURSOR-031" title="FR-CURSOR-031">FR-CURSOR-031</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">movement</span><span class="needs_spacer">, </span><span class="needs_data">vertical</span></span></span></div>
+</span></span></div>
+<div class="line"><span><div class="line">links outgoing: <span class="links"><span><a class="reference internal" href="#NR-CURSOR-101" title="FR-CURSOR-031">NR-CURSOR-101</a></span></span></div>
+</span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>When moving vertically, the system must preserve the current visual column (<code class="docutils literal notranslate"><span class="pre">v_col</span></code>).</p>
+<p><strong>Exception:</strong>
+Only if the target <a class="reference internal" href="../../glossary.html#term-Visual-Line"><span class="xref std std-term">visual line</span></a> is shorter than the current <code class="docutils literal notranslate"><span class="pre">v_col</span></code>, the system must truncate the new
+position to the end of the target <a class="reference internal" href="../../glossary.html#term-Visual-Line"><span class="xref std std-term">visual line</span></a> (its maximum valid <code class="docutils literal notranslate"><span class="pre">v_col</span></code>).</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="horizontal-movement">
+<span id="id3"></span><h3>Horizontal Movement<a class="headerlink" href="#horizontal-movement" title="Link to this heading">¶</a></h3>
+<div class="need_container docutils container" id="SNCB-f73f4ec8">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-CURSOR-040">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Horizontal Absolute Shifting</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-CURSOR-040" title="FR-CURSOR-040">FR-CURSOR-040</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">movement</span><span class="needs_spacer">, </span><span class="needs_data">horizontal</span></span></span></div>
+</span></span></div>
+<div class="line"><span><div class="line">links outgoing: <span class="links"><span><a class="reference internal" href="#INV-CURSOR-003" title="FR-CURSOR-040">INV-CURSOR-003</a></span></span></div>
+</span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>Moving the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> <code class="docutils literal notranslate"><span class="pre">left</span></code> or <code class="docutils literal notranslate"><span class="pre">right</span></code> must strictly decrement or increment the <a class="reference internal" href="../../glossary.html#term-Absolute-Index"><span class="xref std std-term">Absolute Index</span></a>
+by exactly 1, respectively. By definition of <a class="reference internal" href="#INV-CURSOR-003" title="INV-CURSOR-003"><em class="xref need">Coordinate Synchronization (INV-CURSOR-003)</em></a>, this inherently handles all appropriate
+wrapping across <a class="reference internal" href="../../glossary.html#term-Visual-Line"><span class="xref std std-term">visual lines</span></a> and <a class="reference internal" href="../../glossary.html#term-Logical-Line"><span class="xref std std-term">logical lines</span></a>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="boundary-behaviors">
+<span id="id4"></span><h3>Boundary Behaviors<a class="headerlink" href="#boundary-behaviors" title="Link to this heading">¶</a></h3>
+<div class="need_container docutils container" id="SNCB-2824bdca">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-CURSOR-050">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Vertical Boundary Extremes</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-CURSOR-050" title="FR-CURSOR-050">FR-CURSOR-050</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">movement</span><span class="needs_spacer">, </span><span class="needs_data">boundary</span></span></span></div>
+</span></span></div>
+<div class="line"><span></span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>Moving <code class="docutils literal notranslate"><span class="pre">up</span></code> from any valid position on the first <a class="reference internal" href="../../glossary.html#term-Visual-Line"><span class="xref std std-term">visual line</span></a> must relocate the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> to the
+absolute start of the text.
+Moving <code class="docutils literal notranslate"><span class="pre">down</span></code> from any valid position on the last <a class="reference internal" href="../../glossary.html#term-Visual-Line"><span class="xref std std-term">visual line</span></a> must relocate the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> to the
+absolute end of the text.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-0986ca1b">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-CURSOR-051">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Inoperative Extents</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-CURSOR-051" title="FR-CURSOR-051">FR-CURSOR-051</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">movement</span><span class="needs_spacer">, </span><span class="needs_data">boundary</span><span class="needs_spacer">, </span><span class="needs_data">no-op</span></span></span></div>
+</span></span></div>
+<div class="line"><span></span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>Moving <code class="docutils literal notranslate"><span class="pre">left</span></code> at the absolute start of the text, or moving <code class="docutils literal notranslate"><span class="pre">right</span></code> at the absolute end of the text,
+must not alter the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> (No-Op).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-70d25f11">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-CURSOR-052">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Move Home</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-CURSOR-052" title="FR-CURSOR-052">FR-CURSOR-052</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">movement</span><span class="needs_spacer">, </span><span class="needs_data">boundary</span></span></span></div>
+</span></span></div>
+<div class="line"><span></span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>Moving <code class="docutils literal notranslate"><span class="pre">home</span></code> must relocate the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> to the start of the <a class="reference internal" href="../../glossary.html#term-Text-Buffer"><span class="xref std std-term">text buffer</span></a>.</p>
+<p>Equivalent to setting the <a class="reference internal" href="../../glossary.html#term-Absolute-Index"><span class="xref std std-term">absolute index</span></a> to 0.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-eb1cf441">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-CURSOR-053">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Move End</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-CURSOR-053" title="FR-CURSOR-053">FR-CURSOR-053</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">movement</span><span class="needs_spacer">, </span><span class="needs_data">boundary</span></span></span></div>
+</span></span></div>
+<div class="line"><span></span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>Moving <code class="docutils literal notranslate"><span class="pre">end</span></code> must relocate the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> to the end of the <a class="reference internal" href="../../glossary.html#term-Text-Buffer"><span class="xref std std-term">text buffer</span></a>.</p>
+<p>Equivalent to setting the <a class="reference internal" href="../../glossary.html#term-Absolute-Index"><span class="xref std std-term">absolute index</span></a> to the length of the <a class="reference internal" href="../../glossary.html#term-Text-Buffer"><span class="xref std std-term">text buffer</span></a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="out-of-scope">
+<h2>Out of Scope<a class="headerlink" href="#out-of-scope" title="Link to this heading">¶</a></h2>
+<div class="need_container docutils container" id="SNCB-c20b7f0a">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_nreq docutils align-default" id="NR-CURSOR-101">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Non-Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Desired Column Retention</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#NR-CURSOR-101" title="NR-CURSOR-101">NR-CURSOR-101</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">out-of-scope</span><span class="needs_spacer">, </span><span class="needs_data">movement</span></span></span></div>
+</span></span></div>
+<div class="line"><span><div class="line">links incoming: <span class="links"><span><a class="reference internal" href="#FR-CURSOR-031" title="NR-CURSOR-101">FR-CURSOR-031</a></span></span></div>
+</span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>The system is currently not required to support a “Desired Column” or “Sticky Ghost Cursor” feature (the ability to
+memorize the furthest <code class="docutils literal notranslate"><span class="pre">v_col</span></code> position when navigating vertically across shorter intermediate lines).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-f1e21231">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_nreq docutils align-default" id="NR-CURSOR-102">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Non-Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">User Input</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#NR-CURSOR-102" title="NR-CURSOR-102">NR-CURSOR-102</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">out-of-scope</span><span class="needs_spacer">, </span><span class="needs_data">movement</span></span></span></div>
+</span></span></div>
+<div class="line"><span></span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>The system does not capture keyboard or mouse events
+All “typing” or “clicking” must be translated into API calls by the host application.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">TextEditor</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">1. Specifications &amp; Design</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">1. Requirements</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#introduction">1.1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#overall-description">1.2. Overall Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#external-interface-requirements">1.3. External Interface Requirements</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#functional-requirements">1.4. Functional Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#nonfunctional-requirements">1.5. Nonfunctional Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#appendix-a-requirements">1.6. Appendix A: Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#appendix-b-glossary">1.7. Appendix B: Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#appendix-c-related-documents">1.8. Appendix C: Related Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#indices-and-tables">1.9. Indices and tables</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture/index.html">2. Architecture</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../glossary.html">Glossary</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="index.html"><span class="section-number">1. </span>Requirements</a><ul>
+      <li>Previous: <a href="f-req_text_manipulation.html" title="previous chapter"><span class="section-number">1.4.2. </span>Text Buffer &amp; Manipulation</a></li>
+      <li>Next: <a href="f-req_text_wrapping.html" title="next chapter"><span class="section-number">1.4.4. </span>Text Wrapping</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Joe Rittiner.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../_sources/specs/requirements/f-req_cursor_movement.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Logical Domain Service &#8212; TextEditor 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=27fed22d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-data-viewer/jsonview.bundle.css?v=f6ef2277" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/libs/html/datatables.min.css?v=4b4fd840" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/needstable.css?v=5e1b6797" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_links.css?v=2150a916" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_style.css?v=92936fa5" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_core.css?v=f5b60a78" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_toggle.css?v=5c6620df" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/modern.css?v=803738c0" />
+    <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../../_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/sphinx-data-viewer/jsonview.bundle.js?v=18cd53c5"></script>
+    <script src="../../../_static/sphinx-data-viewer/jsonview_loader.js?v=f7ff7e7d"></script>
+    <script src="../../../_static/sphinx-needs/libs/html/datatables.min.js?v=8a4aee21"></script>
+    <script src="../../../_static/sphinx-needs/libs/html/datatables_loader.js?v=a2cae175"></script>
+    <script src="../../../_static/sphinx-needs/libs/html/sphinx_needs_collapse.js?v=dca66431"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Movement Resolver" href="arch-movement_resolver.html" />
+    <link rel="prev" title="TextEditor" href="arch-facade.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="logical-domain-service">
+<h1>Logical Domain Service<a class="headerlink" href="#logical-domain-service" title="Link to this heading">¶</a></h1>
+<section id="responsibility">
+<h2>Responsibility<a class="headerlink" href="#responsibility" title="Link to this heading">¶</a></h2>
+<p>The Logical Domain Service is the sole external interface of the Logical Domain. It
+exposes the domain’s two canonical text representations: raw string and logical lines,
+and translates between absolute indices and logical coordinates for mutation operations.
+No component outside the Logical Domain interacts with the TextBuffer directly.</p>
+</section>
+<section id="owned-state">
+<h2>Owned State<a class="headerlink" href="#owned-state" title="Link to this heading">¶</a></h2>
+<p>The Logical Domain Service owns two pieces of state: the <code class="docutils literal notranslate"><span class="pre">TextBuffer</span></code> instance and <code class="docutils literal notranslate"><span class="pre">CursorState</span></code>.
+Ownership here means the service is the only component that holds a reference to them and
+the only component through which the they are mutated or queried.</p>
+<p>The service owns no independent data of its own. It is not a pure calculator. It holds
+the <code class="docutils literal notranslate"><span class="pre">TextBuffer</span></code> and <code class="docutils literal notranslate"><span class="pre">CursorState</span></code>, but all persistent states live inside those instances.</p>
+</section>
+<section id="behaviour">
+<h2>Behaviour<a class="headerlink" href="#behaviour" title="Link to this heading">¶</a></h2>
+<p><strong>Text representations.</strong> The service exposes two read interfaces derived from the
+TextBuffer’s raw string:</p>
+<ul class="simple">
+<li><p><strong>Raw output:</strong> the buffer contents returned as a single unmodified string, including
+all <code class="docutils literal notranslate"><span class="pre">\n</span></code> characters. (<a class="reference internal" href="../../requirements/f-req_output_modes.html#FR-MODE-001" title="FR-MODE-001"><em class="xref need">Raw Text Output (FR-MODE-001)</em></a>)</p></li>
+<li><p><strong>Logical line output:</strong> the buffer contents split at <code class="docutils literal notranslate"><span class="pre">\n</span></code> boundaries, with the
+newline characters themselves excluded from the returned strings.
+(<a class="reference internal" href="../../requirements/f-req_output_modes.html#FR-MODE-011" title="FR-MODE-011"><em class="xref need">Logical Line Output (FR-MODE-011)</em></a>, <a class="reference internal" href="../../requirements/f-req_text_manipulation.html#FR-TEXT-016" title="FR-TEXT-016"><em class="xref need">Inserting Newline (FR-TEXT-016)</em></a>, <a class="reference internal" href="../../requirements/f-req_text_manipulation.html#FR-TEXT-025" title="FR-TEXT-025"><em class="xref need">Newline Character Deletion (FR-TEXT-025)</em></a>, <a class="reference internal" href="../../requirements/f-req_text_manipulation.html#FR-TEXT-035" title="FR-TEXT-035"><em class="xref need">Newline Character Backspace (FR-TEXT-035)</em></a>)</p></li>
+</ul>
+<dl class="simple">
+<dt><strong>Cursor state.</strong> The service provides read and write interfaces to the <code class="docutils literal notranslate"><span class="pre">CursorState</span></code>,</dt><dd><p>enforcing strict validation checks against the current buffer length (<code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">k</span> <span class="pre">&lt;=</span> <span class="pre">len(text)</span></code>):</p>
+</dd>
+</dl>
+<ul class="simple">
+<li><p><strong>Explicit Position Setting:</strong> Calling <code class="docutils literal notranslate"><span class="pre">set_position(k)</span></code> with an absolute index evaluates the
+boundaries immediately. If <code class="docutils literal notranslate"><span class="pre">k</span></code> is less than 0 or greater than <code class="docutils literal notranslate"><span class="pre">len(text)</span></code>, the service rejects
+the command and raises an exception (e.g., <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> or <code class="docutils literal notranslate"><span class="pre">IndexError</span></code>).</p></li>
+<li><p><strong>Movement Commands:</strong> Calling horizontal movement commands
+(<code class="docutils literal notranslate"><span class="pre">move_left()</span></code>, <code class="docutils literal notranslate"><span class="pre">move_right()</span></code>, <code class="docutils literal notranslate"><span class="pre">move_home()</span></code>, or <code class="docutils literal notranslate"><span class="pre">move_end()</span></code>)
+evaluates the target position against the buffer boundaries. If the command would cause the cursor
+to move out of bounds, the operation results in a silent <strong>no-op</strong>, and the underlying <code class="docutils literal notranslate"><span class="pre">CursorState</span></code>
+remains unmodified.</p></li>
+</ul>
+<p><strong>Coordinate translation.</strong> The service translates between absolute indices and logical
+coordinates <code class="docutils literal notranslate"><span class="pre">(row,</span> <span class="pre">col)</span></code> for all mutation operations. Neither the <code class="docutils literal notranslate"><span class="pre">TextBuffer</span></code> nor the
+Visual Domain performs this translation. This translation is also the mechanism through
+which the system satisfies its cursor representation interfaces: returning the cursor as
+an absolute index (<a class="reference internal" href="../../requirements/f-req_cursor_movement.html#FR-CURSOR-002" title="FR-CURSOR-002"><em class="xref need">Absolute Position Represent... (FR-CURSOR-002)</em></a>) or as a logical coordinate
+(<a class="reference internal" href="../../requirements/f-req_cursor_movement.html#FR-CURSOR-003" title="FR-CURSOR-003"><em class="xref need">Logical Coordinate Represen... (FR-CURSOR-003)</em></a>) both depend on the Logical Domain Service’s ability to convert
+between these two spaces on demand.</p>
+<p>The Logical Domain is a cursor-centric model and only supports text manipulation at the cursor
+position. (<a class="reference internal" href="../../requirements/f-req_cursor_movement.html#FR-CURSOR-001" title="FR-CURSOR-001"><em class="xref need">Mutable Cursor Position (FR-CURSOR-001)</em></a>)</p>
+<p><strong>Mutation delegation.</strong> <code class="docutils literal notranslate"><span class="pre">insert</span></code>, <code class="docutils literal notranslate"><span class="pre">delete</span></code>, <code class="docutils literal notranslate"><span class="pre">backspace</span></code> and <code class="docutils literal notranslate"><span class="pre">move_*</span></code> operations are
+validated at the service boundary. Inputs are type-checked, and values of incorrect types are
+rejected with an exception (<a class="reference internal" href="../../requirements/f-req_initialization.html#FR-INIT-013" title="FR-INIT-013"><em class="xref need">Type Conflict (FR-INIT-013)</em></a>). The operation is then delegated to the
+<code class="docutils literal notranslate"><span class="pre">TextBuffer</span></code> or <code class="docutils literal notranslate"><span class="pre">CursorState</span></code>.</p>
+</section>
+<section id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading">¶</a></h2>
+<p><strong>Depends on:</strong> The <code class="docutils literal notranslate"><span class="pre">TextBuffer</span></code> and <code class="docutils literal notranslate"><span class="pre">CursorState</span></code> components for all text storage and
+mutation and cursor state management. The service has no other engine dependencies.</p>
+<p><strong>Depended on by:</strong> The <code class="docutils literal notranslate"><span class="pre">Visual</span> <span class="pre">Domain</span></code> (via <code class="docutils literal notranslate"><span class="pre">VisualLogicalAdapter</span></code>) and the <code class="docutils literal notranslate"><span class="pre">TextEditor</span></code>
+facade (directly, for read-only output).</p>
+</section>
+<section id="key-invariants">
+<h2>Key Invariants<a class="headerlink" href="#key-invariants" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><strong>Strict encapsulation.</strong> The internal components must never be exposed outside the
+Logical Domain. All reads and mutations from a higher Domain pass through this
+service’s interface. If this invariant is broken, the coordinate-consistency and
+output-stability guarantees below become unenforceable.</p></li>
+<li><p><strong>Output stability.</strong> Raw and logical line output are pure functions of the TextBuffer’s
+current state. Repeated queries with no intervening mutation return identical results.
+(<a class="reference internal" href="../../requirements/f-req_output_modes.html#INV-MODE-002" title="INV-MODE-002"><em class="xref need">Buffer-Based Idempotency (INV-MODE-002)</em></a>)</p></li>
+<li><p><strong>Coordinate consistency.</strong> For any buffer position, the Absolute Index and <code class="docutils literal notranslate"><span class="pre">(line,</span> <span class="pre">col)</span></code>
+returned by the service always refer to the same position between characters.
+(<a class="reference internal" href="../../requirements/f-req_cursor_movement.html#INV-CURSOR-003" title="INV-CURSOR-003"><em class="xref need">Coordinate Synchronization (INV-CURSOR-003)</em></a>)</p></li>
+</ul>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">TextEditor</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">1. Specifications &amp; Design</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../requirements/index.html">1. Requirements</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">2. Architecture</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#introduction">2.1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#architectural-goals-and-constraints">2.2. Architectural Goals and Constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#system-context">2.3. System Context</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#containers">2.4. Containers</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#components">2.5. Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#code-c4-level-4">2.6. Code (C4 Level 4)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#architectural-decisions">2.7. Architectural Decisions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#error-contract">2.8. Error Contract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#open-questions">2.9. Open Questions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#appendix-a-glossary">2.10. Appendix A: Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#appendix-b-revision-history">2.11. Appendix B: Revision History</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#appendix-c-supporting-documents">2.12. Appendix C: Supporting Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#indices-and-tables">2.13. Indices and tables</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../glossary.html">Glossary</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html"><span class="section-number">2. </span>Architecture</a><ul>
+      <li>Previous: <a href="arch-facade.html" title="previous chapter">TextEditor</a></li>
+      <li>Next: <a href="arch-movement_resolver.html" title="next chapter">Movement Resolver</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Joe Rittiner.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../../_sources/specs/architecture/components/arch-logical_domain_service.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

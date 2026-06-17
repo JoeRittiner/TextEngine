@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Viewport State &#8212; TextEditor 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=27fed22d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-data-viewer/jsonview.bundle.css?v=f6ef2277" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/libs/html/datatables.min.css?v=4b4fd840" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/needstable.css?v=5e1b6797" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_links.css?v=2150a916" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_style.css?v=92936fa5" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_core.css?v=f5b60a78" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_toggle.css?v=5c6620df" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/modern.css?v=803738c0" />
+    <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../../_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/sphinx-data-viewer/jsonview.bundle.js?v=18cd53c5"></script>
+    <script src="../../../_static/sphinx-data-viewer/jsonview_loader.js?v=f7ff7e7d"></script>
+    <script src="../../../_static/sphinx-needs/libs/html/datatables.min.js?v=8a4aee21"></script>
+    <script src="../../../_static/sphinx-needs/libs/html/datatables_loader.js?v=a2cae175"></script>
+    <script src="../../../_static/sphinx-needs/libs/html/sphinx_needs_collapse.js?v=dca66431"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Visual Domain Service" href="arch-visual_domain_service.html" />
+    <link rel="prev" title="Text Buffer" href="arch-text_buffer.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="viewport-state">
+<h1>Viewport State<a class="headerlink" href="#viewport-state" title="Link to this heading">¶</a></h1>
+<section id="responsibility">
+<h2>Responsibility<a class="headerlink" href="#responsibility" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ViewportState</span></code> determines which visual lines are currently displayable by maintaining
+the window’s position over the full visual line sequence and scrolling when the cursor
+moves outside the viewport.</p>
+</section>
+<section id="owned-state">
+<h2>Owned State<a class="headerlink" href="#owned-state" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ViewportState</span></code> owns three pieces of state, all fixed at initialisation except
+<code class="docutils literal notranslate"><span class="pre">window_start</span></code>:</p>
+<ul class="simple">
+<li><p><strong>Display height:</strong> A positive integer defining the maximum number of visual lines the
+display can show simultaneously. (<a class="reference internal" href="../../requirements/f-req_initialization.html#FR-INIT-004" title="FR-INIT-004"><em class="xref need">Display Height Initialization (FR-INIT-004)</em></a>, <a class="reference internal" href="../../requirements/f-req_window.html#INV-VIEW-001" title="INV-VIEW-001"><em class="xref need">Display Dimensions (INV-VIEW-001)</em></a>)</p></li>
+<li><p><strong>ScrollOff:</strong> A non-negative integer defining the number of lines at the top and bottom
+of the display that are visible but outside the viewport. The condition
+<code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">*</span> <span class="pre">scrolloff</span> <span class="pre">&lt;</span> <span class="pre">display_height</span></code> must hold; violations are rejected at initialisation.
+(<a class="reference internal" href="../../requirements/f-req_initialization.html#FR-INIT-005" title="FR-INIT-005"><em class="xref need">ScrollOff Initialization (FR-INIT-005)</em></a>, <a class="reference internal" href="../../requirements/f-req_initialization.html#FR-INIT-011" title="FR-INIT-011"><em class="xref need">ScrollOff–Height Conflict (FR-INIT-011)</em></a>, <a class="reference internal" href="../../requirements/f-req_window.html#INV-VIEW-002" title="INV-VIEW-002"><em class="xref need">ScrollOff Constraint (INV-VIEW-002)</em></a>)</p></li>
+<li><p><strong>Window start:</strong> The index of the first visual line currently in the display window.
+This is the only piece of state that changes during normal operation. It is not
+supplied by the host application; it is derived during initialisation as the smallest
+non-negative value that satisfies <a class="reference internal" href="../../requirements/f-req_window.html#INV-VIEW-003" title="INV-VIEW-003"><em class="xref need">Window Bounds (INV-VIEW-003)</em></a> and <a class="reference internal" href="../../requirements/f-req_window.html#FR-VIEW-001" title="FR-VIEW-001"><em class="xref need">Cursor Window Constraint (FR-VIEW-001)</em></a> given
+the initial cursor position. (<a class="reference internal" href="../../requirements/f-req_initialization.html#FR-INIT-007" title="FR-INIT-007"><em class="xref need">Window Start Initialization (FR-INIT-007)</em></a>)</p></li>
+</ul>
+<p>Viewport height (the subset of the display window excluding the scrolloff margins) is
+an invariant derived from <code class="docutils literal notranslate"><span class="pre">display_height</span></code> and <code class="docutils literal notranslate"><span class="pre">scrolloff</span></code>, not independently owned
+state. (<a class="reference internal" href="../../requirements/f-req_window.html#INV-VIEW-004" title="INV-VIEW-004"><em class="xref need">Viewport Subset (INV-VIEW-004)</em></a>)</p>
+<p><strong>Initialisation validation.</strong> All three host-supplied parameters are validated on
+initialisation. A null or incorrectly-typed value raises an exception and halts
+initialisation. (<a class="reference internal" href="../../requirements/f-req_initialization.html#FR-INIT-012" title="FR-INIT-012"><em class="xref need">Null Parameter (FR-INIT-012)</em></a>, <a class="reference internal" href="../../requirements/f-req_initialization.html#FR-INIT-013" title="FR-INIT-013"><em class="xref need">Type Conflict (FR-INIT-013)</em></a>) The scrolloff–height conflict
+is checked after both individual values have passed their own validation.
+(<a class="reference internal" href="../../requirements/f-req_initialization.html#FR-INIT-011" title="FR-INIT-011"><em class="xref need">ScrollOff–Height Conflict (FR-INIT-011)</em></a>)</p>
+</section>
+<section id="behaviour">
+<h2>Behaviour<a class="headerlink" href="#behaviour" title="Link to this heading">¶</a></h2>
+<p>Given the current visual line count, the current cursor’s visual coordinate, and the
+existing <code class="docutils literal notranslate"><span class="pre">window_start</span></code>, <code class="docutils literal notranslate"><span class="pre">ViewportState</span></code> determines whether <code class="docutils literal notranslate"><span class="pre">window_start</span></code> requires
+adjustment and returns the displayable range <code class="docutils literal notranslate"><span class="pre">[window_start,</span> <span class="pre">window_start</span> <span class="pre">+</span>
+<span class="pre">display_height</span> <span class="pre">-</span> <span class="pre">1]</span></code>.</p>
+<p>The scroll decision follows from two constraints. First, the cursor must always be within
+the display window. (<a class="reference internal" href="../../requirements/f-req_window.html#FR-VIEW-001" title="FR-VIEW-001"><em class="xref need">Cursor Window Constraint (FR-VIEW-001)</em></a>) Second, whenever mathematically possible, the
+cursor must be within the viewport (the inner region excluding the scrolloff margins.)
+(<a class="reference internal" href="../../requirements/f-req_window.html#FR-VIEW-002" title="FR-VIEW-002"><em class="xref need">Cursor Constraint &amp; Scrolloff (FR-VIEW-002)</em></a>) When the cursor falls outside the viewport, <code class="docutils literal notranslate"><span class="pre">window_start</span></code> is
+adjusted by the minimum amount needed to bring the cursor back inside.
+(<a class="reference internal" href="../../requirements/f-req_window.html#FR-VIEW-003" title="FR-VIEW-003"><em class="xref need">Minimal Scroll Adjustment (FR-VIEW-003)</em></a>) The scrolloff constraint is relaxed only when the window has
+reached the absolute start or end of the visual line sequence and cannot scroll further.
+(<a class="reference internal" href="../../requirements/f-req_window.html#FR-VIEW-002" title="FR-VIEW-002"><em class="xref need">Cursor Constraint &amp; Scrolloff (FR-VIEW-002)</em></a>)</p>
+<p>Scrolling is non-destructive: adjusting <code class="docutils literal notranslate"><span class="pre">window_start</span></code> does not modify the text buffer,
+the cursor’s Absolute Index, Logical coordinate, or Visual coordinate.
+(<a class="reference internal" href="../../requirements/f-req_window.html#FR-VIEW-004" title="FR-VIEW-004"><em class="xref need">Non-Destructive Scrolling (FR-VIEW-004)</em></a>)</p>
+<p>The returned range is always contiguous. Display output is a function of both the buffer
+state and the current <code class="docutils literal notranslate"><span class="pre">window_start</span></code>; the same range returns the same lines for a given
+buffer state. (<a class="reference internal" href="../../requirements/f-req_output_modes.html#INV-MODE-003" title="INV-MODE-003"><em class="xref need">Viewport-Dependent Idempotency (INV-MODE-003)</em></a>)</p>
+</section>
+<section id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading">¶</a></h2>
+<p><strong>Depends on:</strong> Its inputs only: the visual line count, the cursor’s visual coordinate,
+and its own owned state. <code class="docutils literal notranslate"><span class="pre">ViewportState</span></code> holds no references to any other component.</p>
+<p><strong>Depended on by:</strong> The <code class="docutils literal notranslate"><span class="pre">DisplayDomainService</span></code>, which owns <code class="docutils literal notranslate"><span class="pre">ViewportState</span></code>, supplies
+it with the current visual line count and cursor position after every operation, and uses
+the returned range to slice the displayable lines.</p>
+</section>
+<section id="key-invariants">
+<h2>Key Invariants<a class="headerlink" href="#key-invariants" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><strong>Window bounds.</strong> <code class="docutils literal notranslate"><span class="pre">window_start</span></code> is always within the range
+<code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">window_start</span> <span class="pre">&lt;=</span> <span class="pre">max(0,</span> <span class="pre">num_visual_lines</span> <span class="pre">-</span> <span class="pre">display_height)</span></code>. This holds at
+initialisation and is maintained after every update. (<a class="reference internal" href="../../requirements/f-req_window.html#INV-VIEW-003" title="INV-VIEW-003"><em class="xref need">Window Bounds (INV-VIEW-003)</em></a>)</p></li>
+<li><p><strong>Cursor within display.</strong> The cursor’s visual row is always within the display window.
+That is, within <code class="docutils literal notranslate"><span class="pre">[window_start,</span> <span class="pre">window_start</span> <span class="pre">+</span> <span class="pre">display_height</span> <span class="pre">-</span> <span class="pre">1]</span></code>. This invariant
+is never relaxed. (<a class="reference internal" href="../../requirements/f-req_window.html#FR-VIEW-001" title="FR-VIEW-001"><em class="xref need">Cursor Window Constraint (FR-VIEW-001)</em></a>)</p></li>
+<li><p><strong>Cursor within viewport when possible.</strong> The cursor’s visual row is within the viewport
+<code class="docutils literal notranslate"><span class="pre">[window_start</span> <span class="pre">+</span> <span class="pre">scrolloff,</span> <span class="pre">window_start</span> <span class="pre">+</span> <span class="pre">display_height</span> <span class="pre">-</span> <span class="pre">scrolloff</span> <span class="pre">-</span> <span class="pre">1]</span></code>
+unless the window is near the absolute start or end of the visual line sequence.
+(<a class="reference internal" href="../../requirements/f-req_window.html#FR-VIEW-002" title="FR-VIEW-002"><em class="xref need">Cursor Constraint &amp; Scrolloff (FR-VIEW-002)</em></a>)</p></li>
+<li><p><strong>Immutable configuration.</strong> <code class="docutils literal notranslate"><span class="pre">display_height</span></code> and <code class="docutils literal notranslate"><span class="pre">scrolloff</span></code> do not change after
+initialisation. A change to either requires re-initialisation. (<a class="reference internal" href="../../requirements/f-req_initialization.html#INV-INIT-001" title="INV-INIT-001"><em class="xref need">Immutable Configuration (INV-INIT-001)</em></a>)</p></li>
+<li><p><strong>Read-only operations are non-destructive.</strong> Querying the displayable range does not
+modify <code class="docutils literal notranslate"><span class="pre">window_start</span></code>, the text buffer, or the cursor. (<a class="reference internal" href="../../requirements/f-req_output_modes.html#INV-MODE-001" title="INV-MODE-001"><em class="xref need">Read-Only Operations (INV-MODE-001)</em></a>)</p></li>
+</ul>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">TextEditor</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">1. Specifications &amp; Design</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../requirements/index.html">1. Requirements</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">2. Architecture</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#introduction">2.1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#architectural-goals-and-constraints">2.2. Architectural Goals and Constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#system-context">2.3. System Context</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#containers">2.4. Containers</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#components">2.5. Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#code-c4-level-4">2.6. Code (C4 Level 4)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#architectural-decisions">2.7. Architectural Decisions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#error-contract">2.8. Error Contract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#open-questions">2.9. Open Questions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#appendix-a-glossary">2.10. Appendix A: Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#appendix-b-revision-history">2.11. Appendix B: Revision History</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#appendix-c-supporting-documents">2.12. Appendix C: Supporting Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#indices-and-tables">2.13. Indices and tables</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../glossary.html">Glossary</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html"><span class="section-number">2. </span>Architecture</a><ul>
+      <li>Previous: <a href="arch-text_buffer.html" title="previous chapter">Text Buffer</a></li>
+      <li>Next: <a href="arch-visual_domain_service.html" title="next chapter">Visual Domain Service</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Joe Rittiner.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../../_sources/specs/architecture/components/arch-viewport_state.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

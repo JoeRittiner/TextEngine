@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Cursor State and Movement &#8212; TextEditor 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=27fed22d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-data-viewer/jsonview.bundle.css?v=f6ef2277" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/libs/html/datatables.min.css?v=4b4fd840" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/needstable.css?v=5e1b6797" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_links.css?v=2150a916" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_style.css?v=92936fa5" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_core.css?v=f5b60a78" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_toggle.css?v=5c6620df" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/modern.css?v=803738c0" />
+    <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../../_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/sphinx-data-viewer/jsonview.bundle.js?v=18cd53c5"></script>
+    <script src="../../../_static/sphinx-data-viewer/jsonview_loader.js?v=f7ff7e7d"></script>
+    <script src="../../../_static/sphinx-needs/libs/html/datatables.min.js?v=8a4aee21"></script>
+    <script src="../../../_static/sphinx-needs/libs/html/datatables_loader.js?v=a2cae175"></script>
+    <script src="../../../_static/sphinx-needs/libs/html/sphinx_needs_collapse.js?v=dca66431"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="2.11.1. Revision History" href="../arch-history.html" />
+    <link rel="prev" title="2.7.6. Layer Reads" href="../decisions/arch-layer_reads.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="cursor-state-and-movement">
+<h1>Cursor State and Movement<a class="headerlink" href="#cursor-state-and-movement" title="Link to this heading">¶</a></h1>
+<section id="the-current-model">
+<h2>The Current Model<a class="headerlink" href="#the-current-model" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">CursorState</span></code> represents the cursor as a visual coordinate <code class="docutils literal notranslate"><span class="pre">(row,</span> <span class="pre">col)</span></code>. On every call
+to <code class="docutils literal notranslate"><span class="pre">get_position()</span></code>, it checks the stored coordinate against the current wrapping map
+via the <code class="docutils literal notranslate"><span class="pre">VisualLogicalAdapter</span></code> and clamps it to the nearest valid position if needed.
+This is <em>lazy validation</em>: the stored value may be transiently invalid, and the
+invalidity is corrected the moment something asks for the position.</p>
+<p><code class="docutils literal notranslate"><span class="pre">MovementResolver</span></code> is a pure stateless calculator that translates a <code class="docutils literal notranslate"><span class="pre">(position,</span>
+<span class="pre">direction,</span> <span class="pre">visual_lines)</span></code> triple into a new valid visual coordinate. It is used not
+only for movement commands but also by <code class="docutils literal notranslate"><span class="pre">insert</span></code>, <code class="docutils literal notranslate"><span class="pre">backspace</span></code>, and <code class="docutils literal notranslate"><span class="pre">delete</span></code> to
+update the cursor position after each mutation.</p>
+</section>
+<section id="identified-tensions">
+<h2>Identified Tensions<a class="headerlink" href="#identified-tensions" title="Link to this heading">¶</a></h2>
+<p><strong>Visual coordinate is a derived value.</strong> A visual coordinate is a function of two
+things: the absolute position of the cursor in the text, and the current wrapping map.
+When either changes, the stored coordinate may no longer correspond to a valid position
+in the updated map. Storing a derived value as ground truth means any change to its
+inputs can silently invalidate it.</p>
+<p>Lazy validation is the mechanism that recovers from this: defer the validity check until
+the value is needed, so the staleness never causes harm. It works. But it means
+<code class="docutils literal notranslate"><span class="pre">CursorState</span></code> carries a permanent dependency on <code class="docutils literal notranslate"><span class="pre">VisualLogicalAdapter</span></code> — a component
+whose sole purpose is to hold a position now also needs to consult the wrapping
+infrastructure on every read.</p>
+<p><strong>The delete-exception case.</strong> A <code class="docutils literal notranslate"><span class="pre">delete</span></code> operation does not change the absolut index
+position of the cursor. However,:need:<cite>FR-CURSOR-010</cite> defines that when the cursor sits at
+the end of a logical line whose final visual line is exactly <code class="docutils literal notranslate"><span class="pre">display_width</span></code> characters
+long, it must be represented as <code class="docutils literal notranslate"><span class="pre">[v_row,</span> <span class="pre">display_width]</span></code> rather than normalising to
+<code class="docutils literal notranslate"><span class="pre">[v_row</span> <span class="pre">+</span> <span class="pre">1,</span> <span class="pre">0]</span></code>. The next visual row does not exist.</p>
+<p>Now consider a <code class="docutils literal notranslate"><span class="pre">delete</span></code> at this position. The cursor is at <code class="docutils literal notranslate"><span class="pre">[v_row,</span> <span class="pre">display_width]</span></code>,
+which is a <code class="docutils literal notranslate"><span class="pre">\n</span></code> character. <code class="docutils literal notranslate"><span class="pre">delete</span></code> removes it, joining the two logical lines. The
+exception no longer holds; the cursor must normalise to <code class="docutils literal notranslate"><span class="pre">[v_row</span> <span class="pre">+</span> <span class="pre">1,</span> <span class="pre">0]</span></code>. The
+absolute index of the cursor has not changed. The wrapping map has. The stored visual
+coordinate is now wrong, and <code class="docutils literal notranslate"><span class="pre">delete</span></code> does not update the cursor.</p>
+<p>Lazy validation catches this on the next <code class="docutils literal notranslate"><span class="pre">get_position()</span></code> call, and the architecture
+is correct. But the fact that the system <em>anticipates</em> this possibility — and patches
+over it on every read — is the smell. The need for a patch is evidence of a deeper
+misalignment in the model.</p>
+<p><strong>``MovementResolver`` is coupled to mutations.</strong> <code class="docutils literal notranslate"><span class="pre">insert</span></code>, <code class="docutils literal notranslate"><span class="pre">backspace</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">delete</span></code> currently use <code class="docutils literal notranslate"><span class="pre">MovementResolver</span></code> to determine the updated cursor position.
+This is architecturally awkward: <code class="docutils literal notranslate"><span class="pre">insert</span></code> advances the cursor to the right by
+<code class="docutils literal notranslate"><span class="pre">len(text)</span></code> positions; <code class="docutils literal notranslate"><span class="pre">backspace</span></code> decrements it by one; <code class="docutils literal notranslate"><span class="pre">delete</span></code> does not move
+it at all. None of these require movement resolution logic. They are arithmetic. The
+dependency on <code class="docutils literal notranslate"><span class="pre">MovementResolver</span></code> for mutations exists because the cursor is stored in
+visual space, where arithmetic is not straightforward. This is a symptom, not a design.</p>
+</section>
+<section id="the-root">
+<h2>The Root<a class="headerlink" href="#the-root" title="Link to this heading">¶</a></h2>
+<p>The root cause is that visual coordinate is a derived value being stored as though it
+were the source of truth. The stable primitive from which a visual coordinate is derived
+is the <strong>absolute index</strong>: the cursor’s position as a 0-based offset into the raw text
+string. Unlike a visual coordinate, an absolute index does not depend on the wrapping
+map. Its validity invariant is trivially checkable: <code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">k</span> <span class="pre">&lt;=</span> <span class="pre">len(text)</span></code>. It requires
+no external reference.</p>
+<p>The remaining sections propose two paths, both grounded in this insight.</p>
+</section>
+<section id="path-1-absolute-index-in-the-visual-domain">
+<h2>Path 1 — Absolute Index in the Visual Domain<a class="headerlink" href="#path-1-absolute-index-in-the-visual-domain" title="Link to this heading">¶</a></h2>
+<p>The smallest change that resolves all identified tensions: <code class="docutils literal notranslate"><span class="pre">CursorState</span></code> stores <code class="docutils literal notranslate"><span class="pre">k:</span>
+<span class="pre">int</span></code> instead of <code class="docutils literal notranslate"><span class="pre">(row,</span> <span class="pre">col)</span></code>.</p>
+<p><strong>``CursorState``</strong> becomes a minimal container. It stores a single integer, validates
+the range <code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">k</span> <span class="pre">&lt;=</span> <span class="pre">len(text)</span></code> on <code class="docutils literal notranslate"><span class="pre">set()</span></code>, and returns it on <code class="docutils literal notranslate"><span class="pre">get()</span></code>. It has no
+dependency on <code class="docutils literal notranslate"><span class="pre">VisualLogicalAdapter</span></code> and performs no clamping.</p>
+<p><strong>``VisualDomainService``</strong> absorbs the translation logic that previously lived
+implicitly in the cursor. Before a movement operation, it translates <code class="docutils literal notranslate"><span class="pre">k</span></code> to a visual
+coordinate via the adapter. After the resolver returns a new visual coordinate, it
+translates that back to an absolute index and stores it. For mutations, the cursor
+update is direct arithmetic: <code class="docutils literal notranslate"><span class="pre">insert</span></code> sets <code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">+=</span> <span class="pre">len(text)</span></code>; <code class="docutils literal notranslate"><span class="pre">backspace</span></code> sets
+<code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">-=</span> <span class="pre">1</span></code>; <code class="docutils literal notranslate"><span class="pre">delete</span></code> leaves <code class="docutils literal notranslate"><span class="pre">k</span></code> unchanged.</p>
+<p><strong>``MovementResolver``</strong> is unchanged and decoupled from mutations. It remains a pure
+stateless function of <code class="docutils literal notranslate"><span class="pre">(visual_pos,</span> <span class="pre">direction,</span> <span class="pre">visual_lines)</span> <span class="pre">→</span> <span class="pre">visual_pos</span></code>. It no
+longer needs to be consulted for <code class="docutils literal notranslate"><span class="pre">insert</span></code>, <code class="docutils literal notranslate"><span class="pre">backspace</span></code>, or <code class="docutils literal notranslate"><span class="pre">delete</span></code>.</p>
+<p><strong>``VisualLogicalAdapter``</strong> absorbs <code class="docutils literal notranslate"><span class="pre">FR-CURSOR-010</span></code>. The normalisation rule — which
+previously lived in <code class="docutils literal notranslate"><span class="pre">CursorState</span></code>’s validation logic — moves into <code class="docutils literal notranslate"><span class="pre">to_visual(k)</span></code>,
+the single point at which visual coordinates are produced from absolute indices. This is
+the correct location: the rule describes how to represent a position as a visual
+coordinate, which is precisely what <code class="docutils literal notranslate"><span class="pre">to_visual()</span></code> does. The <code class="docutils literal notranslate"><span class="pre">validate_visual_position()</span></code>
+method is removed from the public API; its logic is now internal to translation.</p>
+<p>The delete-exception case becomes a non-event. After <code class="docutils literal notranslate"><span class="pre">delete</span></code> removes the <code class="docutils literal notranslate"><span class="pre">\n</span></code>, the
+wrapping map updates, and <code class="docutils literal notranslate"><span class="pre">k</span></code> is unchanged. The next call to <code class="docutils literal notranslate"><span class="pre">adapter.to_visual(k)</span></code>
+consults the new map and returns the correct normalised coordinate. No special handling,
+no deferred clamping. The problem disappears because <code class="docutils literal notranslate"><span class="pre">k</span></code> does not depend on the
+wrapping map.</p>
+<p>The one real cost is movement: two adapter translations per operation (<code class="docutils literal notranslate"><span class="pre">k</span></code> to visual
+before resolving, visual to <code class="docutils literal notranslate"><span class="pre">k</span></code> after). Both are lookups into the wrapping map and
+localized to the <code class="docutils literal notranslate"><span class="pre">VisualDomainService</span></code>. For a project at this scale, this is not really
+a concern.</p>
+<p>Path 1 is a conservative, self-contained refactor. It solves all identified problems and
+does not preclude Path 2.</p>
+</section>
+<section id="path-2-the-cursor-centric-logical-domain">
+<h2>Path 2 — The Cursor-Centric Logical Domain<a class="headerlink" href="#path-2-the-cursor-centric-logical-domain" title="Link to this heading">¶</a></h2>
+<p>Path 1 places the absolute index in the Visual Domain because that is where the cursor
+currently lives. But the absolute index is a position in the raw text string — a Logical
+Domain concept. Taking the insight to its conclusion: the cursor belongs in the Logical
+Domain.</p>
+<p>This is not a refactoring of where <code class="docutils literal notranslate"><span class="pre">CursorState</span></code> sits. It is a reconceptualisation of
+what the Logical Domain <em>is</em>.</p>
+<p>Currently the Logical Domain is a text manipulation layer. Its API takes explicit
+positions: <code class="docutils literal notranslate"><span class="pre">insert(text,</span> <span class="pre">abs_index)</span></code>, <code class="docutils literal notranslate"><span class="pre">delete(abs_index)</span></code>, <code class="docutils literal notranslate"><span class="pre">backspace(abs_index)</span></code>.
+The position is a parameter; the domain is agnostic about which position the caller
+intends. This is the API of a library, not an editor.</p>
+<p>A text editor is cursor-centric. The cursor is not a parameter to an operation; it is a
+persistent, shared context that defines where every operation acts. <code class="docutils literal notranslate"><span class="pre">insert(text)</span></code>
+means <em>insert at the cursor</em>. <code class="docutils literal notranslate"><span class="pre">backspace()</span></code> means <em>remove the character before the
+cursor</em>. <code class="docutils literal notranslate"><span class="pre">delete()</span></code> means <em>remove the character at the cursor</em>. These are the
+semantically correct signatures for the core layer of a text editor, and they become
+possible the moment the cursor lives in the Logical Domain.</p>
+<p><strong>``CursorState``</strong> moves to the Logical Domain, owned by <code class="docutils literal notranslate"><span class="pre">LogicalDomainService</span></code>. It
+stores <code class="docutils literal notranslate"><span class="pre">k:</span> <span class="pre">int</span></code>, validates range, and exposes <code class="docutils literal notranslate"><span class="pre">get_cursor()</span> <span class="pre">→</span> <span class="pre">int</span></code> and
+<code class="docutils literal notranslate"><span class="pre">set_cursor(k:</span> <span class="pre">int)</span></code>.</p>
+<p><strong>``LogicalDomainService``</strong> becomes cursor-centric. <code class="docutils literal notranslate"><span class="pre">insert(text)</span></code> inserts at the
+cursor and advances it: <code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">+=</span> <span class="pre">len(text)</span></code>. <code class="docutils literal notranslate"><span class="pre">backspace()</span></code> removes the character before
+the cursor and decrements it: <code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">-=</span> <span class="pre">1</span></code>. <code class="docutils literal notranslate"><span class="pre">delete()</span></code> removes the character at the
+cursor; <code class="docutils literal notranslate"><span class="pre">k</span></code> is unchanged. The <code class="docutils literal notranslate"><span class="pre">abs_index</span></code> parameter disappears from all three. The
+domain now models the natural semantics of editing.</p>
+<p><strong>``VisualLogicalAdapter``</strong> mediates cursor state across the domain boundary, as it
+already mediates text mutations. It exposes <code class="docutils literal notranslate"><span class="pre">get_cursor_abs()</span> <span class="pre">→</span> <span class="pre">int</span></code>, which reads from
+<code class="docutils literal notranslate"><span class="pre">LogicalDomainService</span></code>, and <code class="docutils literal notranslate"><span class="pre">set_cursor(k:</span> <span class="pre">int)</span></code>, which writes to it. Mutation calls
+lose their index parameter: <code class="docutils literal notranslate"><span class="pre">adapter.insert(text)</span></code> delegates to
+<code class="docutils literal notranslate"><span class="pre">logical.insert(text)</span></code>; the cursor update is internal to the Logical Domain.</p>
+<p><strong>``VisualDomainService``</strong> handles movement as in Path 1 — read cursor via adapter,
+translate to visual, resolve, translate back, write cursor via adapter — but performs
+no cursor arithmetic for mutations. It delegates to the adapter and steps aside.</p>
+<p><strong>There is no cursor state in the Visual Domain.</strong> The Visual Domain borrows the cursor
+from the Logical Domain when it needs it. <code class="docutils literal notranslate"><span class="pre">VisualDomainService</span></code> and
+<code class="docutils literal notranslate"><span class="pre">DisplayDomainService</span></code> derive their coordinate representations on demand.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">set_cursor(k)</span></code> call from the Visual Domain to the Logical Domain — issued after a
+movement operation — is a Visual → Logical write, consistent with the existing
+unidirectional dependency. The Adapter already mediates all cross-domain calls from
+Visual to Logical; this is one more, distinguished only by the fact that it updates
+cursor state rather than text. It should be documented as a deliberate design choice
+rather than left implicit.</p>
+<p>The Facade also becomes cleaner. <code class="docutils literal notranslate"><span class="pre">editor.insert(text)</span></code> is the natural call; the cursor
+position is implicit. The <code class="docutils literal notranslate"><span class="pre">arch-layer_reads</span></code> principle applies unchanged: cursor reads
+flow directly to the owning layer (<code class="docutils literal notranslate"><span class="pre">LogicalDomainService</span></code>), while write operations
+propagate through the full domain hierarchy.</p>
+<p>One question is worth stating plainly: does adding cursor ownership to the Logical
+Domain violate the principle that it is a “general text manipulation layer”? It does not,
+because a text editor’s core layer is not a general text manipulation library. The cursor
+is a first-class concept at every level of the system; the argument for keeping the
+Logical Domain cursor-agnostic was never architectural — it was habitual. Correcting
+the scope of the Logical Domain is not feature creep; it is naming the domain honestly.</p>
+</section>
+<section id="assessment">
+<h2>Assessment<a class="headerlink" href="#assessment" title="Link to this heading">¶</a></h2>
+<p>Both paths eliminate lazy validation, remove the <code class="docutils literal notranslate"><span class="pre">VisualLogicalAdapter</span></code> dependency
+from cursor state, decouple <code class="docutils literal notranslate"><span class="pre">MovementResolver</span></code> from mutations, and resolve the
+delete-exception case cleanly.</p>
+<p>Path 1 is the conservative option. The change surface is small, the risk is low, and the
+existing domain boundaries are preserved. It is a sound refactor that stands on its own.</p>
+<p>Path 2 is the more coherent final state. The cursor belongs in the Logical Domain because
+the absolute index is a Logical Domain concept, and <code class="docutils literal notranslate"><span class="pre">insert(text)</span></code> is the correct API
+for a cursor-centric editor. The architecture at every level becomes simpler to reason
+about: the cursor has one home, mutations are semantically correct, and the Visual Domain
+borrows what it needs without owning it. Path 2 is more ambitious because it changes the
+Logical Domain’s contract, but the result is an architecture whose structure matches its
+intent.</p>
+<p>The recommended direction is Path 2.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">TextEditor</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">1. Specifications &amp; Design</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../requirements/index.html">1. Requirements</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">2. Architecture</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#introduction">2.1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#architectural-goals-and-constraints">2.2. Architectural Goals and Constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#system-context">2.3. System Context</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#containers">2.4. Containers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#components">2.5. Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#code-c4-level-4">2.6. Code (C4 Level 4)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#architectural-decisions">2.7. Architectural Decisions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#error-contract">2.8. Error Contract</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#open-questions">2.9. Open Questions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#appendix-a-glossary">2.10. Appendix A: Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#appendix-b-revision-history">2.11. Appendix B: Revision History</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#appendix-c-supporting-documents">2.12. Appendix C: Supporting Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#indices-and-tables">2.13. Indices and tables</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../glossary.html">Glossary</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html"><span class="section-number">2. </span>Architecture</a><ul>
+      <li>Previous: <a href="../decisions/arch-layer_reads.html" title="previous chapter"><span class="section-number">2.7.6. </span>Layer Reads</a></li>
+      <li>Next: <a href="../arch-history.html" title="next chapter"><span class="section-number">2.11.1. </span>Revision History</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Joe Rittiner.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../../_sources/specs/architecture/future_evolution/arch-cursor_state_and_movement.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

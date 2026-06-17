@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>CursorState &#8212; TextEditor 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=27fed22d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-data-viewer/jsonview.bundle.css?v=f6ef2277" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/libs/html/datatables.min.css?v=4b4fd840" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/needstable.css?v=5e1b6797" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_links.css?v=2150a916" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_style.css?v=92936fa5" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_core.css?v=f5b60a78" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_toggle.css?v=5c6620df" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/modern.css?v=803738c0" />
+    <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../../_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/sphinx-data-viewer/jsonview.bundle.js?v=18cd53c5"></script>
+    <script src="../../../_static/sphinx-data-viewer/jsonview_loader.js?v=f7ff7e7d"></script>
+    <script src="../../../_static/sphinx-needs/libs/html/datatables.min.js?v=8a4aee21"></script>
+    <script src="../../../_static/sphinx-needs/libs/html/datatables_loader.js?v=a2cae175"></script>
+    <script src="../../../_static/sphinx-needs/libs/html/sphinx_needs_collapse.js?v=dca66431"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Display Domain Service" href="arch-display_domain_service.html" />
+    <link rel="prev" title="2. Architecture" href="../index.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="cursorstate">
+<h1>CursorState<a class="headerlink" href="#cursorstate" title="Link to this heading">¶</a></h1>
+<section id="responsibility">
+<h2>Responsibility<a class="headerlink" href="#responsibility" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">CursorState</span></code> is the authoritative store for the cursor’s position, expressed as an Absolute Index.
+(<a class="reference internal" href="../../requirements/f-req_cursor_movement.html#FR-CURSOR-001" title="FR-CURSOR-001"><em class="xref need">Mutable Cursor Position (FR-CURSOR-001)</em></a>)</p>
+</section>
+<section id="owned-state">
+<h2>Owned State<a class="headerlink" href="#owned-state" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">CursorState</span></code> owns one piece of state: the cursor’s position <code class="docutils literal notranslate"><span class="pre">abs_index</span></code>.
+This is the ground truth for cursor position within the Logical Domain.</p>
+<p>This state is updated upon <code class="docutils literal notranslate"><span class="pre">move_*</span></code> commands, as well when the buffer is mutated by
+<code class="docutils literal notranslate"><span class="pre">insert</span></code> or <code class="docutils literal notranslate"><span class="pre">backspace</span></code>. (<a class="reference internal" href="../../requirements/f-req_cursor_movement.html#FR-CURSOR-020" title="FR-CURSOR-020"><em class="xref need">Movement Operations (FR-CURSOR-020)</em></a>, <a class="reference internal" href="../../requirements/f-req_text_manipulation.html#FR-TEXT-011" title="FR-TEXT-011"><em class="xref need">Insert Operation Support (FR-TEXT-011)</em></a>, <a class="reference internal" href="../../requirements/f-req_text_manipulation.html#FR-TEXT-031" title="FR-TEXT-031"><em class="xref need">Backspace Operation Support (FR-TEXT-031)</em></a>)</p>
+<p>Though it holds no reference to the buffer. It must be informed of buffer mutations for <code class="docutils literal notranslate"><span class="pre">insert</span></code>
+and <code class="docutils literal notranslate"><span class="pre">backspace</span></code> commands.</p>
+</section>
+<section id="behaviour">
+<h2>Behaviour<a class="headerlink" href="#behaviour" title="Link to this heading">¶</a></h2>
+<p><strong>On set.</strong> <code class="docutils literal notranslate"><span class="pre">CursorState</span></code> accepts a new absolute index and stores it. It operates under the invariant
+that the <code class="docutils literal notranslate"><span class="pre">LogicalDomainService</span></code> pre-validates explicit sets, throwing an error before invalid indices
+reach this component.</p>
+<p><strong>On get.</strong> The <code class="docutils literal notranslate"><span class="pre">CursorState</span></code> returns the stored absolute index without validation.
+The caller is responsible for ensuring the position is valid given the current buffer state.</p>
+<p><strong>Move.</strong> <code class="docutils literal notranslate"><span class="pre">CursorState</span></code> offers an interface for moving horizontally only. These are coordinated by the
+<code class="docutils literal notranslate"><span class="pre">LogicalDomainService</span></code>, which treats out-of-bounds results as no-ops to ensure this state component
+never holds an invalid absolute index.</p>
+<p><strong>Initialisation.</strong> The initial cursor position is supplied as an Absolute Index by the
+host application (<a class="reference internal" href="../../requirements/f-req_initialization.html#FR-INIT-001" title="FR-INIT-001"><em class="xref need">System Initialization (FR-INIT-001)</em></a>, <a class="reference internal" href="../../requirements/f-req_initialization.html#FR-INIT-006" title="FR-INIT-006"><em class="xref need">Cursor Initialization (FR-INIT-006)</em></a>). An out-of-range value or incorrect type
+raises an exception and halts initialisation (<a class="reference internal" href="../../requirements/f-req_initialization.html#FR-INIT-013" title="FR-INIT-013"><em class="xref need">Type Conflict (FR-INIT-013)</em></a>).</p>
+</section>
+<section id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading">¶</a></h2>
+<p><strong>Depends on:</strong> Nothing.</p>
+<p><strong>Depended on by:</strong> The <code class="docutils literal notranslate"><span class="pre">LogicalDomainService</span></code>, which is the only component that calls
+<code class="docutils literal notranslate"><span class="pre">get_position</span></code> or sets a new position on <code class="docutils literal notranslate"><span class="pre">CursorState</span></code>.</p>
+</section>
+<section id="key-invariants">
+<h2>Key Invariants<a class="headerlink" href="#key-invariants" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><strong>Inter-character positioning.</strong> The cursor always refers to a position between
+characters, never on a character. (<a class="reference internal" href="../../requirements/f-req_cursor_movement.html#INV-CURSOR-002" title="INV-CURSOR-002"><em class="xref need">Inter-Character Positioning (INV-CURSOR-002)</em></a>)</p></li>
+<li><p><strong>Non-destructive.</strong> Reading or updating the cursor position never modifies the text
+buffer. (<a class="reference internal" href="../../requirements/f-req_cursor_movement.html#FR-CURSOR-021" title="FR-CURSOR-021"><em class="xref need">Non-Destructive Movement (FR-CURSOR-021)</em></a>)</p></li>
+</ul>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">TextEditor</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">1. Specifications &amp; Design</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../requirements/index.html">1. Requirements</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">2. Architecture</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#introduction">2.1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#architectural-goals-and-constraints">2.2. Architectural Goals and Constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#system-context">2.3. System Context</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#containers">2.4. Containers</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#components">2.5. Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#code-c4-level-4">2.6. Code (C4 Level 4)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#architectural-decisions">2.7. Architectural Decisions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#error-contract">2.8. Error Contract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#open-questions">2.9. Open Questions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#appendix-a-glossary">2.10. Appendix A: Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#appendix-b-revision-history">2.11. Appendix B: Revision History</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#appendix-c-supporting-documents">2.12. Appendix C: Supporting Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#indices-and-tables">2.13. Indices and tables</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../glossary.html">Glossary</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html"><span class="section-number">2. </span>Architecture</a><ul>
+      <li>Previous: <a href="../index.html" title="previous chapter"><span class="section-number">2. </span>Architecture</a></li>
+      <li>Next: <a href="arch-display_domain_service.html" title="next chapter">Display Domain Service</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Joe Rittiner.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../../_sources/specs/architecture/components/arch-cursor_state.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

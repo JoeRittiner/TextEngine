@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>2.7.4. Cursor Belongs to the Logical Domain &#8212; TextEditor 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=27fed22d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-data-viewer/jsonview.bundle.css?v=f6ef2277" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/libs/html/datatables.min.css?v=4b4fd840" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/needstable.css?v=5e1b6797" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_links.css?v=2150a916" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_style.css?v=92936fa5" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_core.css?v=f5b60a78" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_toggle.css?v=5c6620df" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/modern.css?v=803738c0" />
+    <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../../_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/sphinx-data-viewer/jsonview.bundle.js?v=18cd53c5"></script>
+    <script src="../../../_static/sphinx-data-viewer/jsonview_loader.js?v=f7ff7e7d"></script>
+    <script src="../../../_static/sphinx-needs/libs/html/datatables.min.js?v=8a4aee21"></script>
+    <script src="../../../_static/sphinx-needs/libs/html/datatables_loader.js?v=a2cae175"></script>
+    <script src="../../../_static/sphinx-needs/libs/html/sphinx_needs_collapse.js?v=dca66431"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="2.7.5. Cursor Position Validation" href="arch-position_validation.html" />
+    <link rel="prev" title="2.7.3. C4 Model" href="arch-c4_model.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="cursor-belongs-to-the-logical-domain">
+<h1><span class="section-number">2.7.4. </span>Cursor Belongs to the Logical Domain<a class="headerlink" href="#cursor-belongs-to-the-logical-domain" title="Link to this heading">¶</a></h1>
+<section id="context">
+<h2>Context<a class="headerlink" href="#context" title="Link to this heading">¶</a></h2>
+<p>The editor architecture is divided into three domain layers. Data flows upward through these layers
+(Logical → Visual → Display), while requests flow downward.</p>
+<p>A design question emerged regarding ownership of the cursor. The cursor’s position can be fundamentally
+tracked as an absolute index into the text buffer, making it deeply tied to logical text mutations
+(such as insertions and deletions). However, vertical cursor movement across wrapped lines requirements
+(<a class="reference internal" href="../../requirements/f-req_cursor_movement.html#FR-CURSOR-030" title="FR-CURSOR-030"><em class="xref need">Visual Line Basis (FR-CURSOR-030)</em></a>), depend entirely on layout information managed by the Visual Domain.</p>
+<p>This creates an architectural tension between:</p>
+<ul class="simple">
+<li><p>Keeping cursor state close to the text buffer source of truth to ensure state stability during mutations.</p></li>
+<li><p>Preserving strict, unidirectional dependencies between domain layers.</p></li>
+<li><p>Mitigating translation overhead during directional movement operations.</p></li>
+</ul>
+</section>
+<section id="decision">
+<h2>Decision<a class="headerlink" href="#decision" title="Link to this heading">¶</a></h2>
+<p>The cursor belongs in the <strong>Logical Domain</strong>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">CursorState</span></code> component is owned and managed entirely by the <code class="docutils literal notranslate"><span class="pre">LogicalDomainService</span></code>. It stores the
+cursor position using a single primitive value: an absolute index (<code class="docutils literal notranslate"><span class="pre">abs_index</span></code>) into the text buffer.</p>
+<p>The Visual Domain contains no persistent cursor state. It borrows the cursor position on demand from the
+Logical Domain when executing visual calculations.</p>
+<p>Movement operations are split by axis:</p>
+<ol class="arabic simple">
+<li><p><strong>Horizontal Movement:</strong> The Visual Domain acts as a pure pass-through, delegating horizontal adjustments
+directly to the Logical Domain to evaluate as absolute index changes.</p></li>
+<li><p><strong>Vertical Movement:</strong> The <code class="docutils literal notranslate"><span class="pre">VisualDomainService</span></code> orchestrates visual adjustments via a multi-step
+translation flow utilizing the <code class="docutils literal notranslate"><span class="pre">VisualLogicalAdapter</span></code> and the stateless <code class="docutils literal notranslate"><span class="pre">MovementResolver</span></code>.</p></li>
+</ol>
+</section>
+<section id="rationale">
+<h2>Rationale<a class="headerlink" href="#rationale" title="Link to this heading">¶</a></h2>
+<p>Storing the cursor as a visual coordinate <code class="docutils literal notranslate"><span class="pre">(row,</span> <span class="pre">col)</span></code> in the Visual Domain introduces “lazy validation”.
+Because a visual coordinate is a derived value dependent on a shifting wrapping map, text mutations can silently
+invalidate the cursor’s coordinate, forcing a permanent and messy dependency from <code class="docutils literal notranslate"><span class="pre">CursorState</span></code>
+back onto the <code class="docutils literal notranslate"><span class="pre">VisualLogicalAdapter</span></code>.</p>
+<p>Moving the cursor to the Logical Domain as an absolute index provides several structural advantages:</p>
+<ul class="simple">
+<li><p><strong>State Stability:</strong> An absolute index is a stable primitive. It does not become corrupt or invalid
+when wrapping maps or display widths change.</p></li>
+<li><p><strong>Atomic Mutations:</strong> Text modifications (insertions and deletions) can update both the text buffer and the
+cursor position simultaneously within the same domain layer, eliminating complex cross-domain synchronization
+hooks.</p></li>
+<li><p><strong>Simplified Horizontal Movement:</strong> Because horizontal movement does not inherently require structural layout
+lines, delegating it straight to the Logical Domain bypasses unnecessary layout processing.</p></li>
+</ul>
+<p>While vertical movement now requires an explicit read-translate-resolve-write orchestration flow across domain
+boundaries, this overhead is accepted. The reliability of a stable, mutation-safe absolute index outweighs the
+cost of performing coordinate translation during live vertical steps.</p>
+<p>The vertical movement flow operates cleanly without storing state in the Visual Domain:</p>
+<ol class="arabic simple">
+<li><p><strong>Read</strong> the current absolute index from the Logical Domain via the <code class="docutils literal notranslate"><span class="pre">VisualLogicalAdapter</span></code>.</p></li>
+<li><p><strong>Translate</strong> the absolute index into a transient visual coordinate using the adapter’s wrapping map.</p></li>
+<li><p><strong>Resolve</strong> the target visual coordinate by passing the position and direction to the stateless <code class="docutils literal notranslate"><span class="pre">MovementResolver</span></code>.</p></li>
+<li><p><strong>Translate Back</strong> the calculated target visual coordinate into an absolute index.</p></li>
+<li><p><strong>Write</strong> the final absolute index back to the <code class="docutils literal notranslate"><span class="pre">CursorState</span></code> in the Logical Domain.</p></li>
+</ol>
+</section>
+<section id="alternatives-considered">
+<h2>Alternatives Considered<a class="headerlink" href="#alternatives-considered" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt><strong>Cursor in the Visual Domain (Previous Architecture)</strong></dt><dd><p>The cursor was previously modeled as a visual coordinate stored in the Visual Domain to avoid translation
+overhead during directional movements. This was rejected because visual coordinates are derived values.
+Buffer mutations constantly threatened to break the coordinate, requiring a complex lazy validation pattern
+and forcing the state layer to depend heavily on layout components.</p>
+</dd>
+<dt><strong>Movement Controller in the Visual Domain, Cursor in the Logical Domain</strong></dt><dd><p>A dedicated movement controller component could have been introduced in the Visual Domain while leaving
+the cursor state itself in the Logical Domain. This was rejected because it violates architectural dependency
+rules: the Logical Domain would be exposed to Visual Domain concepts to reconcile state, or an active
+bidirectional coordination path would be required. The resolution is to place both the state and the resolver
+in the Visual Domain, while maintaining them as separate components to ensure testability.</p>
+</dd>
+<dt><strong>Cursor in the Display Domain</strong></dt><dd><p>The cursor could have been modeled relative to window or display coordinates. This was rejected because it
+introduces unnecessary layout abstraction. Lower domains are generally preferred when satisfying an
+architectural invariant, and the Visual Domain already accurately defines the editor-wide coordinate system.</p>
+</dd>
+</dl>
+</section>
+<section id="consequences">
+<h2>Consequences<a class="headerlink" href="#consequences" title="Link to this heading">¶</a></h2>
+<p><strong>Easier:</strong></p>
+<ul class="simple">
+<li><p><strong>Stable Truth:</strong> The cursor position is never transiently invalid or desynchronized during text mutations.</p></li>
+<li><p><strong>Clean Visual Domain:</strong> The Visual Domain is entirely stateless regarding the cursor, behaving as a functional
+layout calculator.</p></li>
+<li><p><strong>Encapsulated Mutations:</strong> Core editor operations like text insertion and backspacing process cleanly within a
+single domain block.</p></li>
+</ul>
+<p><strong>Harder:</strong></p>
+<ul class="simple">
+<li><p><strong>Boundary Orchestration:</strong> Vertical movement requires a strict, multi-step orchestration sequence by the
+<code class="docutils literal notranslate"><span class="pre">VisualDomainService</span></code> to safely map across the boundary.</p></li>
+<li><p><strong>Adapter Workload:</strong> The <code class="docutils literal notranslate"><span class="pre">VisualLogicalAdapter</span></code> must maintain highly accurate, bidirectional translation
+logic (index-to-visual and visual-to-index) to prevent layout drifts during vertical steps.</p></li>
+</ul>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">TextEditor</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">1. Specifications &amp; Design</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../requirements/index.html">1. Requirements</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">2. Architecture</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#introduction">2.1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#architectural-goals-and-constraints">2.2. Architectural Goals and Constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#system-context">2.3. System Context</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#containers">2.4. Containers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#components">2.5. Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#code-c4-level-4">2.6. Code (C4 Level 4)</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#architectural-decisions">2.7. Architectural Decisions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#error-contract">2.8. Error Contract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#open-questions">2.9. Open Questions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#appendix-a-glossary">2.10. Appendix A: Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#appendix-b-revision-history">2.11. Appendix B: Revision History</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#appendix-c-supporting-documents">2.12. Appendix C: Supporting Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#indices-and-tables">2.13. Indices and tables</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../glossary.html">Glossary</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html"><span class="section-number">2. </span>Architecture</a><ul>
+      <li>Previous: <a href="arch-c4_model.html" title="previous chapter"><span class="section-number">2.7.3. </span>C4 Model</a></li>
+      <li>Next: <a href="arch-position_validation.html" title="next chapter"><span class="section-number">2.7.5. </span>Cursor Position Validation</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Joe Rittiner.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../../_sources/specs/architecture/decisions/arch-cursor_domain.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

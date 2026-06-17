@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>2.7.2. Display Domain &#8212; TextEditor 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=27fed22d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-data-viewer/jsonview.bundle.css?v=f6ef2277" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/libs/html/datatables.min.css?v=4b4fd840" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/needstable.css?v=5e1b6797" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_links.css?v=2150a916" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_style.css?v=92936fa5" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_core.css?v=f5b60a78" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_toggle.css?v=5c6620df" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/modern.css?v=803738c0" />
+    <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../../_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/sphinx-data-viewer/jsonview.bundle.js?v=18cd53c5"></script>
+    <script src="../../../_static/sphinx-data-viewer/jsonview_loader.js?v=f7ff7e7d"></script>
+    <script src="../../../_static/sphinx-needs/libs/html/datatables.min.js?v=8a4aee21"></script>
+    <script src="../../../_static/sphinx-needs/libs/html/datatables_loader.js?v=a2cae175"></script>
+    <script src="../../../_static/sphinx-needs/libs/html/sphinx_needs_collapse.js?v=dca66431"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="2.7.3. C4 Model" href="arch-c4_model.html" />
+    <link rel="prev" title="2.7.1. Layered Domains" href="arch-layers.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="display-domain">
+<h1><span class="section-number">2.7.2. </span>Display Domain<a class="headerlink" href="#display-domain" title="Link to this heading">¶</a></h1>
+<section id="context">
+<h2>Context<a class="headerlink" href="#context" title="Link to this heading">¶</a></h2>
+<p>The Text Editor Engine must track the cursor consistently across four coordinate spaces:
+Absolute Index, Logical, Visual, and Window. (<a class="reference internal" href="../../requirements/f-req_cursor_movement.html#INV-CURSOR-001" title="INV-CURSOR-001"><em class="xref need">Valid Coordinate Ranges (INV-CURSOR-001)</em></a>)</p>
+<p>The Visual Domain already provides a fully functional layer: it wraps the raw text into
+visual lines and tracks the cursor in Visual coordinates <code class="docutils literal notranslate"><span class="pre">(row,</span> <span class="pre">col)</span></code>. If the display
+were infinitely tall, the Visual Domain alone would suffice.</p>
+<p>The problem is that real displays are not infinitely tall. The engine must also:</p>
+<ul class="simple">
+<li><p>Constrain the visible output to a fixed-height window.</p></li>
+<li><p>Keep the cursor within that window as it moves (scrolling when necessary).</p></li>
+<li><p>Translate the cursor’s Visual coordinate into a Window coordinate <code class="docutils literal notranslate"><span class="pre">[x,</span> <span class="pre">y]</span></code> that is
+relative to the visible portion of the wrapped output.</p></li>
+</ul>
+<p>A design decision was required: where does height-management and Window-coordinate
+tracking belong in the domain structure?</p>
+</section>
+<section id="decision">
+<h2>Decision<a class="headerlink" href="#decision" title="Link to this heading">¶</a></h2>
+<p>An additional Display Domain is placed <strong>above</strong> the Visual Domain in the dependency stack.
+It does not replace the Visual Domain; it extends it. The Display Domain consumes the Visual
+Domain’s output (the full list of wrapped visual lines and the Visual cursor position) and
+applies a second transformation: truncating that list to the visible window and translating
+the Visual cursor into Window coordinates.</p>
+<p>The Display Domain is the Visual Domain with one additional responsibility: deciding
+which visual lines are currently visible.</p>
+</section>
+<section id="rationale">
+<h2>Rationale<a class="headerlink" href="#rationale" title="Link to this heading">¶</a></h2>
+<p>The Visual Domain already produces the correct logical structure: lines wrapped to the
+configured display width, with the cursor tracked in Visual space. Height-management is
+a strictly additive concern: it does not change how lines are wrapped or how the cursor
+moves; it only selects a subset of what the Visual Domain has already computed.</p>
+<p>Placing the Display Domain above the Visual Domain reflects this dependency accurately.
+The Display Domain depends on Visual output; the Visual Domain is unaware of the window
+height. This preserves the unidirectional dependency rule (<a class="reference internal" href="../index.html#arch-goals-and-constraints"><span class="std std-ref">Architectural Goals and Constraints</span></a>)
+and ensures that neither domain’s behaviour bleeds into the other’s responsibility.</p>
+<p>The alternative placement, adjacent to or below the Visual Domain, would require the
+Display Domain to replicate wrapping logic or to operate on unwrapped logical lines. This
+would violate single responsibility, increase complexity, and break the clean coordinate
+ownership model.</p>
+</section>
+<section id="alternatives-considered">
+<h2>Alternatives Considered<a class="headerlink" href="#alternatives-considered" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt><strong>Display Domain operating directly above the Logical Domain (bypassing Visual).</strong></dt><dd><p>The Display Domain could truncate <em>logical</em> lines rather than visual lines, making it
+independent of the Visual Domain entirely. This is structurally simpler, but it is
+less useful: logical lines are not wrapped, so the host application would always receive
+raw, unwrapped text regardless of the configured display width. The wrapping
+invariant (<a class="reference internal" href="../../requirements/f-req_text_wrapping.html#FR-WRAP-001" title="FR-WRAP-001"><em class="xref need">Non-Destructive Wrapping (FR-WRAP-001)</em></a>) would be unenforceable at the display boundary.</p>
+</dd>
+<dt><strong>Merging Display and Visual into a single domain.</strong></dt><dd><p>A single domain could handle both wrapping and viewport management. This reduces the
+number of moving parts, but conflates two distinct concerns; line wrapping (a function
+of width) and viewport scrolling (a function of height and cursor position), into one
+component. The combined domain would be harder to test in isolation and would violate
+single responsibility.</p>
+</dd>
+<dt><strong>Host application manages viewport.</strong></dt><dd><p>The engine could expose all wrapped visual lines and leave height-clipping and
+Window-coordinate translation to the host. This simplifies the engine but pushes
+non-trivial coordinate logic into every host implementation.</p>
+</dd>
+</dl>
+</section>
+<section id="consequences">
+<h2>Consequences<a class="headerlink" href="#consequences" title="Link to this heading">¶</a></h2>
+<p><strong>Easier:</strong></p>
+<ul class="simple">
+<li><p>The Visual Domain can be developed, tested, and reasoned about independently of window
+geometry. All wrapping behaviour is fully exercisable without a window height.</p></li>
+<li><p>The Display Domain’s responsibility is narrow and precisely stated: given visual lines
+and a visual cursor, return the visible subset and the Window cursor. It can be unit-tested
+with a mock of the Visual Domain’s output.</p></li>
+<li><p>The coordinate ownership model is clean: each domain owns exactly one coordinate space,
+and translation is always localised to the domain boundary where the spaces meet.</p></li>
+</ul>
+<p><strong>Constrained or made harder:</strong></p>
+<ul class="simple">
+<li><p>The engine has three layers where two might seem sufficient for simple use cases. This
+adds cognitive overhead when first reading the architecture.</p></li>
+<li><p>A resize operation (change to <code class="docutils literal notranslate"><span class="pre">display_height</span></code> or <code class="docutils literal notranslate"><span class="pre">display_width</span></code>) must propagate
+through two domain boundaries. The Visual Domain must recompute wrapping for a new
+width; the Display Domain must recompute the viewport for a new height. These are
+currently treated as re-initialisation events. (<a class="reference internal" href="../../requirements/f-req_window.html#INV-VIEW-001" title="INV-VIEW-001"><em class="xref need">Display Dimensions (INV-VIEW-001)</em></a>, <a class="reference internal" href="../../requirements/f-req_text_wrapping.html#INV-WRAP-001" title="INV-WRAP-001"><em class="xref need">Defined Display Width (INV-WRAP-001)</em></a>)</p></li>
+<li><p>Raw text does not cross the Display Domain boundary. Any host that needs both the
+visible text and the Window cursor position must issue two separate queries.
+The Facade resolves this by holding direct references to all three domain services,
+allowing it to serve each output mode from its owning layer without passing concerns
+upward. (See <a class="reference internal" href="arch-layer_reads.html"><span class="doc">Layer Reads</span></a>).</p></li>
+</ul>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">TextEditor</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">1. Specifications &amp; Design</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../requirements/index.html">1. Requirements</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">2. Architecture</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#introduction">2.1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#architectural-goals-and-constraints">2.2. Architectural Goals and Constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#system-context">2.3. System Context</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#containers">2.4. Containers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#components">2.5. Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#code-c4-level-4">2.6. Code (C4 Level 4)</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#architectural-decisions">2.7. Architectural Decisions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#error-contract">2.8. Error Contract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#open-questions">2.9. Open Questions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#appendix-a-glossary">2.10. Appendix A: Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#appendix-b-revision-history">2.11. Appendix B: Revision History</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#appendix-c-supporting-documents">2.12. Appendix C: Supporting Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#indices-and-tables">2.13. Indices and tables</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../glossary.html">Glossary</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html"><span class="section-number">2. </span>Architecture</a><ul>
+      <li>Previous: <a href="arch-layers.html" title="previous chapter"><span class="section-number">2.7.1. </span>Layered Domains</a></li>
+      <li>Next: <a href="arch-c4_model.html" title="next chapter"><span class="section-number">2.7.3. </span>C4 Model</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Joe Rittiner.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../../_sources/specs/architecture/decisions/arch-display_domain.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>2.7.3. C4 Model &#8212; TextEditor 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=27fed22d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-data-viewer/jsonview.bundle.css?v=f6ef2277" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/libs/html/datatables.min.css?v=4b4fd840" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/needstable.css?v=5e1b6797" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_links.css?v=2150a916" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_style.css?v=92936fa5" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_core.css?v=f5b60a78" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_toggle.css?v=5c6620df" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/modern.css?v=803738c0" />
+    <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../../_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/sphinx-data-viewer/jsonview.bundle.js?v=18cd53c5"></script>
+    <script src="../../../_static/sphinx-data-viewer/jsonview_loader.js?v=f7ff7e7d"></script>
+    <script src="../../../_static/sphinx-needs/libs/html/datatables.min.js?v=8a4aee21"></script>
+    <script src="../../../_static/sphinx-needs/libs/html/datatables_loader.js?v=a2cae175"></script>
+    <script src="../../../_static/sphinx-needs/libs/html/sphinx_needs_collapse.js?v=dca66431"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="2.7.4. Cursor Belongs to the Logical Domain" href="arch-cursor_domain.html" />
+    <link rel="prev" title="2.7.2. Display Domain" href="arch-display_domain.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="c4-model">
+<h1><span class="section-number">2.7.3. </span>C4 Model<a class="headerlink" href="#c4-model" title="Link to this heading">¶</a></h1>
+<section id="context">
+<h2>Context<a class="headerlink" href="#context" title="Link to this heading">¶</a></h2>
+<p>The engine’s layered domain structure was already decided (see <a class="reference internal" href="arch-layers.html"><span class="doc">Layered Domains</span></a>): three
+additive domains, Logical, Visual, and Display, stacked with strict unidirectional
+dependencies. That decision produced a natural hierarchy of abstraction: the engine as a
+whole, the domains within it, and the modules within each domain.</p>
+<p>What remained was a documentation decision: how to describe and communicate that hierarchy
+consistently. Without a shared model, there is no principled way to answer questions such
+as: what counts as a component? what is the boundary of a domain? what level of detail
+belongs in which diagram? Inventing answers ad-hoc risks inconsistency across diagrams and
+requires every term to be defined before it can be used.</p>
+</section>
+<section id="decision">
+<h2>Decision<a class="headerlink" href="#decision" title="Link to this heading">¶</a></h2>
+<p>The architecture of the Text Editor Engine is described using the <strong>C4 model</strong>
+(<a class="reference external" href="https://c4model.com/">https://c4model.com/</a>).</p>
+<p>The C4 hierarchy is applied as follows:</p>
+<ul class="simple">
+<li><p><strong>System:</strong> The Text Editor Engine and Host application.</p></li>
+<li><p><strong>Container:</strong> Each of the three domains: Logical, Visual, and Display. These are not
+separately deployable processes; they are bounded, cohesive units of responsibility
+within a single Python module.</p></li>
+<li><p><strong>Component:</strong> The individual modules within each domain (e.g. <code class="docutils literal notranslate"><span class="pre">TextBuffer</span></code>,
+<code class="docutils literal notranslate"><span class="pre">VisualLogicalAdapter</span></code>, <code class="docutils literal notranslate"><span class="pre">ViewportState</span></code>).</p></li>
+<li><p><strong>Code:</strong> The classes, functions, and data structures that implement each component.</p></li>
+</ul>
+</section>
+<section id="rationale">
+<h2>Rationale<a class="headerlink" href="#rationale" title="Link to this heading">¶</a></h2>
+<p>The C4 model’s four-level hierarchy maps directly onto the engine’s existing structure,
+with no forcing required. The engine is in the System; its three domains are Containers; the
+modules within each domain are Components. C4 therefore gives the hierarchy names it would
+have needed regardless. It does not impose a structure, it labels one that already exists.</p>
+<p>C4 also scales with the reader. The Context and Container diagrams communicate the
+high-level structure to anyone reading the architecture document for the first time.
+Component diagrams provide the detail needed during implementation. The model does not
+require all four levels to be diagrammed — levels can be omitted where they add no
+clarity — which keeps documentation proportionate to the engine’s actual complexity.</p>
+<p>Finally, C4 is tooling-agnostic and widely understood. Using it means the diagrams and
+vocabulary in this document are immediately legible to anyone familiar with the model,
+without requiring project-specific conventions to be explained first.</p>
+</section>
+<section id="alternatives-considered">
+<h2>Alternatives Considered<a class="headerlink" href="#alternatives-considered" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt><strong>An ad-hoc structural vocabulary.</strong></dt><dd><p>Rather than adopting C4, the architecture document could have invented its own terms and
+diagram conventions. This was rejected because it would require every diagram and every
+use of terms like “domain” or “component” to be accompanied by a definition. C4 provides
+those definitions for free, and its conventions are already understood by practitioners.</p>
+</dd>
+</dl>
+</section>
+<section id="consequences">
+<h2>Consequences<a class="headerlink" href="#consequences" title="Link to this heading">¶</a></h2>
+<p><strong>Easier:</strong></p>
+<ul class="simple">
+<li><p>Diagrams at different levels of detail (Context, Container, Component) can be produced
+and read independently. A reader who only needs the high-level picture reads the
+Container diagram; a reader implementing a component reads the Component diagram. Neither
+diagram needs to carry the detail of the other.</p></li>
+<li><p>The model’s vocabulary resolves naming questions without discussion. Whether a given
+unit is a Container or a Component is answered by C4’s definitions, not by negotiation
+each time a new diagram is drawn.</p></li>
+<li><p>The Container boundary makes violations of single responsibility visible in the
+documentation itself: if a Container’s responsibility cannot be stated in one sentence,
+the diagram signals a problem before the code is written.</p></li>
+</ul>
+<p><strong>Constrained or made harder:</strong></p>
+<ul class="simple">
+<li><p>The C4 Container level implies a degree of autonomy and replaceability that does not
+fully apply here: the three domains are co-located in a single Python module and share a
+process. Using “Container” for a bounded unit within a module is a deliberate adaptation
+of the model, not a strict application of it. This must be noted explicitly to avoid
+misleading readers who expect Containers to be separately deployable services.</p></li>
+<li><p>Maintaining consistency across four levels of documentation adds overhead. Decisions
+about what belongs at the Component level versus the Container level must be made
+deliberately and may require revisiting as the implementation evolves.</p></li>
+<li><p>For a project of this scale, the full C4 apparatus — four levels, multiple diagram
+types, explicit interface contracts — is more structure than the complexity of the
+problem strictly demands. The overhead is accepted in exchange for the learning value
+and the consistency it enforces.</p></li>
+</ul>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">TextEditor</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">1. Specifications &amp; Design</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../requirements/index.html">1. Requirements</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">2. Architecture</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#introduction">2.1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#architectural-goals-and-constraints">2.2. Architectural Goals and Constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#system-context">2.3. System Context</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#containers">2.4. Containers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#components">2.5. Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#code-c4-level-4">2.6. Code (C4 Level 4)</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#architectural-decisions">2.7. Architectural Decisions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#error-contract">2.8. Error Contract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#open-questions">2.9. Open Questions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#appendix-a-glossary">2.10. Appendix A: Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#appendix-b-revision-history">2.11. Appendix B: Revision History</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#appendix-c-supporting-documents">2.12. Appendix C: Supporting Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#indices-and-tables">2.13. Indices and tables</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../glossary.html">Glossary</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html"><span class="section-number">2. </span>Architecture</a><ul>
+      <li>Previous: <a href="arch-display_domain.html" title="previous chapter"><span class="section-number">2.7.2. </span>Display Domain</a></li>
+      <li>Next: <a href="arch-cursor_domain.html" title="next chapter"><span class="section-number">2.7.4. </span>Cursor Belongs to the Logical Domain</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Joe Rittiner.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../../_sources/specs/architecture/decisions/arch-c4_model.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>1.4.5. Window &amp; Scrolling &#8212; TextEditor 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-data-viewer/jsonview.bundle.css?v=f6ef2277" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/libs/html/datatables.min.css?v=4b4fd840" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/common_css/needstable.css?v=5e1b6797" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/common_css/need_links.css?v=2150a916" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/common_css/need_style.css?v=92936fa5" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/common_css/need_core.css?v=f5b60a78" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/common_css/need_toggle.css?v=5c6620df" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/modern.css?v=803738c0" />
+    <script src="../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/sphinx-data-viewer/jsonview.bundle.js?v=18cd53c5"></script>
+    <script src="../../_static/sphinx-data-viewer/jsonview_loader.js?v=f7ff7e7d"></script>
+    <script src="../../_static/sphinx-needs/libs/html/datatables.min.js?v=8a4aee21"></script>
+    <script src="../../_static/sphinx-needs/libs/html/datatables_loader.js?v=a2cae175"></script>
+    <script src="../../_static/sphinx-needs/libs/html/sphinx_needs_collapse.js?v=dca66431"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="1.4.6. Output Modes" href="f-req_output_modes.html" />
+    <link rel="prev" title="1.4.4. Text Wrapping" href="f-req_text_wrapping.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="window-scrolling">
+<span id="req-window"></span><h1><span class="section-number">1.4.5. </span>Window &amp; Scrolling<a class="headerlink" href="#window-scrolling" title="Link to this heading">¶</a></h1>
+<section id="description-and-priority">
+<h2>Description and Priority<a class="headerlink" href="#description-and-priority" title="Link to this heading">¶</a></h2>
+<p><strong>Priority: Low</strong></p>
+<p>The <a class="reference internal" href="../../glossary.html#term-Window"><span class="xref std std-term">window</span></a> defines the total visible height, limiting the maximum number of <a class="reference internal" href="../../glossary.html#term-Visual-Line"><span class="xref std std-term">visual lines</span></a>
+that can be “displayed” at once. A <code class="docutils literal notranslate"><span class="pre">window_height</span> <span class="pre">=</span> <span class="pre">10</span></code> means that no more than 10 <a class="reference internal" href="../../glossary.html#term-Visual-Line"><span class="xref std std-term">visual lines</span></a>/
+<a class="reference internal" href="../../glossary.html#term-Display-Line"><span class="xref std std-term">display lines</span></a> are returned.</p>
+<p>The <a class="reference internal" href="../../glossary.html#term-Viewport"><span class="xref std std-term">viewport</span></a> acts as a virtual boundary within the <a class="reference internal" href="../../glossary.html#term-Window"><span class="xref std std-term">window</span></a>. It constraints where the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> can
+move before triggering a scroll. A <code class="docutils literal notranslate"><span class="pre">viewport_height</span> <span class="pre">=</span> <span class="pre">window_height</span></code> means there are no restrictions on where the
+<a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> is displayed (<a class="reference internal" href="../../glossary.html#term-Window-Coordinate"><span class="xref std std-term">window coordinate</span></a>) withing the <a class="reference internal" href="../../glossary.html#term-Window"><span class="xref std std-term">window</span></a>.</p>
+<p><a class="reference internal" href="../../glossary.html#term-ScrollOff"><span class="xref std std-term">ScrollOff</span></a> defines the margin: the number of <a class="reference internal" href="../../glossary.html#term-Visual-Line"><span class="xref std std-term">visual lines</span></a> that must remain visible above
+and below the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a>. The <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> is only allowed to enter the <a class="reference internal" href="../../glossary.html#term-ScrollOff"><span class="xref std std-term">scrollOff</span></a> margins if it is near
+the absolute start or end of the <a class="reference internal" href="../../glossary.html#term-Text-Buffer"><span class="xref std std-term">text buffer</span></a> where scrolling further is impossible.</p>
+<p>The visible <a class="reference internal" href="../../glossary.html#term-Window"><span class="xref std std-term">window</span></a> range/ the <a class="reference internal" href="../../glossary.html#term-Window-Start"><span class="xref std std-term">window start</span></a> is automatically updated in response to <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a>
+movement and text manipulation.</p>
+</section>
+<section id="state-invariants">
+<h2>State Invariants<a class="headerlink" href="#state-invariants" title="Link to this heading">¶</a></h2>
+<div class="need_container docutils container" id="SNCB-7bd5f513">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_inv docutils align-default" id="INV-VIEW-001">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Invariant</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Display Dimensions</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#INV-VIEW-001" title="INV-VIEW-001">INV-VIEW-001</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">viewport</span><span class="needs_spacer">, </span><span class="needs_data">state</span></span></span></div>
+</span></span></div>
+<div class="line"><span><div class="line">links outgoing: <span class="links"><span><a class="reference internal" href="f-req_initialization.html#FR-INIT-004" title="INV-VIEW-001">FR-INIT-004</a></span></span></div>
+<div class="line">links incoming: <span class="links"><span><a class="reference internal" href="f-req_cursor_movement.html#INV-CURSOR-001" title="INV-VIEW-001">INV-CURSOR-001</a>, <a class="reference internal" href="f-req_initialization.html#INV-INIT-001" title="INV-VIEW-001">INV-INIT-001</a>, <a class="reference internal" href="f-req_initialization.html#FR-INIT-004" title="INV-VIEW-001">FR-INIT-004</a>, <a class="reference internal" href="f-req_output_modes.html#FR-MODE-031" title="INV-VIEW-001">FR-MODE-031</a></span></span></div>
+</span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>A positive integer <a class="reference internal" href="../../glossary.html#term-Display-Height"><span class="xref std std-term">display height</span></a> must be defined at system initialization. It dictates the maximum number of
+<a class="reference internal" href="../../glossary.html#term-Visual-Line"><span class="xref std std-term">visual lines</span></a> the system can return as <a class="reference internal" href="../../glossary.html#term-Display-Line"><span class="xref std std-term">display lines</span></a>.</p>
+<p><strong>Note:</strong> If dynamic resizing is needed by a user, the system must be re-initialized with a new
+<a class="reference internal" href="../../glossary.html#term-Display-Height"><span class="xref std std-term">display height</span></a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-f4908ef0">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_inv docutils align-default" id="INV-VIEW-002">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Invariant</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">ScrollOff Constraint</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#INV-VIEW-002" title="INV-VIEW-002">INV-VIEW-002</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">viewport</span><span class="needs_spacer">, </span><span class="needs_data">scrolloff</span></span></span></div>
+</span></span></div>
+<div class="line"><span><div class="line">links outgoing: <span class="links"><span><a class="reference internal" href="f-req_initialization.html#FR-INIT-005" title="INV-VIEW-002">FR-INIT-005</a></span></span></div>
+<div class="line">links incoming: <span class="links"><span><a class="reference internal" href="f-req_initialization.html#INV-INIT-002" title="INV-VIEW-002">INV-INIT-002</a>, <a class="reference internal" href="f-req_initialization.html#FR-INIT-005" title="INV-VIEW-002">FR-INIT-005</a>, <a class="reference internal" href="f-req_initialization.html#FR-INIT-011" title="INV-VIEW-002">FR-INIT-011</a></span></span></div>
+</span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>A non-negative integer <a class="reference internal" href="../../glossary.html#term-ScrollOff"><span class="xref std std-term">scrollOff</span></a> must be defined. To ensure a valid <a class="reference internal" href="../../glossary.html#term-Viewport-Height"><span class="xref std std-term">viewport height</span></a> exists,
+the condition <code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">*</span> <span class="pre">scrolloff</span> <span class="pre">&lt;</span> <span class="pre">display_height</span></code> must strictly hold true.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-1e152eef">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_inv docutils align-default" id="INV-VIEW-003">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Invariant</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Window Bounds</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#INV-VIEW-003" title="INV-VIEW-003">INV-VIEW-003</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">viewport</span><span class="needs_spacer">, </span><span class="needs_data">boundaries</span></span></span></div>
+</span></span></div>
+<div class="line"><span><div class="line">links incoming: <span class="links"><span><a class="reference internal" href="f-req_initialization.html#INV-INIT-002" title="INV-VIEW-003">INV-INIT-002</a>, <a class="reference internal" href="f-req_initialization.html#FR-INIT-007" title="INV-VIEW-003">FR-INIT-007</a>, <a class="reference internal" href="f-req_output_modes.html#FR-MODE-031" title="INV-VIEW-003">FR-MODE-031</a></span></span></div>
+</span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>The visible <a class="reference internal" href="../../glossary.html#term-Window"><span class="xref std std-term">window</span></a> is defined by a <a class="reference internal" href="../../glossary.html#term-Window-Start"><span class="xref std std-term">window start</span></a> index (representing the first visible
+<a class="reference internal" href="../../glossary.html#term-Visual-Line"><span class="xref std std-term">visual line</span></a> index).</p>
+<p>The <a class="reference internal" href="../../glossary.html#term-Window"><span class="xref std std-term">window</span></a> must always be contained within the available <a class="reference internal" href="../../glossary.html#term-Visual-Line"><span class="xref std std-term">visual lines</span></a>.
+The valid range is:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">window_start</span> <span class="pre">&lt;=</span> <span class="pre">max(0,</span> <span class="pre">num_visual_lines</span> <span class="pre">-</span> <span class="pre">display_height)</span></code>.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-66327ad3">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_inv docutils align-default" id="INV-VIEW-004">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Invariant</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Viewport Subset</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#INV-VIEW-004" title="INV-VIEW-004">INV-VIEW-004</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">viewport</span><span class="needs_spacer">, </span><span class="needs_data">boundaries</span></span></span></div>
+</span></span></div>
+<div class="line"><span><div class="line">links incoming: <span class="links"><span><a class="reference internal" href="f-req_initialization.html#INV-INIT-002" title="INV-VIEW-004">INV-INIT-002</a></span></span></div>
+</span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>The <a class="reference internal" href="../../glossary.html#term-Viewport"><span class="xref std std-term">viewport</span></a> is the subset of the <a class="reference internal" href="../../glossary.html#term-Display-Line"><span class="xref std std-term">display lines</span></a> excluding the top and bottom <a class="reference internal" href="../../glossary.html#term-ScrollOff"><span class="xref std std-term">scrollOff</span></a> lines:
+<code class="docutils literal notranslate"><span class="pre">[scrolloff,</span> <span class="pre">viewport_height</span> <span class="pre">+</span> <span class="pre">scrolloff]</span></code>.</p>
+<p>The <a class="reference internal" href="../../glossary.html#term-Viewport-Height"><span class="xref std std-term">viewport height</span></a> is strictly <code class="docutils literal notranslate"><span class="pre">display_height</span> <span class="pre">-</span> <span class="pre">(2</span> <span class="pre">*</span> <span class="pre">scrolloff)</span></code> and positive.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="preconditions">
+<h2>Preconditions<a class="headerlink" href="#preconditions" title="Link to this heading">¶</a></h2>
+<p>The system requires an initialized <a class="reference internal" href="../../glossary.html#term-Text-Buffer"><span class="xref std std-term">text buffer</span></a> that has been successfully mapped into
+<a class="reference internal" href="../../glossary.html#term-Visual-Line"><span class="xref std std-term">visual lines</span></a> according to the <a class="reference internal" href="f-req_text_wrapping.html"><span class="doc">Wrapping Specification</span></a>.</p>
+</section>
+<section id="stimulus-response-sequences">
+<h2>Stimulus/Response Sequences<a class="headerlink" href="#stimulus-response-sequences" title="Link to this heading">¶</a></h2>
+<ul>
+<li><p><strong>Stimulus:</strong> The <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> is moved to a new position within the bounds of the current <a class="reference internal" href="../../glossary.html#term-Viewport"><span class="xref std std-term">viewport</span></a>.</p>
+<p><strong>Response:</strong> The system requires no scrolling action; the <a class="reference internal" href="../../glossary.html#term-Window"><span class="xref std std-term">window</span></a> remains unchanged.</p>
+</li>
+<li><p><strong>Stimulus:</strong> The <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> is moved to a position outside the current <a class="reference internal" href="../../glossary.html#term-Viewport"><span class="xref std std-term">viewport</span></a>
+(into the <a class="reference internal" href="../../glossary.html#term-ScrollOff"><span class="xref std std-term">scrollOff</span></a> region or beyond).</p>
+<p><strong>Response:</strong> The system adjusts the <a class="reference internal" href="../../glossary.html#term-Window-Start"><span class="xref std std-term">window start</span></a> by the minimal amount required to include the new
+<a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> position within the <a class="reference internal" href="../../glossary.html#term-Viewport"><span class="xref std std-term">viewport</span></a>.</p>
+</li>
+<li><p><strong>Stimulus:</strong> Text is deleted, reducing the total number of <a class="reference internal" href="../../glossary.html#term-Visual-Line"><span class="xref std std-term">visual lines</span></a> such that the current
+<a class="reference internal" href="../../glossary.html#term-Window-Start"><span class="xref std std-term">window start</span></a> violates <a class="reference internal" href="#INV-VIEW-003" title="INV-VIEW-003"><em class="xref need">Window Bounds (INV-VIEW-003)</em></a>.</p>
+<p><strong>Response:</strong> The system automatically shifts the <a class="reference internal" href="../../glossary.html#term-Window-Start"><span class="xref std std-term">window start</span></a> upwards (decreasing the value) until the
+<a class="reference internal" href="../../glossary.html#term-Window"><span class="xref std std-term">window</span></a> bounds are valid again.</p>
+</li>
+</ul>
+</section>
+<section id="functional-requirements">
+<h2>Functional Requirements<a class="headerlink" href="#functional-requirements" title="Link to this heading">¶</a></h2>
+<div class="need_container docutils container" id="SNCB-a3c2d733">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-VIEW-001">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Cursor Window Constraint</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-VIEW-001" title="FR-VIEW-001">FR-VIEW-001</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">viewport</span><span class="needs_spacer">, </span><span class="needs_data">scrolloff</span></span></span></div>
+</span></span></div>
+<div class="line"><span><div class="line">links incoming: <span class="links"><span><a class="reference internal" href="f-req_initialization.html#FR-INIT-007" title="FR-VIEW-001">FR-INIT-007</a></span></span></div>
+</span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>The system must enforce that the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> remains within the <a class="reference internal" href="../../glossary.html#term-Window"><span class="xref std std-term">window</span></a>/
+<a class="reference internal" href="../../glossary.html#term-Display-Line"><span class="xref std std-term">display lines</span></a> at all times.</p>
+<p>In other words: the <code class="docutils literal notranslate"><span class="pre">y</span></code> value of the <a class="reference internal" href="../../glossary.html#term-Window-Coordinate"><span class="xref std std-term">window coordinate</span></a> must be within the range
+<code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">num_display_lines-1]</span></code>. (Together with <a class="reference internal" href="f-req_cursor_movement.html#INV-CURSOR-003" title="INV-CURSOR-003"><em class="xref need">Coordinate Synchronization (INV-CURSOR-003)</em></a>)
+(Since there is always at least one <a class="reference internal" href="../../glossary.html#term-Logical-Line"><span class="xref std std-term">logical line</span></a> (<a class="reference internal" href="f-req_text_manipulation.html#INV-TEXT-001" title="INV-TEXT-001"><em class="xref need">Empty Buffer Definition (INV-TEXT-001)</em></a>), <code class="docutils literal notranslate"><span class="pre">num_display_lines</span></code> will always be at least <code class="docutils literal notranslate"><span class="pre">1</span></code>.)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-5e937b4d">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-VIEW-002">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Cursor Constraint &amp; Scrolloff</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-VIEW-002" title="FR-VIEW-002">FR-VIEW-002</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">viewport</span><span class="needs_spacer">, </span><span class="needs_data">scrolloff</span></span></span></div>
+</span></span></div>
+<div class="line"><span><div class="line">links incoming: <span class="links"><span><a class="reference internal" href="#FR-VIEW-003" title="FR-VIEW-002">FR-VIEW-003</a></span></span></div>
+</span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>The system must enforce that the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> remains within the <a class="reference internal" href="../../glossary.html#term-Viewport"><span class="xref std std-term">viewport</span></a> whenever mathematically possible.</p>
+<p>This constraint must only be relaxed (allowing the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> into the <a class="reference internal" href="../../glossary.html#term-ScrollOff"><span class="xref std std-term">scrollOff</span></a> region) when the
+<a class="reference internal" href="../../glossary.html#term-Window-Start"><span class="xref std std-term">window start</span></a> has reached the absolute start or end of the <a class="reference internal" href="../../glossary.html#term-Text-Buffer"><span class="xref std std-term">text buffer</span></a> and prevent the <a class="reference internal" href="../../glossary.html#term-Window"><span class="xref std std-term">window</span></a>
+from scrolling further
+(i.e., when <code class="docutils literal notranslate"><span class="pre">window_start</span> <span class="pre">==</span> <span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">window_start</span> <span class="pre">==</span> <span class="pre">max(0,</span> <span class="pre">len(visual_lines)</span> <span class="pre">-</span> <span class="pre">display_height)</span></code>).</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-ba121713">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-VIEW-003">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Minimal Scroll Adjustment</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-VIEW-003" title="FR-VIEW-003">FR-VIEW-003</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">viewport</span><span class="needs_spacer">, </span><span class="needs_data">scrolling</span></span></span></div>
+</span></span></div>
+<div class="line"><span><div class="line">links outgoing: <span class="links"><span><a class="reference internal" href="#FR-VIEW-002" title="FR-VIEW-003">FR-VIEW-002</a></span></span></div>
+</span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>When adjusting the <a class="reference internal" href="../../glossary.html#term-Window"><span class="xref std std-term">window</span></a>, the system must change the <a class="reference internal" href="../../glossary.html#term-Window-Start"><span class="xref std std-term">window start</span></a> index by the absolute minimum
+amount required to satisfy <a class="reference internal" href="#FR-VIEW-002" title="FR-VIEW-002"><em class="xref need">Cursor Constraint &amp; Scrolloff (FR-VIEW-002)</em></a>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="need_container docutils container" id="SNCB-84751f21">
+<table class="need needs_grid_simple needs_layout_clean needs_style_none needs_type_freq docutils align-default" id="FR-VIEW-004">
+<tbody>
+<tr class="need head row-odd"><td class="need head"><div class="needs_head line-block">
+<div class="line"><span><span class="needs_type_name"><span class="needs_data">Requirement</span></span>: </span><strong><span><span class="needs_title"><span class="needs_data">Non-Destructive Scrolling</span></span></span></strong><span> <span class="needs-id"><a class="reference internal" href="#FR-VIEW-004" title="FR-VIEW-004">FR-VIEW-004</a></span>  <span class="needs needs_collapse" id="target__show__meta"><span class="needs collapsed"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="8 12 12 16 16 12"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg></span><span class="needs visible collapse_is_hidden"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right-circle"><circle cx="12" cy="12" r="10"></circle><polyline points="12 16 16 12 12 8"></polyline><line x1="8" y1="12" x2="16" y2="12"></line></svg></span></span> </span></div>
+</div>
+</td>
+</tr>
+<tr class="need meta row-even"><td class="need meta"><div class="needs_meta line-block">
+<div class="line"><span><span><div class="line"><span class="needs_status"><span class="needs_label">status: </span><span class="needs_data">Open</span></span></div>
+<div class="line"><span class="needs_tags"><span class="needs_label">tags: </span><span class="needs_data_container"><span class="needs_data">viewport</span><span class="needs_spacer">, </span><span class="needs_data">scrolling</span></span></span></div>
+</span></span></div>
+<div class="line"><span><div class="line">links outgoing: <span class="links"><span><a class="reference internal" href="f-req_cursor_movement.html#FR-CURSOR-005" title="FR-VIEW-004">FR-CURSOR-005</a></span></span></div>
+</span></div>
+</div>
+</td>
+</tr>
+<tr class="need content row-odd"><td class="need content" colspan="1"><p>Scrolling operations must adjust only the <a class="reference internal" href="../../glossary.html#term-Window-Start"><span class="xref std std-term">window start</span></a> index, <a class="reference internal" href="../../glossary.html#term-Window-Coordinate"><span class="xref std std-term">window coordinate</span></a> and the
+<a class="reference internal" href="../../glossary.html#term-Display-Line"><span class="xref std std-term">display lines</span></a>. They are a purely visual mechanism and must not change the
+<a class="reference internal" href="../../glossary.html#term-Absolute-Index"><span class="xref std std-term">Absolute Index</span></a>, <a class="reference internal" href="../../glossary.html#term-Logical-Coordinate"><span class="xref std std-term">Logical</span></a>, or <a class="reference internal" href="../../glossary.html#term-Visual-Coordinate"><span class="xref std std-term">Visual Coordinates</span></a> of
+the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a>, nor modify the <a class="reference internal" href="../../glossary.html#term-Text-Buffer"><span class="xref std std-term">text buffer</span></a>.</p>
+<p>Scrolling operations may adjust the <a class="reference internal" href="../../glossary.html#term-Window-Coordinate"><span class="xref std std-term">Window Coordinate</span></a> <code class="docutils literal notranslate"><span class="pre">[x,</span> <span class="pre">y]</span></code> of the <a class="reference internal" href="../../glossary.html#term-Cursor"><span class="xref std std-term">cursor</span></a> only in some cases.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">TextEditor</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">1. Specifications &amp; Design</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">1. Requirements</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#introduction">1.1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#overall-description">1.2. Overall Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#external-interface-requirements">1.3. External Interface Requirements</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#functional-requirements">1.4. Functional Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#nonfunctional-requirements">1.5. Nonfunctional Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#appendix-a-requirements">1.6. Appendix A: Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#appendix-b-glossary">1.7. Appendix B: Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#appendix-c-related-documents">1.8. Appendix C: Related Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#indices-and-tables">1.9. Indices and tables</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture/index.html">2. Architecture</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../glossary.html">Glossary</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="index.html"><span class="section-number">1. </span>Requirements</a><ul>
+      <li>Previous: <a href="f-req_text_wrapping.html" title="previous chapter"><span class="section-number">1.4.4. </span>Text Wrapping</a></li>
+      <li>Next: <a href="f-req_output_modes.html" title="next chapter"><span class="section-number">1.4.6. </span>Output Modes</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Joe Rittiner.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../_sources/specs/requirements/f-req_window.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

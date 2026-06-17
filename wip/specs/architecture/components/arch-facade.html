@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>TextEditor &#8212; TextEditor 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=27fed22d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-data-viewer/jsonview.bundle.css?v=f6ef2277" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/libs/html/datatables.min.css?v=4b4fd840" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/needstable.css?v=5e1b6797" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_links.css?v=2150a916" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_style.css?v=92936fa5" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_core.css?v=f5b60a78" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_toggle.css?v=5c6620df" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/modern.css?v=803738c0" />
+    <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../../_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/sphinx-data-viewer/jsonview.bundle.js?v=18cd53c5"></script>
+    <script src="../../../_static/sphinx-data-viewer/jsonview_loader.js?v=f7ff7e7d"></script>
+    <script src="../../../_static/sphinx-needs/libs/html/datatables.min.js?v=8a4aee21"></script>
+    <script src="../../../_static/sphinx-needs/libs/html/datatables_loader.js?v=a2cae175"></script>
+    <script src="../../../_static/sphinx-needs/libs/html/sphinx_needs_collapse.js?v=dca66431"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Logical Domain Service" href="arch-logical_domain_service.html" />
+    <link rel="prev" title="Display Domain Service" href="arch-display_domain_service.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="texteditor">
+<h1>TextEditor<a class="headerlink" href="#texteditor" title="Link to this heading">¶</a></h1>
+<section id="responsibility">
+<h2>Responsibility<a class="headerlink" href="#responsibility" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">TextEditor</span></code> is the sole public entry point to the system, exposing a unified
+interface over the domain services to the host application. (<a class="reference internal" href="../../requirements/index.html#NFREQ-DEPLOY-201" title="NFREQ-DEPLOY-201"><em class="xref need">Deployment Unit (NFREQ-DEPLOY-201)</em></a>)</p>
+</section>
+<section id="owned-state">
+<h2>Owned State<a class="headerlink" href="#owned-state" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">TextEditor</span></code> owns three domain service instances: the <code class="docutils literal notranslate"><span class="pre">LogicalDomainService</span></code>,
+the <code class="docutils literal notranslate"><span class="pre">VisualDomainService</span></code>, and the <code class="docutils literal notranslate"><span class="pre">DisplayDomainService</span></code>. The internal components
+of each domain are not visible to the facade.</p>
+<p>No observable state is exposed before initialisation completes successfully.
+(<a class="reference internal" href="../../requirements/f-req_initialization.html#FR-INIT-001" title="FR-INIT-001"><em class="xref need">System Initialization (FR-INIT-001)</em></a>)</p>
+</section>
+<section id="behaviour">
+<h2>Behaviour<a class="headerlink" href="#behaviour" title="Link to this heading">¶</a></h2>
+<p><strong>Initialisation.</strong> The <code class="docutils literal notranslate"><span class="pre">TextEditor</span></code> is initialised by the host application with the
+full set of configuration parameters: initial text, cursor position, display width,
+display height, and scrolloff. (<a class="reference internal" href="../../requirements/f-req_initialization.html#FR-INIT-001" title="FR-INIT-001"><em class="xref need">System Initialization (FR-INIT-001)</em></a>) If no cursor position is provided,
+the cursor defaults to the position immediately after the last character in the buffer.
+(<a class="reference internal" href="../../requirements/f-req_initialization.html#FR-INIT-006" title="FR-INIT-006"><em class="xref need">Cursor Initialization (FR-INIT-006)</em></a>) The <code class="docutils literal notranslate"><span class="pre">TextEditor</span></code> initialises the domain services in dependency
+order (Logical first, then Visual, then Display) and verifies that all initialization
+invariants hold simultaneously before returning. (<a class="reference internal" href="../../requirements/f-req_initialization.html#INV-INIT-002" title="INV-INIT-002"><em class="xref need">Post-Initialization Validity (INV-INIT-002)</em></a>) Else it must
+throw an exception. (<a class="reference internal" href="../../requirements/f-req_initialization.html#FR-INIT-011" title="FR-INIT-011"><em class="xref need">ScrollOff–Height Conflict (FR-INIT-011)</em></a>, <a class="reference internal" href="../../requirements/f-req_initialization.html#FR-INIT-012" title="FR-INIT-012"><em class="xref need">Null Parameter (FR-INIT-012)</em></a>, <a class="reference internal" href="../../requirements/f-req_initialization.html#FR-INIT-013" title="FR-INIT-013"><em class="xref need">Type Conflict (FR-INIT-013)</em></a>)</p>
+<p><strong>Output interfaces.</strong> The facade exposes output grouped by which service handles it:</p>
+<ul class="simple">
+<li><p><em>Raw and Logical Mode:</em> Delegated to the <code class="docutils literal notranslate"><span class="pre">LogicalDomainService</span></code>: raw text (<a class="reference internal" href="../../requirements/f-req_output_modes.html#FR-MODE-001" title="FR-MODE-001"><em class="xref need">Raw Text Output (FR-MODE-001)</em></a>)
+and logical lines (<a class="reference internal" href="../../requirements/f-req_output_modes.html#FR-MODE-011" title="FR-MODE-011"><em class="xref need">Logical Line Output (FR-MODE-011)</em></a>) as well as cursor as Absolute Index (<a class="reference internal" href="../../requirements/f-req_cursor_movement.html#FR-CURSOR-002" title="FR-CURSOR-002"><em class="xref need">Absolute Position Represent... (FR-CURSOR-002)</em></a>)
+and as Logical Coordinate (<a class="reference internal" href="../../requirements/f-req_cursor_movement.html#FR-CURSOR-003" title="FR-CURSOR-003"><em class="xref need">Logical Coordinate Represen... (FR-CURSOR-003)</em></a>).</p></li>
+<li><p><em>Visual Mode:</em> Delegated to the <code class="docutils literal notranslate"><span class="pre">VisualDomainService</span></code>: wrapped visual output (<a class="reference internal" href="../../requirements/f-req_output_modes.html#FR-MODE-021" title="FR-MODE-021"><em class="xref need">Wrapped Visual Output (FR-MODE-021)</em></a>),
+visual-to-logical mapping (<a class="reference internal" href="../../requirements/f-req_output_modes.html#FR-MODE-022" title="FR-MODE-022"><em class="xref need">Visual-to-Logical Mapping (FR-MODE-022)</em></a>), cursor as Visual Coordinate (<a class="reference internal" href="../../requirements/f-req_cursor_movement.html#FR-CURSOR-004" title="FR-CURSOR-004"><em class="xref need">Visual Coordinate Represent... (FR-CURSOR-004)</em></a>).</p></li>
+<li><p><em>Display Mode:</em> Delegated to the <code class="docutils literal notranslate"><span class="pre">DisplayDomainService</span></code>: viewport-truncated output (<a class="reference internal" href="../../requirements/f-req_output_modes.html#FR-MODE-031" title="FR-MODE-031"><em class="xref need">Viewport-Truncated Output (FR-MODE-031)</em></a>),
+display-to-logical mapping (<a class="reference internal" href="../../requirements/f-req_output_modes.html#FR-MODE-032" title="FR-MODE-032"><em class="xref need">Display-to-Logical Mapping (FR-MODE-032)</em></a>), and cursor as Window Coordinate
+(<a class="reference internal" href="../../requirements/f-req_cursor_movement.html#FR-CURSOR-005" title="FR-CURSOR-005"><em class="xref need">Window Coordinate Represent... (FR-CURSOR-005)</em></a>).</p></li>
+</ul>
+<p>All output operations are read-only. (<a class="reference internal" href="../../requirements/f-req_output_modes.html#INV-MODE-001" title="INV-MODE-001"><em class="xref need">Read-Only Operations (INV-MODE-001)</em></a>) This is a deliberate bypass of
+the layering. (See <a class="reference internal" href="../decisions/arch-layer_reads.html"><span class="doc">Layer Reads</span></a>)</p>
+<p><strong>Mutations and movement.</strong> <code class="docutils literal notranslate"><span class="pre">insert</span></code>, <code class="docutils literal notranslate"><span class="pre">delete</span></code>, <code class="docutils literal notranslate"><span class="pre">backspace</span></code>, and cursor movement operations
+are delegated to the <code class="docutils literal notranslate"><span class="pre">DisplayDomainService</span></code>, which propagates them through the Visual
+and Logical Domains in turn. The facade adds no logic of its own to these operations.
+(<a class="reference internal" href="../../requirements/f-req_cursor_movement.html#FR-CURSOR-020" title="FR-CURSOR-020"><em class="xref need">Movement Operations (FR-CURSOR-020)</em></a>)</p>
+<p><strong>Minimum logic.</strong> The facade does implements minimal business logic, and no coordinate
+translation, or domain-specific behaviour. If the facade contains anything other than
+delegation and initialisation sequencing, that logic belongs in a domain service.</p>
+</section>
+<section id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading">¶</a></h2>
+<p><strong>Depends on:</strong> All three domain services directly: <code class="docutils literal notranslate"><span class="pre">LogicalDomainService</span></code> for raw
+and logical output; <code class="docutils literal notranslate"><span class="pre">VisualDomainService</span></code> for wrapped visual output, visual-to-logical
+mapping. <code class="docutils literal notranslate"><span class="pre">DisplayDomainService</span></code> for display-mode output, window cursor representation,
+mutations, and movement. The facade does not depend on any component inside a domain.</p>
+<p><strong>Depended on by:</strong> The host application exclusively. No internal component depends on
+the <code class="docutils literal notranslate"><span class="pre">TextEditor</span></code>.</p>
+</section>
+<section id="scope-boundary">
+<h2>Scope Boundary<a class="headerlink" href="#scope-boundary" title="Link to this heading">¶</a></h2>
+<p>The following are explicitly outside the system’s scope. The facade must not expose
+interfaces for any of them, and the host application is responsible for implementing
+them where needed:</p>
+<ul class="simple">
+<li><p><strong>User input.</strong> The system does not capture keyboard or mouse events. The host
+application translates input into API calls. (<a class="reference internal" href="../../requirements/f-req_cursor_movement.html#NR-CURSOR-102" title="NR-CURSOR-102"><em class="xref need">User Input (NR-CURSOR-102)</em></a>)</p></li>
+<li><p><strong>Re-initialisation.</strong> Configuration parameters cannot be changed after successful
+initialisation. To change them, the host application instantiates a new <code class="docutils literal notranslate"><span class="pre">TextEditor</span></code>.
+(<a class="reference internal" href="../../requirements/f-req_initialization.html#NR-INIT-101" title="NR-INIT-101"><em class="xref need">Re-Initialization (NR-INIT-101)</em></a>)</p></li>
+<li><p><strong>State persistence.</strong> The system provides no serialisation or deserialisation. The
+host application may read the text buffer and cursor position via the output interfaces
+and supply them as initialisation parameters to a new instance. (<a class="reference internal" href="../../requirements/f-req_initialization.html#NR-INIT-102" title="NR-INIT-102"><em class="xref need">State Persistence (NR-INIT-102)</em></a>)</p></li>
+<li><p><strong>Rendering and I/O.</strong> The system does not handle rendering or GUI operations.
+(<a class="reference internal" href="../../requirements/f-req_output_modes.html#NR-MODE-101" title="NR-MODE-101"><em class="xref need">Rendering &amp; I/O (NR-MODE-101)</em></a>)</p></li>
+<li><p><strong>Text selection, clipboard, undo/redo.</strong> These operations are not supported.
+(<a class="reference internal" href="../../requirements/f-req_text_manipulation.html#NR-TEXT-101" title="NR-TEXT-101"><em class="xref need">Text Selection (NR-TEXT-101)</em></a>, <a class="reference internal" href="../../requirements/f-req_text_manipulation.html#NR-TEXT-102" title="NR-TEXT-102"><em class="xref need">Clipboard Functions (NR-TEXT-102)</em></a>, <a class="reference internal" href="../../requirements/f-req_text_manipulation.html#NR-TEXT-103" title="NR-TEXT-103"><em class="xref need">Undo / Redo (NR-TEXT-103)</em></a>)</p></li>
+</ul>
+</section>
+<section id="key-invariants">
+<h2>Key Invariants<a class="headerlink" href="#key-invariants" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><strong>Post-initialisation validity.</strong> Upon successful initialisation, all system invariants
+hold simultaneously: the buffer contains the supplied initial text; the cursor is within
+valid bounds in all four coordinate spaces; all coordinate representations are mutually
+consistent; and <code class="docutils literal notranslate"><span class="pre">window_start</span></code> satisfies the window bounds and cursor visibility
+constraints. The initial state is indistinguishable from one reached through normal
+operation. (<a class="reference internal" href="../../requirements/f-req_initialization.html#INV-INIT-002" title="INV-INIT-002"><em class="xref need">Post-Initialization Validity (INV-INIT-002)</em></a>)</p></li>
+<li><p><strong>Coordinate synchronisation.</strong> At every point where the facade returns a value to the
+host application, all four cursor representations (Absolute Index, Logical Coordinate,
+Visual Coordinate, Window Coordinate) bijectively map to the same underlying buffer
+position. (<a class="reference internal" href="../../requirements/f-req_cursor_movement.html#INV-CURSOR-003" title="INV-CURSOR-003"><em class="xref need">Coordinate Synchronization (INV-CURSOR-003)</em></a>)</p></li>
+<li><p><strong>Sole public entry point.</strong> No domain service, component, or internal interface is
+accessible to the host application except through the <code class="docutils literal notranslate"><span class="pre">TextEditor</span></code>. This is a
+deployment constraint, not merely a design preference. (<a class="reference internal" href="../../requirements/index.html#NFREQ-DEPLOY-201" title="NFREQ-DEPLOY-201"><em class="xref need">Deployment Unit (NFREQ-DEPLOY-201)</em></a>)</p></li>
+</ul>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">TextEditor</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">1. Specifications &amp; Design</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../requirements/index.html">1. Requirements</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">2. Architecture</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#introduction">2.1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#architectural-goals-and-constraints">2.2. Architectural Goals and Constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#system-context">2.3. System Context</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#containers">2.4. Containers</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#components">2.5. Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#code-c4-level-4">2.6. Code (C4 Level 4)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#architectural-decisions">2.7. Architectural Decisions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#error-contract">2.8. Error Contract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#open-questions">2.9. Open Questions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#appendix-a-glossary">2.10. Appendix A: Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#appendix-b-revision-history">2.11. Appendix B: Revision History</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#appendix-c-supporting-documents">2.12. Appendix C: Supporting Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#indices-and-tables">2.13. Indices and tables</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../glossary.html">Glossary</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html"><span class="section-number">2. </span>Architecture</a><ul>
+      <li>Previous: <a href="arch-display_domain_service.html" title="previous chapter">Display Domain Service</a></li>
+      <li>Next: <a href="arch-logical_domain_service.html" title="next chapter">Logical Domain Service</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Joe Rittiner.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../../_sources/specs/architecture/components/arch-facade.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

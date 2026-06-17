@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Sequence Diagrams &#8212; TextEditor 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-data-viewer/jsonview.bundle.css?v=f6ef2277" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/libs/html/datatables.min.css?v=4b4fd840" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/common_css/needstable.css?v=5e1b6797" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/common_css/need_links.css?v=2150a916" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/common_css/need_style.css?v=92936fa5" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/common_css/need_core.css?v=f5b60a78" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/common_css/need_toggle.css?v=5c6620df" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/modern.css?v=803738c0" />
+    <script src="../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/sphinx-data-viewer/jsonview.bundle.js?v=18cd53c5"></script>
+    <script src="../../_static/sphinx-data-viewer/jsonview_loader.js?v=f7ff7e7d"></script>
+    <script src="../../_static/sphinx-needs/libs/html/datatables.min.js?v=8a4aee21"></script>
+    <script src="../../_static/sphinx-needs/libs/html/datatables_loader.js?v=a2cae175"></script>
+    <script src="../../_static/sphinx-needs/libs/html/sphinx_needs_collapse.js?v=dca66431"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="2.6.1. Code (C4 Level 4)" href="code/index.html" />
+    <link rel="prev" title="Visual-Logical Adapter" href="components/arch-visual_logical_adapter.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="sequence-diagrams">
+<h1>Sequence Diagrams<a class="headerlink" href="#sequence-diagrams" title="Link to this heading">¶</a></h1>
+<section id="display-domain">
+<h2>Display Domain<a class="headerlink" href="#display-domain" title="Link to this heading">¶</a></h2>
+<p class="plantuml">
+<img src="../../_images/plantuml-3a5a0064a6969d43cb0b864ff8f98ab4fc415eb2.png" alt="&#64;startuml
+
+title DisplayDomain.get_lines()
+
+participant Actor as app #white
+box &quot;DisplayDomain&quot; #white
+    participant DomainDomainService as DS
+    participant ViewportState as VS
+end box
+participant VisualDomain as VD #green
+
+app -&gt; DS : &quot;&quot;get_lines()&quot;&quot;
+activate DS
+    DS -&gt; VD : &quot;&quot;get_lines()&quot;&quot;
+    activate VD
+        return &quot;&quot;visual_lines&quot;&quot;
+    DS -&gt; DS : &quot;&quot;truncate(visual_lines)&quot;&quot;
+    activate DS
+        DS -&gt; VS : &quot;&quot;get_range()&quot;&quot;
+        activate VS
+            return &quot;&quot;start, end&quot;&quot;
+        return &quot;&quot;display_lines&quot;&quot;
+    return &quot;&quot;display_lines&quot;&quot;
+deactivate DS
+
+&#64;enduml"/>
+</p>
+<p class="plantuml">
+<img src="../../_images/plantuml-2800e1409f91604cc548b85ac165800419c25257.png" alt="&#64;startuml
+
+title DisplayDomain.get_cursor()
+
+participant Actor as app #white
+box &quot;DisplayDomain&quot; #white
+    participant DomainDomainService as DS
+    participant ViewportState as VS
+end box
+participant VisualDomain as VD #green
+
+app -&gt; DS : &quot;&quot;get_cursor()&quot;&quot;
+activate DS
+    DS -&gt; VD : &quot;&quot;get_cursor()&quot;&quot;
+    activate VD
+        return &quot;&quot;visual_position&quot;&quot;
+    DS -&gt; DS : &quot;&quot;translate(visual_position)&quot;&quot;
+    activate DS
+        DS -&gt; VS : &quot;&quot;get_range()&quot;&quot;
+        activate VS
+            return &quot;&quot;start, end&quot;&quot;
+        return &quot;&quot;display_position&quot;&quot;
+    return &quot;&quot;display_position&quot;&quot;
+
+&#64;enduml"/>
+</p>
+<p class="plantuml">
+<img src="../../_images/plantuml-340164343e58f09fd74b2e314e428ac86ddd36a0.png" alt="&#64;startuml
+
+title DisplayDomain.insert(text)
+
+participant Actor as app #white
+box &quot;DisplayDomain&quot; #white
+    participant DomainDomainService as DS
+    participant ViewportState as VS
+end box
+participant VisualDomain as VD #green
+
+app -&gt; DS : &quot;&quot;insert(text)&quot;&quot;
+activate DS
+    DS -&gt; VD : &quot;&quot;insert(text)&quot;&quot;
+    DS -&gt; VD : &quot;&quot;get_cursor()&quot;&quot;
+    activate VD
+        return &quot;&quot;visual_position&quot;&quot;
+    DS -&gt; VS : &quot;&quot;update(visual_position)&quot;&quot;
+    deactivate DS
+
+&#64;enduml"/>
+</p>
+<p class="plantuml">
+<img src="../../_images/plantuml-d1d72bd871f9285928325b96675df5a7a820bf5d.png" alt="&#64;startuml
+
+title DisplayDomain.delete()
+
+participant Actor as app #white
+box &quot;DisplayDomain&quot; #white
+    participant DomainDomainService as DS
+    participant ViewportState as VS
+end box
+participant VisualDomain as VD #green
+
+app -&gt; DS : &quot;&quot;delete()&quot;&quot;
+activate DS
+    DS -&gt; VD : &quot;&quot;delete()&quot;&quot;
+    deactivate DS
+
+&#64;enduml"/>
+</p>
+<p class="plantuml">
+<img src="../../_images/plantuml-728c3a70c1a7e1f049fd4a56ae294ee22d89b888.png" alt="&#64;startuml
+
+title DisplayDomain.backspace()
+
+participant Actor as app #white
+box &quot;DisplayDomain&quot; #white
+    participant DomainDomainService as DS
+    participant ViewportState as VS
+end box
+participant VisualDomain as VD #green
+
+app -&gt; DS : &quot;&quot;backspace()&quot;&quot;
+activate DS
+    DS -&gt; VD : &quot;&quot;backspace()&quot;&quot;
+    DS -&gt; VD : &quot;&quot;get_cursor()&quot;&quot;
+    activate VD
+        return &quot;&quot;visual_position&quot;&quot;
+    DS -&gt; VS : &quot;&quot;update(visual_position)&quot;&quot;
+    deactivate DS
+
+
+&#64;enduml"/>
+</p>
+<p class="plantuml">
+<img src="../../_images/plantuml-cc7e3a7c1b8d51f2c8b6d10cb602696cf0d125cf.png" alt="&#64;startuml
+
+title DisplayDomain.move_*()
+
+participant Actor as app #white
+box &quot;DisplayDomain&quot; #white
+    participant DomainDomainService as DS
+    participant ViewportState as VS
+end box
+participant VisualDomain as VD #green
+
+app -&gt; DS : &quot;&quot;move_*()&quot;&quot;
+activate DS
+    DS -&gt; VD : &quot;&quot;move_*()&quot;&quot;
+    DS -&gt; VD : &quot;&quot;get_cursor()&quot;&quot;
+    activate VD
+        return &quot;&quot;visual_position&quot;&quot;
+    DS -&gt; VS : &quot;&quot;update(visual_position)&quot;&quot;
+    deactivate DS
+
+&#64;enduml"/>
+</p>
+</section>
+<section id="visual-domain">
+<h2>Visual Domain<a class="headerlink" href="#visual-domain" title="Link to this heading">¶</a></h2>
+<p class="plantuml">
+<img src="../../_images/plantuml-05e9f449061e84446f6e97a9db945dbe00710914.png" alt="&#64;startuml
+
+title VisualDomain.get_lines()
+
+participant Actor as app #white
+box &quot;VisualDomain&quot; #white
+    participant VisualDomainService as VS
+    participant MovementResolver as MR
+    participant VisualLogicalAdapter as VA
+end box
+participant LogicalDomain as LD #lightblue
+
+app -&gt; VS : &quot;&quot;get_lines()&quot;&quot;
+activate VS
+    VS -&gt; VA : &quot;&quot;get_lines()&quot;&quot;
+    activate VA
+        VA -&gt; LD : &quot;&quot;get_lines()&quot;&quot;
+        activate LD
+            return &quot;&quot;text&quot;&quot;
+        VA -&gt; VA : &quot;&quot;wrap(text)&quot;&quot;
+        note left: Wraps lines using internal &quot;&quot;wrapping_map&quot;&quot;
+        activate VA
+            return &quot;&quot;visual_lines&quot;&quot;
+        return &quot;&quot;visual_lines&quot;&quot;
+    return &quot;&quot;visual_lines&quot;&quot;
+&#64;enduml"/>
+</p>
+<p class="plantuml">
+<img src="../../_images/plantuml-f0eb565398558137338b5ff181199ddfeb686ce5.png" alt="&#64;startuml
+
+title VisualDomain.get_cursor()
+
+participant Actor as app #white
+box &quot;VisualDomain&quot; #white
+    participant VisualDomainService as VS
+    participant MovementResolver as MR
+    participant VisualLogicalAdapter as VA
+end box
+participant LogicalDomain as LD #lightblue
+
+app -&gt; VS : &quot;&quot;get_cursor()&quot;&quot;
+activate VS
+    VS -&gt; VA : &quot;&quot;get_cursor()&quot;&quot;
+    activate VA
+        VA -&gt; LD : &quot;&quot;get_cursor()&quot;&quot;
+        activate LD
+            return &quot;&quot;abs_index&quot;&quot;
+        VA -&gt; VA : &quot;&quot;translate(abs_index)&quot;&quot;
+        activate VA
+            return &quot;&quot;visual_position&quot;&quot;
+        return &quot;&quot;visual_position&quot;&quot;
+    return &quot;&quot;visual_position&quot;&quot;
+&#64;enduml"/>
+</p>
+<p class="plantuml">
+<img src="../../_images/plantuml-c970d06e01609c3da597fad1cfd4868b5375506b.png" alt="&#64;startuml
+
+title VisualDomain.insert(text)
+
+participant Actor as app #white
+box &quot;VisualDomain&quot; #white
+    participant VisualDomainService as VS
+    participant MovementResolver as MR
+    participant VisualLogicalAdapter as VA
+end box
+participant LogicalDomain as LD #lightblue
+
+app -&gt; VS : &quot;&quot;insert(text)&quot;&quot;
+activate VS
+    VS -&gt; VA : &quot;&quot;insert(text)&quot;&quot;
+    deactivate VS
+
+activate VA
+    VA -&gt; LD : &quot;&quot;insert(text)&quot;&quot;
+
+    VA -&gt; LD : &quot;&quot;get_text()&quot;&quot;
+    activate LD
+        return &quot;&quot;text&quot;&quot;
+
+    VA -&gt; VA : &quot;&quot;update_map()&quot;&quot;
+    deactivate VA
+
+&#64;enduml"/>
+</p>
+<p class="plantuml">
+<img src="../../_images/plantuml-58ce21becbc786b4edf72a09840853ec897564a2.png" alt="&#64;startuml
+
+title VisualDomain.delete()
+
+participant Actor as app #white
+box &quot;VisualDomain&quot; #white
+    participant VisualDomainService as VS
+    participant MovementResolver as MR
+    participant VisualLogicalAdapter as VA
+end box
+participant LogicalDomain as LD #lightblue
+
+app -&gt; VS : &quot;&quot;delete()&quot;&quot;
+activate VS
+    VS -&gt; VA : &quot;&quot;delete()&quot;&quot;
+    deactivate VS
+
+activate VA
+    VA -&gt; LD : &quot;&quot;delete()&quot;&quot;
+    VA -&gt; LD : &quot;&quot;get_text()&quot;&quot;
+    activate LD
+        return &quot;&quot;text&quot;&quot;
+
+    VA -&gt; VA : &quot;&quot;update_map()&quot;&quot;
+    deactivate VA
+
+&#64;enduml"/>
+</p>
+<p class="plantuml">
+<img src="../../_images/plantuml-e444da79d96dd6f7234aab4df15fd9e601e4ad3a.png" alt="&#64;startuml
+
+title VisualDomain.backspace()
+
+participant Actor as app #white
+box &quot;VisualDomain&quot; #white
+    participant VisualDomainService as VS
+    participant MovementResolver as MR
+    participant VisualLogicalAdapter as VA
+end box
+participant LogicalDomain as LD #lightblue
+
+app -&gt; VS : &quot;&quot;backspace()&quot;&quot;
+activate VS
+    VS -&gt; VA : &quot;&quot;backspace()&quot;&quot;
+    deactivate VS
+
+activate VA
+    VA -&gt; LD : &quot;&quot;backspace()&quot;&quot;
+    VA -&gt; LD : &quot;&quot;get_text()&quot;&quot;
+    activate LD
+        return &quot;&quot;text&quot;&quot;
+
+    VA -&gt; VA : &quot;&quot;update_map()&quot;&quot;
+    deactivate VA
+
+&#64;enduml"/>
+</p>
+<p class="plantuml">
+<img src="../../_images/plantuml-0cf986606e1f9f5e43e9699aa211d27c1a40b590.png" alt="&#64;startuml
+
+title VisualDomain.move_right()
+
+participant Actor as app #white
+box &quot;VisualDomain&quot; #white
+    participant VisualDomainService as VS
+    participant MovementResolver as MR
+    participant VisualLogicalAdapter as VA
+end box
+participant LogicalDomain as LD #lightblue
+
+
+app -&gt; VS : &quot;&quot;move_right()&quot;&quot;
+activate VS
+    VS -&gt; VA : &quot;&quot;move_right()&quot;&quot;
+    deactivate VS
+
+activate VA
+    VA -&gt; LD : &quot;&quot;move_right()&quot;&quot;
+    deactivate VA
+
+&#64;enduml"/>
+</p>
+<p class="plantuml">
+<img src="../../_images/plantuml-2ccf7c8c88cfed8856280cd6b696aa14fa776a2f.png" alt="&#64;startuml
+
+title VisualDomain.move_up()
+
+participant Actor as app #white
+box &quot;VisualDomain&quot; #white
+    participant VisualDomainService as VS
+    participant MovementResolver as MR
+    participant VisualLogicalAdapter as VA
+end box
+participant LogicalDomain as LD #lightblue
+
+app -&gt; VS : &quot;&quot;move_up()&quot;&quot;
+activate VS
+    VS -&gt; VA : &quot;&quot;get_lines()&quot;&quot;
+    activate VA
+        VA -&gt; LD : &quot;&quot;get_lines()&quot;&quot;
+        activate LD
+            return &quot;&quot;logical_lines&quot;&quot;
+        VA -&gt; VA : &quot;&quot;translate(logical_lines)&quot;&quot;
+            activate VA
+            return &quot;&quot;visual_lines&quot;&quot;
+        return &quot;&quot;visual_lines&quot;&quot;
+
+    VS -&gt; VA : &quot;&quot;get_cursor()&quot;&quot;
+    activate VA
+        VA -&gt; LD : &quot;&quot;get_cursor()&quot;&quot;
+        activate LD
+            return &quot;&quot;abs_index&quot;&quot;
+        VA -&gt; VA : &quot;&quot;translate(abs_index)&quot;&quot;
+            activate VA
+            return &quot;&quot;visual_position&quot;&quot;
+        return &quot;&quot;visual_position&quot;&quot;
+    VS -&gt; MR : &quot;&quot;move_up(visual_lines, visual_position)&quot;&quot;
+    activate MR
+        return &quot;&quot;visual_position&quot;&quot;
+    VS -&gt; VA : &quot;&quot;set_cursor(visual_position)&quot;&quot;
+    deactivate VS
+
+activate VA
+    VA -&gt; VA : &quot;&quot;translate(visual_position)&quot;&quot;
+    activate VA
+        return &quot;&quot;abs_index&quot;&quot;
+    VA -&gt; LD : &quot;&quot;set_cursor(abs_index)&quot;&quot;
+    deactivate VA
+&#64;enduml"/>
+</p>
+</section>
+<section id="logical-domain">
+<h2>Logical Domain<a class="headerlink" href="#logical-domain" title="Link to this heading">¶</a></h2>
+<p class="plantuml">
+<img src="../../_images/plantuml-3865774afde0c2983feec2e1df8b4843ed79d8bc.png" alt="&#64;startuml
+
+title LogicalDomain.get_lines()
+
+participant Actor as app #white
+box &quot;LogicalDomain&quot; #white
+    participant LogicalDomainService as LS
+    participant CursorState as CS
+    participant TextBuffer as TB
+end box
+
+app -&gt; LS : &quot;&quot;get_lines()&quot;&quot;
+activate LS
+    LS -&gt; TB : &quot;&quot;get_text()&quot;&quot;
+    activate TB
+        return &quot;&quot;text&quot;&quot;
+    LS -&gt; LS : &quot;&quot;split_lines(text)&quot;&quot;
+    activate LS
+        return &quot;&quot;logical_lines&quot;&quot;
+    return &quot;&quot;logical_lines&quot;&quot;
+
+&#64;enduml"/>
+</p>
+<p class="plantuml">
+<img src="../../_images/plantuml-bbcc6c5e7553089cfbb0760c9ff0f6b05031922b.png" alt="&#64;startuml
+
+title LogicalDomain.get_text()
+
+participant Actor as app #white
+box &quot;LogicalDomain&quot; #white
+    participant LogicalDomainService as LS
+    participant TextBuffer as TB
+end box
+
+app -&gt; LS : &quot;&quot;get_text()&quot;&quot;
+activate LS
+    LS -&gt; TB : &quot;&quot;get_text()&quot;&quot;
+    activate TB
+        return &quot;&quot;text&quot;&quot;
+    return &quot;&quot;text&quot;&quot;
+
+&#64;enduml"/>
+</p>
+<p class="plantuml">
+<img src="../../_images/plantuml-44f2a7ecbedbe5d7654ae85dfe0ac88f3b72fe1b.png" alt="&#64;startuml
+
+title LogicalDomain.get_absolute_index()
+
+participant Actor as app #white
+box &quot;LogicalDomain&quot; #white
+    participant LogicalDomainService as LS
+    participant CursorState as CS
+    participant TextBuffer as TB
+end box
+
+app -&gt; LS : &quot;&quot;get_absolute_index()&quot;&quot;
+activate LS
+    LS -&gt; CS : &quot;&quot;get_cursor()&quot;&quot;
+    activate CS
+        return &quot;&quot;abs_index&quot;&quot;
+    return &quot;&quot;abs_index&quot;&quot;
+
+&#64;enduml"/>
+</p>
+<p class="plantuml">
+<img src="../../_images/plantuml-a6e25a5f16c9753b77aa1512fbc08435564252b1.png" alt="&#64;startuml
+
+title LogicalDomain.get_logical_cursor()
+
+participant Actor as app #white
+box &quot;LogicalDomain&quot; #white
+    participant LogicalDomainService as LS
+    participant CursorState as CS
+    participant TextBuffer as TB
+end box
+
+app -&gt; LS : &quot;&quot;get_logical_cursor()&quot;&quot;
+activate LS
+    LS -&gt; CS : &quot;&quot;get_cursor()&quot;&quot;
+    activate CS
+        return &quot;&quot;abs_index&quot;&quot;
+    LS -&gt; TB : &quot;&quot;get_text()&quot;&quot;
+    activate TB
+        return &quot;&quot;text&quot;&quot;
+    LS -&gt; LS : &quot;&quot;to_logical(abs_index, text)&quot;&quot;
+    activate LS
+        return &quot;&quot;logical_position&quot;&quot;
+    return &quot;&quot;logical_position&quot;&quot;
+
+&#64;enduml"/>
+</p>
+<p class="plantuml">
+<img src="../../_images/plantuml-52264f2c4548ab5e2edca960f391198f42551967.png" alt="&#64;startuml
+
+title LogicalDomain.insert(text)
+
+participant Actor as app #white
+box &quot;LogicalDomain&quot; #white
+    participant LogicalDomainService as LS
+    participant CursorState as CS
+    participant TextBuffer as TB
+end box
+
+app -&gt; LS : &quot;&quot;insert(text)&quot;&quot;
+activate LS
+    LS -&gt; CS : &quot;&quot;get_cursor()&quot;&quot;
+    activate CS
+        return &quot;&quot;abs_index&quot;&quot;
+    LS -&gt; TB : &quot;&quot;insert(text, abs_index)&quot;&quot;
+
+    LS -&gt; CS : &quot;&quot;set_cursor(abs_index + text.length)&quot;&quot;
+
+    deactivate LS
+
+&#64;enduml"/>
+</p>
+<p class="plantuml">
+<img src="../../_images/plantuml-ce14f0aed63dcbbe70649bbe4e919c4170bdd259.png" alt="&#64;startuml
+
+title LogicalDomain.delete()
+
+participant Actor as app #white
+box &quot;LogicalDomain&quot; #white
+    participant LogicalDomainService as LS
+    participant CursorState as CS
+    participant TextBuffer as TB
+end box
+
+app -&gt; LS : &quot;&quot;delete()&quot;&quot;
+activate LS
+
+    LS -&gt; CS : &quot;&quot;get_cursor()&quot;&quot;
+    activate CS
+        return &quot;&quot;abs_index&quot;&quot;
+
+    LS -&gt; TB : &quot;&quot;delete(abs_index)&quot;&quot;
+    deactivate LS
+
+&#64;enduml"/>
+</p>
+<p class="plantuml">
+<img src="../../_images/plantuml-ae04749e9a8051a9fab0f0947e45a044c7d8f0f3.png" alt="&#64;startuml
+
+title LogicalDomain.backspace()
+
+participant Actor as app #white
+box &quot;LogicalDomain&quot; #white
+    participant LogicalDomainService as LS
+    participant CursorState as CS
+    participant TextBuffer as TB
+end box
+
+app -&gt; LS : &quot;&quot;backspace()&quot;&quot;
+activate LS
+
+    LS -&gt; CS : &quot;&quot;move_left()&quot;&quot;
+
+    LS -&gt; CS : &quot;&quot;get_cursor()&quot;&quot;
+    activate CS
+        return &quot;&quot;abs_index&quot;&quot;
+
+    LS -&gt; TB : &quot;&quot;delete(abs_index)&quot;&quot;
+    deactivate LS
+
+&#64;enduml"/>
+</p>
+<p class="plantuml">
+<img src="../../_images/plantuml-ff9e2dcadf26da2618d0c88c5c9de0c6acc67b5c.png" alt="&#64;startuml
+
+title LogicalDomain.set_cursor(abs_index)
+
+participant Actor as app #white
+box &quot;LogicalDomain&quot; #white
+    participant LogicalDomainService as LS
+    participant CursorState as CS
+    participant TextBuffer as TB
+end box
+
+app -&gt; LS : &quot;&quot;set_cursor(abs_index)&quot;&quot;
+activate LS
+    LS -&gt; TB : &quot;&quot;get_text()&quot;&quot;
+    activate TB
+        return &quot;&quot;text&quot;&quot;
+    LS -&gt; LS : &quot;&quot;verify(abs_index, text)&quot;&quot;
+    LS -&gt; CS : &quot;&quot;set_cursor(abs_index)&quot;&quot;
+    deactivate LS
+
+&#64;enduml"/>
+</p>
+<p class="plantuml">
+<img src="../../_images/plantuml-2f48816e25b37446d8f0fbbfd358816d366bc7c0.png" alt="&#64;startuml
+
+title LogicalDomain.move_right()
+
+participant Actor as app #white
+box &quot;LogicalDomain&quot; #white
+    participant LogicalDomainService as LS
+    participant CursorState as CS
+    participant TextBuffer as TB
+end box
+
+app -&gt; LS : &quot;&quot;move_right()&quot;&quot;
+activate LS
+    LS -&gt; TB : &quot;&quot;get_text&quot;&quot;
+    activate TB
+        return &quot;&quot;text&quot;&quot;
+
+    LS -&gt; LS : &quot;&quot;verify(abs_index, text)&quot;&quot;
+
+    LS -&gt; CS : &quot;&quot;move_right()&quot;&quot;
+    deactivate LS
+
+&#64;enduml
+"/>
+</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">TextEditor</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">1. Specifications &amp; Design</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../requirements/index.html">1. Requirements</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">2. Architecture</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#introduction">2.1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#architectural-goals-and-constraints">2.2. Architectural Goals and Constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#system-context">2.3. System Context</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#containers">2.4. Containers</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#components">2.5. Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#code-c4-level-4">2.6. Code (C4 Level 4)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#architectural-decisions">2.7. Architectural Decisions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#error-contract">2.8. Error Contract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#open-questions">2.9. Open Questions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#appendix-a-glossary">2.10. Appendix A: Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#appendix-b-revision-history">2.11. Appendix B: Revision History</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#appendix-c-supporting-documents">2.12. Appendix C: Supporting Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#indices-and-tables">2.13. Indices and tables</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../glossary.html">Glossary</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="index.html"><span class="section-number">2. </span>Architecture</a><ul>
+      <li>Previous: <a href="components/arch-visual_logical_adapter.html" title="previous chapter">Visual-Logical Adapter</a></li>
+      <li>Next: <a href="code/index.html" title="next chapter"><span class="section-number">2.6.1. </span>Code (C4 Level 4)</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Joe Rittiner.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../_sources/specs/architecture/arch-component_sequences.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

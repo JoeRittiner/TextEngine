@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Visual-Logical Adapter &#8212; TextEditor 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=27fed22d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-data-viewer/jsonview.bundle.css?v=f6ef2277" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/libs/html/datatables.min.css?v=4b4fd840" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/needstable.css?v=5e1b6797" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_links.css?v=2150a916" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_style.css?v=92936fa5" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_core.css?v=f5b60a78" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/common_css/need_toggle.css?v=5c6620df" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-needs/modern.css?v=803738c0" />
+    <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../../_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/sphinx-data-viewer/jsonview.bundle.js?v=18cd53c5"></script>
+    <script src="../../../_static/sphinx-data-viewer/jsonview_loader.js?v=f7ff7e7d"></script>
+    <script src="../../../_static/sphinx-needs/libs/html/datatables.min.js?v=8a4aee21"></script>
+    <script src="../../../_static/sphinx-needs/libs/html/datatables_loader.js?v=a2cae175"></script>
+    <script src="../../../_static/sphinx-needs/libs/html/sphinx_needs_collapse.js?v=dca66431"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Sequence Diagrams" href="../arch-component_sequences.html" />
+    <link rel="prev" title="Visual Domain Service" href="arch-visual_domain_service.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="visual-logical-adapter">
+<h1>Visual-Logical Adapter<a class="headerlink" href="#visual-logical-adapter" title="Link to this heading">¶</a></h1>
+<section id="responsibility">
+<h2>Responsibility<a class="headerlink" href="#responsibility" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">VisualLogicalAdapter</span></code> is the sole point of contact between the Visual Domain and
+the Logical Domain. It translates in both directions: outbound, it maps visual coordinates
+to the absolute indices required by the Logical Domain; inbound, it maps the Logical
+Domain’s text content into visual lines. All reads from and all mutations to the Logical
+Domain pass through this component.</p>
+</section>
+<section id="owned-state">
+<h2>Owned State<a class="headerlink" href="#owned-state" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">VisualLogicalAdapter</span></code> owns two pieces of state:</p>
+<ul class="simple">
+<li><p><strong>Display width.</strong> A positive integer fixed at initialisation that defines the maximum
+number of characters per visual line. A null value or a value of an incorrect type
+(including a float) raises an exception and halts initialisation.
+(<a class="reference internal" href="../../requirements/f-req_initialization.html#FR-INIT-001" title="FR-INIT-001"><em class="xref need">System Initialization (FR-INIT-001)</em></a>, <a class="reference internal" href="../../requirements/f-req_initialization.html#FR-INIT-003" title="FR-INIT-003"><em class="xref need">Display Width Initialization (FR-INIT-003)</em></a>, <a class="reference internal" href="../../requirements/f-req_initialization.html#FR-INIT-012" title="FR-INIT-012"><em class="xref need">Null Parameter (FR-INIT-012)</em></a>, <a class="reference internal" href="../../requirements/f-req_initialization.html#FR-INIT-013" title="FR-INIT-013"><em class="xref need">Type Conflict (FR-INIT-013)</em></a>,
+<a class="reference internal" href="../../requirements/f-req_text_wrapping.html#INV-WRAP-001" title="INV-WRAP-001"><em class="xref need">Defined Display Width (INV-WRAP-001)</em></a>, <a class="reference internal" href="../../requirements/f-req_text_wrapping.html#INV-WRAP-002" title="INV-WRAP-002"><em class="xref need">Static Display Width (INV-WRAP-002)</em></a>)</p></li>
+<li><p><strong>Wrapping map.</strong> The structural relationship between logical lines and the visual lines
+they produce: how many visual lines each logical line yields and where the breaks fall.
+The map is the adapter’s internal model of the Logical Domain’s current state, expressed
+in visual terms. It is kept consistent with the buffer after every mutation.
+(<a class="reference internal" href="../../requirements/f-req_output_modes.html#FR-MODE-022" title="FR-MODE-022"><em class="xref need">Visual-to-Logical Mapping (FR-MODE-022)</em></a>)</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">VisualLogicalAdapter</span></code> does not own cursor state and does not own the text itself.</p>
+</section>
+<section id="behaviour">
+<h2>Behaviour<a class="headerlink" href="#behaviour" title="Link to this heading">¶</a></h2>
+<p><strong>Inbound: Logical to Visual (reads).</strong> The adapter exposes the buffer’s content as a
+sequence of visual lines by applying <code class="docutils literal notranslate"><span class="pre">display_width</span></code> to the logical lines retrieved from
+the <code class="docutils literal notranslate"><span class="pre">LogicalDomainService</span></code>. (<a class="reference internal" href="../../requirements/f-req_output_modes.html#FR-MODE-021" title="FR-MODE-021"><em class="xref need">Wrapped Visual Output (FR-MODE-021)</em></a>) The output includes structural
+metadata indicating which visual lines belong to which logical line, so callers can
+correlate visual and logical positions. (<a class="reference internal" href="../../requirements/f-req_output_modes.html#FR-MODE-022" title="FR-MODE-022"><em class="xref need">Visual-to-Logical Mapping (FR-MODE-022)</em></a>) The wrapping rules are
+defined in <a class="reference internal" href="../../requirements/f-req_text_wrapping.html#FR-WRAP-001" title="FR-WRAP-001"><em class="xref need">Non-Destructive Wrapping (FR-WRAP-001)</em></a> through <a class="reference internal" href="../../requirements/f-req_text_wrapping.html#FR-WRAP-005" title="FR-WRAP-005"><em class="xref need">Empty Line Handling (FR-WRAP-005)</em></a>. Reads are non-destructive:
+querying visual output never modifies the buffer, the wrapping map, or any other state.
+(<a class="reference internal" href="../../requirements/f-req_output_modes.html#INV-MODE-001" title="INV-MODE-001"><em class="xref need">Read-Only Operations (INV-MODE-001)</em></a>)</p>
+<p>The adapter also exposes the current cursor position in visual coordinates, by retrieving
+it from the <code class="docutils literal notranslate"><span class="pre">LogicalDomainService</span></code> and translating it to visual coordinates using the
+wrapping map and translation rules. (<a class="reference internal" href="../../requirements/f-req_cursor_movement.html#FR-CURSOR-004" title="FR-CURSOR-004"><em class="xref need">Visual Coordinate Represent... (FR-CURSOR-004)</em></a>, <a class="reference internal" href="../../requirements/f-req_cursor_movement.html#FR-CURSOR-010" title="FR-CURSOR-010"><em class="xref need">Virtual Position at Display... (FR-CURSOR-010)</em></a>)</p>
+<p><strong>Outbound: Visual to Logical (mutations).</strong> The adapter accepts mutation operations
+(<code class="docutils literal notranslate"><span class="pre">insert</span></code>, <code class="docutils literal notranslate"><span class="pre">delete</span></code>, <code class="docutils literal notranslate"><span class="pre">backspace</span></code>) expressed in visual coordinates. It translates the
+given visual coordinate to the absolute index required by the <code class="docutils literal notranslate"><span class="pre">LogicalDomainService</span></code>,
+issues the mutation, and immediately updates the wrapping map to reflect the new buffer
+state. The map is guaranteed consistent before any subsequent read or coordinate translation
+is served. (<a class="reference internal" href="../../requirements/f-req_text_wrapping.html#INV-WRAP-003" title="INV-WRAP-003"><em class="xref need">Visual Line Integrity (INV-WRAP-003)</em></a>) Invalid visual coordinates are rejected with an exception;
+the adapter does not clamp or correct positions it receives.</p>
+<p>The adapter also accepts direct cursor setting, and horizontal movement commands. These
+are passed to the <code class="docutils literal notranslate"><span class="pre">LogicalDomainService</span></code>. An invalid position is rejected with an
+exception; the adapter does not clamp or correct positions it receives. Movement commands
+are non-destructive: they do not modify the buffer, or any other state and don’t warrant updating
+the map. (<a class="reference internal" href="../../requirements/f-req_cursor_movement.html#FR-CURSOR-021" title="FR-CURSOR-021"><em class="xref need">Non-Destructive Movement (FR-CURSOR-021)</em></a>)</p>
+<p><strong>Coordinate translation.</strong> The adapter translates on demand between visual coordinates
+<code class="docutils literal notranslate"><span class="pre">(v_row,</span> <span class="pre">v_col)</span></code> and absolute indices in both directions. This is the only component in
+the Visual Domain that crosses coordinate spaces; <code class="docutils literal notranslate"><span class="pre">MovementResolver</span></code> operates exclusively in
+visual coordinates and relies on the adapter for any translation it requires.
+(<a class="reference internal" href="../../requirements/f-req_cursor_movement.html#FR-CURSOR-004" title="FR-CURSOR-004"><em class="xref need">Visual Coordinate Represent... (FR-CURSOR-004)</em></a>)</p>
+</section>
+<section id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading">¶</a></h2>
+<p><strong>Depends on:</strong> The <code class="docutils literal notranslate"><span class="pre">LogicalDomainService</span></code>, as the target of all read and mutation
+operations on the underlying text. This is the only cross-domain dependency in the Visual
+Domain.</p>
+<p><strong>Depended on by:</strong></p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">VisualDomainService</span></code>, which owns the adapter instance and routes all mutation
+operations and visual-line reads through it.</p></li>
+</ul>
+</section>
+<section id="key-invariants">
+<h2>Key Invariants<a class="headerlink" href="#key-invariants" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><strong>Sole domain boundary.</strong> The <code class="docutils literal notranslate"><span class="pre">VisualLogicalAdapter</span></code> is the only component in the
+Visual Domain permitted to call the <code class="docutils literal notranslate"><span class="pre">LogicalDomainService</span></code>. Any direct call from
+<code class="docutils literal notranslate"><span class="pre">VisualDomainService</span></code> or <code class="docutils literal notranslate"><span class="pre">MovementResolver</span></code> to the Logical Domain
+bypasses the adapter and breaks the boundary.</p></li>
+<li><p><strong>Wrapping map consistency.</strong> The wrapping map always reflects the current buffer state.
+After any mutation, the map is updated before any read, translation, or validity check
+is served. A stale map would cause coordinate translations to silently return wrong
+positions. (<a class="reference internal" href="../../requirements/f-req_text_wrapping.html#INV-WRAP-003" title="INV-WRAP-003"><em class="xref need">Visual Line Integrity (INV-WRAP-003)</em></a>)</p></li>
+<li><p><strong>Immutable display width.</strong> <code class="docutils literal notranslate"><span class="pre">display_width</span></code> is fixed at initialisation and never
+changes for the lifetime of the instance. A change to display width requires
+re-initialisation of the adapter. (<a class="reference internal" href="../../requirements/f-req_text_wrapping.html#INV-WRAP-001" title="INV-WRAP-001"><em class="xref need">Defined Display Width (INV-WRAP-001)</em></a>, <a class="reference internal" href="../../requirements/f-req_text_wrapping.html#INV-WRAP-002" title="INV-WRAP-002"><em class="xref need">Static Display Width (INV-WRAP-002)</em></a>,
+<a class="reference internal" href="../../requirements/f-req_initialization.html#INV-INIT-001" title="INV-INIT-001"><em class="xref need">Immutable Configuration (INV-INIT-001)</em></a>)</p></li>
+<li><p><strong>Full content coverage.</strong> Every character in the buffer is assigned to exactly one
+visual line. No character is omitted or duplicated by the wrapping map.
+(<a class="reference internal" href="../../requirements/f-req_text_wrapping.html#FR-WRAP-002" title="FR-WRAP-002"><em class="xref need">Full Content Visibility (FR-WRAP-002)</em></a>)</p></li>
+<li><p><strong>Output stability.</strong> For any given buffer state and display width, the visual line
+sequence and all coordinate translations are deterministic. Repeated reads with no
+intervening mutation return identical results. (<a class="reference internal" href="../../requirements/f-req_output_modes.html#INV-MODE-002" title="INV-MODE-002"><em class="xref need">Buffer-Based Idempotency (INV-MODE-002)</em></a>)</p></li>
+</ul>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">TextEditor</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">1. Specifications &amp; Design</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../requirements/index.html">1. Requirements</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">2. Architecture</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#introduction">2.1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#architectural-goals-and-constraints">2.2. Architectural Goals and Constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#system-context">2.3. System Context</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#containers">2.4. Containers</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#components">2.5. Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#code-c4-level-4">2.6. Code (C4 Level 4)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#architectural-decisions">2.7. Architectural Decisions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#error-contract">2.8. Error Contract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#open-questions">2.9. Open Questions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#appendix-a-glossary">2.10. Appendix A: Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#appendix-b-revision-history">2.11. Appendix B: Revision History</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#appendix-c-supporting-documents">2.12. Appendix C: Supporting Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#indices-and-tables">2.13. Indices and tables</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../glossary.html">Glossary</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html"><span class="section-number">2. </span>Architecture</a><ul>
+      <li>Previous: <a href="arch-visual_domain_service.html" title="previous chapter">Visual Domain Service</a></li>
+      <li>Next: <a href="../arch-component_sequences.html" title="next chapter">Sequence Diagrams</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Joe Rittiner.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../../_sources/specs/architecture/components/arch-visual_logical_adapter.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

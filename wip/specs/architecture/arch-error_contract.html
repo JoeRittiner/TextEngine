@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>2.12.1. Error Contract &#8212; TextEditor 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-data-viewer/jsonview.bundle.css?v=f6ef2277" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/libs/html/datatables.min.css?v=4b4fd840" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/common_css/needstable.css?v=5e1b6797" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/common_css/need_links.css?v=2150a916" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/common_css/need_style.css?v=92936fa5" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/common_css/need_core.css?v=f5b60a78" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/common_css/need_toggle.css?v=5c6620df" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-needs/modern.css?v=803738c0" />
+    <script src="../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/sphinx-data-viewer/jsonview.bundle.js?v=18cd53c5"></script>
+    <script src="../../_static/sphinx-data-viewer/jsonview_loader.js?v=f7ff7e7d"></script>
+    <script src="../../_static/sphinx-needs/libs/html/datatables.min.js?v=8a4aee21"></script>
+    <script src="../../_static/sphinx-needs/libs/html/datatables_loader.js?v=a2cae175"></script>
+    <script src="../../_static/sphinx-needs/libs/html/sphinx_needs_collapse.js?v=dca66431"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Glossary" href="../../glossary.html" />
+    <link rel="prev" title="2.11.1. Revision History" href="arch-history.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="error-contract">
+<span id="arch-error-contract-page"></span><h1><span class="section-number">2.12.1. </span>Error Contract<a class="headerlink" href="#error-contract" title="Link to this heading">¶</a></h1>
+<p>The engine uses (three) standard Python exception types. No custom exception hierarchy is defined.
+The <code class="docutils literal notranslate"><span class="pre">TextEditor</span></code> facade is the sole exception boundary visible to the host application; internal
+components raise the exceptions below when they detect a contract violation, and the facade either
+resolves them (where a violation can be corrected at the boundary) or re-raises them with sufficient
+context for the host to act on.</p>
+<p>The host application never receives a raw exception from an internal component directly.</p>
+<section id="exception-types">
+<h2>Exception Types<a class="headerlink" href="#exception-types" title="Link to this heading">¶</a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Exception</p></th>
+<th class="head"><p>When raised</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">TypeError</span></code></p></td>
+<td><p>A parameter is of the wrong Python type: a float in place of an integer for <code class="docutils literal notranslate"><span class="pre">display_width</span></code>,
+<code class="docutils literal notranslate"><span class="pre">display_height</span></code>, <code class="docutils literal notranslate"><span class="pre">scrolloff</span></code>, or <code class="docutils literal notranslate"><span class="pre">cursor_index</span></code>; a non-string argument to <code class="docutils literal notranslate"><span class="pre">insert</span></code>.
+(<a class="reference internal" href="../requirements/f-req_initialization.html#FR-INIT-013" title="FR-INIT-013"><em class="xref need">Type Conflict (FR-INIT-013)</em></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ValueError</span></code></p></td>
+<td><p>A parameter has the correct type but an invalid value: <code class="docutils literal notranslate"><span class="pre">display_width</span></code> or <code class="docutils literal notranslate"><span class="pre">display_height</span></code>
+is zero or negative; <code class="docutils literal notranslate"><span class="pre">scrolloff</span></code> is negative; the cross-parameter constraint
+<code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">*</span> <span class="pre">scrolloff</span> <span class="pre">&lt;</span> <span class="pre">display_height</span></code> is violated; <code class="docutils literal notranslate"><span class="pre">cursor_index</span></code> is negative or greater than
+<code class="docutils literal notranslate"><span class="pre">len(text_buffer)</span></code>.
+(<a class="reference internal" href="../requirements/f-req_initialization.html#FR-INIT-011" title="FR-INIT-011"><em class="xref need">ScrollOff–Height Conflict (FR-INIT-011)</em></a>, <a class="reference internal" href="../requirements/f-req_initialization.html#FR-INIT-012" title="FR-INIT-012"><em class="xref need">Null Parameter (FR-INIT-012)</em></a>, <a class="reference internal" href="../requirements/f-req_initialization.html#FR-INIT-003" title="FR-INIT-003"><em class="xref need">Display Width Initialization (FR-INIT-003)</em></a>, <a class="reference internal" href="../requirements/f-req_initialization.html#FR-INIT-004" title="FR-INIT-004"><em class="xref need">Display Height Initialization (FR-INIT-004)</em></a>,
+<a class="reference internal" href="../requirements/f-req_initialization.html#FR-INIT-005" title="FR-INIT-005"><em class="xref need">ScrollOff Initialization (FR-INIT-005)</em></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">IndexError</span></code></p></td>
+<td><p>A cursor or index position is outside the valid range for the current buffer state.
+(<a class="reference internal" href="../requirements/f-req_initialization.html#FR-INIT-006" title="FR-INIT-006"><em class="xref need">Cursor Initialization (FR-INIT-006)</em></a>, <a class="reference internal" href="../requirements/f-req_cursor_movement.html#INV-CURSOR-001" title="INV-CURSOR-001"><em class="xref need">Valid Coordinate Ranges (INV-CURSOR-001)</em></a>)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="null-absent-parameters">
+<h2>Null / Absent Parameters<a class="headerlink" href="#null-absent-parameters" title="Link to this heading">¶</a></h2>
+<p>Required parameters (<code class="docutils literal notranslate"><span class="pre">width</span></code>, <code class="docutils literal notranslate"><span class="pre">height</span></code>, <code class="docutils literal notranslate"><span class="pre">scrolloff</span></code>) raise <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>
+when <code class="docutils literal notranslate"><span class="pre">null</span></code> or absent, since <code class="docutils literal notranslate"><span class="pre">None</span></code> is of the wrong type for an integer parameter.
+Optional parameters (<code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">cursor_index</span></code>) have defined defaults and must not raise when
+omitted or <code class="docutils literal notranslate"><span class="pre">null</span></code>. (<a class="reference internal" href="../requirements/f-req_initialization.html#FR-INIT-012" title="FR-INIT-012"><em class="xref need">Null Parameter (FR-INIT-012)</em></a>)</p>
+</section>
+<section id="per-operation-failure-modes">
+<h2>Per-Operation Failure Modes<a class="headerlink" href="#per-operation-failure-modes" title="Link to this heading">¶</a></h2>
+<p class="rubric">Initialisation</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 40.0%" />
+<col style="width: 20.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Condition</p></th>
+<th class="head"><p>Exception</p></th>
+<th class="head"><p>Requirement</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">width</span></code> is zero, negative, or non-integer</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TypeError</span></code> / <code class="docutils literal notranslate"><span class="pre">ValueError</span></code></p></td>
+<td><p><a class="reference internal" href="../requirements/f-req_initialization.html#FR-INIT-003" title="FR-INIT-003"><em class="xref need">Display Width Initialization (FR-INIT-003)</em></a>, <a class="reference internal" href="../requirements/f-req_initialization.html#FR-INIT-013" title="FR-INIT-013"><em class="xref need">Type Conflict (FR-INIT-013)</em></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">height</span></code> is zero, negative, or non-integer</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TypeError</span></code> / <code class="docutils literal notranslate"><span class="pre">ValueError</span></code></p></td>
+<td><p><a class="reference internal" href="../requirements/f-req_initialization.html#FR-INIT-004" title="FR-INIT-004"><em class="xref need">Display Height Initialization (FR-INIT-004)</em></a>, <a class="reference internal" href="../requirements/f-req_initialization.html#FR-INIT-013" title="FR-INIT-013"><em class="xref need">Type Conflict (FR-INIT-013)</em></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">scrolloff</span></code> is negative or non-integer</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TypeError</span></code> / <code class="docutils literal notranslate"><span class="pre">ValueError</span></code></p></td>
+<td><p><a class="reference internal" href="../requirements/f-req_initialization.html#FR-INIT-005" title="FR-INIT-005"><em class="xref need">ScrollOff Initialization (FR-INIT-005)</em></a>, <a class="reference internal" href="../requirements/f-req_initialization.html#FR-INIT-013" title="FR-INIT-013"><em class="xref need">Type Conflict (FR-INIT-013)</em></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">*</span> <span class="pre">scrolloff</span> <span class="pre">&gt;=</span> <span class="pre">display_height</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ValueError</span></code></p></td>
+<td><p><a class="reference internal" href="../requirements/f-req_initialization.html#FR-INIT-011" title="FR-INIT-011"><em class="xref need">ScrollOff–Height Conflict (FR-INIT-011)</em></a></p></td>
+</tr>
+<tr class="row-even"><td><p>Any required parameter is <code class="docutils literal notranslate"><span class="pre">null</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TypeError</span></code></p></td>
+<td><p><a class="reference internal" href="../requirements/f-req_initialization.html#FR-INIT-012" title="FR-INIT-012"><em class="xref need">Null Parameter (FR-INIT-012)</em></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cursor_index</span></code> out of range or non-integer</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">IndexError</span></code> / <code class="docutils literal notranslate"><span class="pre">TypeError</span></code></p></td>
+<td><p><a class="reference internal" href="../requirements/f-req_initialization.html#FR-INIT-006" title="FR-INIT-006"><em class="xref need">Cursor Initialization (FR-INIT-006)</em></a>, <a class="reference internal" href="../requirements/f-req_initialization.html#FR-INIT-013" title="FR-INIT-013"><em class="xref need">Type Conflict (FR-INIT-013)</em></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">text</span></code> is non-string</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TypeError</span></code></p></td>
+<td><p><a class="reference internal" href="../requirements/f-req_initialization.html#FR-INIT-013" title="FR-INIT-013"><em class="xref need">Type Conflict (FR-INIT-013)</em></a></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Text Mutations (insert, delete, backspace)</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 10.0%" />
+<col style="width: 30.0%" />
+<col style="width: 20.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Condition</p></th>
+<th class="head"><p>Result</p></th>
+<th class="head"><p>Requirement</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">insert(text)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">text</span></code> is non-string</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TypeError</span></code></p></td>
+<td><p><a class="reference internal" href="../requirements/f-req_initialization.html#FR-INIT-013" title="FR-INIT-013"><em class="xref need">Type Conflict (FR-INIT-013)</em></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">insert(text)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">text</span></code> is empty.</p></td>
+<td><p>No-op</p></td>
+<td><p><a class="reference internal" href="../requirements/f-req_text_manipulation.html#FR-TEXT-013" title="FR-TEXT-013"><em class="xref need">Inserting Nothing (FR-TEXT-013)</em></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">insert(text)</span></code></p></td>
+<td><p>length of <code class="docutils literal notranslate"><span class="pre">text</span></code> &gt; 1 characters</p></td>
+<td><p>All are inserted</p></td>
+<td><p><a class="reference internal" href="../requirements/f-req_text_manipulation.html#FR-TEXT-017" title="FR-TEXT-017"><em class="xref need">Insert Atomicity (FR-TEXT-017)</em></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">delete()</span></code></p></td>
+<td><p>No character to the right of the cursor</p></td>
+<td><p>No-op</p></td>
+<td><p><a class="reference internal" href="../requirements/f-req_text_manipulation.html#FR-TEXT-024" title="FR-TEXT-024"><em class="xref need">Delete Boundary Behavior (FR-TEXT-024)</em></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">backspace()</span></code></p></td>
+<td><p>No character to the left of the cursor</p></td>
+<td><p>No-op</p></td>
+<td><p><a class="reference internal" href="../requirements/f-req_text_manipulation.html#FR-TEXT-034" title="FR-TEXT-034"><em class="xref need">Backspace Boundary Behavior (FR-TEXT-034)</em></a></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Cursor Movement</p>
+<p>Attempts to move the cursor into an invalid position are a silent no-op. (e.g. Moving left from the
+start of the buffer, or right from the end of the buffer.)</p>
+</section>
+<section id="propagation-rules">
+<h2>Propagation Rules<a class="headerlink" href="#propagation-rules" title="Link to this heading">¶</a></h2>
+<p>All exceptions escape the <code class="docutils literal notranslate"><span class="pre">TextEditor</span></code> facade unchanged in type. The facade adds a descriptive
+message to any exception it re-raises, sufficient for the host application to identify the violated
+constraint without consulting internal component source.</p>
+<p>No partial state is constructed on a failed initialisation. If any validation step raises, the
+<code class="docutils literal notranslate"><span class="pre">TextEditor</span></code> instance is not created and no internal component is initialised.
+(<a class="reference internal" href="../requirements/f-req_initialization.html#FR-INIT-001" title="FR-INIT-001"><em class="xref need">System Initialization (FR-INIT-001)</em></a>, <a class="reference internal" href="../requirements/f-req_initialization.html#INV-INIT-002" title="INV-INIT-002"><em class="xref need">Post-Initialization Validity (INV-INIT-002)</em></a>)</p>
+</section>
+<section id="test-obligations">
+<h2>Test Obligations<a class="headerlink" href="#test-obligations" title="Link to this heading">¶</a></h2>
+<p>Every entry in the per-operation table above must have a corresponding test that:</p>
+<ul class="simple">
+<li><p>Supplies the invalid input.</p></li>
+<li><p>Asserts the correct exception type is raised.</p></li>
+<li><p>Asserts the engine produces no observable side-effects (no partial state, no mutated buffer).</p></li>
+</ul>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">TextEditor</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">1. Specifications &amp; Design</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../requirements/index.html">1. Requirements</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">2. Architecture</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#introduction">2.1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#architectural-goals-and-constraints">2.2. Architectural Goals and Constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#system-context">2.3. System Context</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#containers">2.4. Containers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#components">2.5. Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#code-c4-level-4">2.6. Code (C4 Level 4)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#architectural-decisions">2.7. Architectural Decisions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#error-contract">2.8. Error Contract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#open-questions">2.9. Open Questions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#appendix-a-glossary">2.10. Appendix A: Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#appendix-b-revision-history">2.11. Appendix B: Revision History</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#appendix-c-supporting-documents">2.12. Appendix C: Supporting Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#indices-and-tables">2.13. Indices and tables</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../glossary.html">Glossary</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="index.html"><span class="section-number">2. </span>Architecture</a><ul>
+      <li>Previous: <a href="arch-history.html" title="previous chapter"><span class="section-number">2.11.1. </span>Revision History</a></li>
+      <li>Next: <a href="../../glossary.html" title="next chapter">Glossary</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Joe Rittiner.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../_sources/specs/architecture/arch-error_contract.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
