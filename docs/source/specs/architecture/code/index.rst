@@ -159,13 +159,14 @@ Cursor Query
 
 .. note::
 
-   The primary interface for host applications is ``get_cursor``, which returns the cursor
+   The primary interface for host applications is the ``cursor`` property, which returns the cursor
    in Window coordinates. The remaining methods expose the cursor in other coordinate spaces
    for advanced integrations. See :ref:`req_output_modes`.
 
 .. code-block:: python
 
-       def get_cursor(self) -> WindowPosition:
+       @property
+       def cursor(self) -> WindowPosition:
            """Return cursor position as a window coordinate ``[x, y]``."""
 
        def visual_cursor(self) -> VisualPosition:
@@ -182,13 +183,14 @@ Content Query
 
 .. note::
 
-   The primary interface for host applications is ``get_lines``, which returns the
+   The primary interface for host applications is the ``lines`` property, which returns the
    viewport-clipped display lines. The remaining methods expose the full buffer in other
    representations for advanced integrations. See :ref:`req_output_modes`.
 
 .. code-block:: python
 
-       def get_lines(self) -> list[VisualLineGroup]:
+       @property
+       def lines(self) -> list[VisualLineGroup]:
            """Return the subset of visual lines currently visible within the window."""
 
        def visual_lines(self) -> list[VisualLineGroup]:
