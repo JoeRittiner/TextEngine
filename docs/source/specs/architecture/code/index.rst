@@ -214,12 +214,38 @@ Magic Methods
            """Return a developer-readable representation of the editor state.
            Including all initialization parameters."""
 
-.. note::
+.. rubric:: Excluded Magic Methods
 
-   ``__len__``, ``__iter__``, and ``__eq__`` are intentionally excluded. Each is ambiguous
-   over the class's multiple representations: length of text vs. number of lines; equality
-   of buffer content vs. full state including cursor and geometry. Providing them would
-   require an arbitrary choice the public API should not silently make.
+.. list-table::
+   :widths: 15 85
+   :header-rows: 1
+
+   * - Method
+     - Rationale
+   * - ``__hash__``
+     - ``__eq__`` is excluded, so Python retains the default identity-based hash.
+       No action required; noted here to prevent a future ``__eq__`` addition from
+       silently breaking hashing.
+   * - ``__len__``
+     - Ambiguous: length of the raw text vs. number of logical lines vs. number of
+       visual lines. Callers must use ``len(editor.raw_text())`` or equivalent explicitly.
+   * - ``__iter__``
+     - Ambiguous: iterate characters, logical lines, or visual lines. No single
+       interpretation is obviously correct.
+   * - ``__eq__``
+     - Ambiguous: equality of buffer content alone vs. full state including cursor
+       position and display geometry.
+   * - ``__bool__``
+     - Misleading: ``INV-TEXT-001`` guarantees the buffer always contains at least one
+       logical line, so an "empty" editor would still be truthy. The result would
+       surprise callers.
+   * - ``__copy__`` / ``__deepcopy__``
+     - The prescribed way to clone state is re-initialisation via the output interfaces
+       (:need:`NR-INIT-101`, :need:`NR-INIT-102`). A shallow copy would produce a second
+       instance sharing internal component references, breaking the ownership model.
+   * - ``__getstate__`` / ``__setstate__``
+     - State serialisation is explicitly out of scope (:need:`NR-INIT-102`). Allowing
+       pickling would produce silent success with undefined behaviour on restore.
 
 Public Return Types
 -------------------
