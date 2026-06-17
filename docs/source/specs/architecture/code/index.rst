@@ -16,17 +16,14 @@ parameter types, return types, and the precise interface contracts that componen
 one another.
 
 This is the authoritative reference for anyone writing or reviewing implementation code. It is
-updated in tandem with the code, not after the fact. It is hand-authored, design-first,
-specifies intent and contracts.
+updated in tandem with the code, not after the fact. It is hand-authored and design-first:
+the signatures here are the contract; the auto-generated API Reference is the verification.
 
 Relationship to Other Documents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * **Architecture Components (C4 Level 3):** :doc:`../index` - the layer above; describes
   responsibilities and ownership without prescribing class structure.
-* **API Reference:** :doc:`../../../reference/index` - auto-generated from docstrings;
-  the runtime truth of what is implemented. If this document and the reference diverge,
-  the reference is correct and this document must be updated.
 * **Requirements:** :doc:`../../requirements/index` - the behavioural contracts that the
   classes below must satisfy.
 
@@ -36,8 +33,6 @@ Document Conventions
 * Class diagrams use PlantUML and follow the color convention defined in
   :doc:`../index` (Logical: blue, Visual: green, Display: orange, Facade: grey).
 * Method signatures are written in Python 3 type-annotated style.
-
-.. * ``# TODO`` markers indicate interface decisions that are not yet finalised.
 
 .. _code_class_diagrams:
 
@@ -113,11 +108,14 @@ Initialisation
            TypeError
                If any required parameter is of the wrong type.
            ValueError
-               If any parameter has an invalid value or the scrolloff–height constraint is violated.
+               If any parameter has an invalid value, or the scrolloff–height constraint
+               is violated.
            IndexError
                If ``cursor_index`` is outside ``[0, len(text)]``.
            """
 
+
+.. :need:`FR-INIT-013` :need:`FR-INIT-011` :need:`FR-INIT-006`
 
 Mutation Commands
 .................
@@ -131,7 +129,7 @@ Mutation Commands
            """Delete the character immediately right of the cursor. No-op at end of buffer."""
 
        def backspace(self) -> None:
-           """Delete the character immediately left of the cursor. Cursor Moves left. No-op at start of buffer."""
+           """Delete the character immediately left of the cursor. Cursor moves left. No-op at start of buffer."""
 
 Cursor Movement
 ...............
@@ -151,20 +149,24 @@ Cursor Movement
            """Move cursor one character right. No-op at end of buffer."""
 
        def move_home(self) -> None:
-           """Move cursor to the absolute start of the buffer (index 0)."""
+           """Move cursor to the absolute start of the buffer (index ``0``)."""
 
        def move_end(self) -> None:
-           """Move cursor to the absolute end of the buffer (index len(buffer))."""
+           """Move cursor to the absolute end of the buffer (index ``len(buffer)``)."""
 
 Cursor Query
 ............
 
-Intended: Display data through ``get_cursor``. Other methods are supplementary. (see :ref:`req_output_modes`)
+.. note::
+
+   The primary interface for host applications is ``get_cursor``, which returns the cursor
+   in Window coordinates. The remaining methods expose the cursor in other coordinate spaces
+   for advanced integrations. See :ref:`req_output_modes`.
 
 .. code-block:: python
 
        def get_cursor(self) -> WindowPosition:
-           """Return cursor position as a window position ``[x, y]``."""
+           """Return cursor position as a window coordinate ``[x, y]``."""
 
        def visual_cursor(self) -> VisualPosition:
            """Return cursor position as a visual coordinate ``(v_row, v_col)``."""
@@ -178,69 +180,86 @@ Intended: Display data through ``get_cursor``. Other methods are supplementary. 
 Content Query
 .............
 
-Intended: Display data through ``get_lines``. Other methods are supplementary. (see :ref:`req_output_modes`)
+.. note::
+
+   The primary interface for host applications is ``get_lines``, which returns the
+   viewport-clipped display lines. The remaining methods expose the full buffer in other
+   representations for advanced integrations. See :ref:`req_output_modes`.
 
 .. code-block:: python
 
        def get_lines(self) -> list[VisualLineGroup]:
-           """Return the subset of visual lines in the current window."""
+           """Return the subset of visual lines currently visible within the window."""
 
        def visual_lines(self) -> list[VisualLineGroup]:
-           """Return all visual lines."""
+           """Return all visual lines across the entire buffer."""
 
        def logical_lines(self) -> list[str]:
-           """Return the buffer split at newline boundaries."""
+           """Return the buffer split at newline boundaries, newline characters excluded."""
 
        def raw_text(self) -> str:
            """Return the buffer contents as a single string, including all newline characters."""
-
 
 Magic Methods
 .............
 
 .. code-block:: python
 
-    def __str__(self) -> str:
-        """Return a string representation of the buffer. Including all newline characters."""
+       def __str__(self) -> str:
+           """Return the buffer contents as a string. Equivalent to ``raw_text()``."""
 
-    def __repr__(self) -> str:
-        """..."""
+       def __repr__(self) -> str:
+           """Return a developer-readable representation of the editor state.
+           Including all initialization parameters."""
 
+.. note::
 
-Excluded magic methods:
-
-- ``__len__``: Length of the text? number of visual lines? logic lines?
-- ``__iter__``: display lines? logic lines?
-- ``__eq__``:  Just text? Or cursor position? geometry?
-- ...
+   ``__len__``, ``__iter__``, and ``__eq__`` are intentionally excluded. Each is ambiguous
+   over the class's multiple representations: length of text vs. number of lines; equality
+   of buffer content vs. full state including cursor and geometry. Providing them would
+   require an arbitrary choice the public API should not silently make.
 
 Public Return Types
 -------------------
 
+These types form the public data contract between the engine and host applications.
+They are defined here rather than inferred from the class diagrams, as they cross the
+public API boundary and must remain stable independently of internal implementation changes.
+
 .. code-block:: python
 
-    @dataclass
-    class VisualLineGroup:
-        """
-        A group of visual lines, that form a logical line.
-        """
-        segments: list[str]
+   @dataclass(frozen=True)
+   class VisualLineGroup:
+       """All visual segments that belong to one logical line."""
 
-        def __iter__(): Iterator[str]
-        def __len__(): int
-        def __getitem__(index: int): str
+       segments: list[str]
 
-    class WindowPosition(NamedTuple):
-        x: int
-        y: int
+       def __iter__(self) -> Iterator[str]:
+           return iter(self.segments)
 
-    class VisualPosition(NamedTuple):
-        row: int
-        col: int
+       def __len__(self) -> int:
+           return len(self.segments)
 
-    class LogicalPosition(NamedTuple):
-        row: int
-        col: int
+       def __getitem__(self, index: int) -> str:
+           return self.segments[index]
+
+
+   class WindowPosition(NamedTuple):
+       """Cursor position within the visible window. ``x`` is column, ``y`` is display row."""
+       x: int
+       y: int
+
+
+   class VisualPosition(NamedTuple):
+       """Cursor position across all wrapped visual lines."""
+       row: int
+       col: int
+
+
+   class LogicalPosition(NamedTuple):
+       """Cursor position in logical line and column space."""
+       row: int
+       col: int
 
 .. _code_internal_interfaces:
 
@@ -251,91 +270,134 @@ Internal Component Interfaces
 
    These are internal contracts between components. They are not part of the public API and
    may change without notice to host applications. They are recorded here to support
-   implementation and testing of individual components in isolation.
+   implementation and isolated unit testing of individual components.
 
 ``TextBuffer``
 ~~~~~~~~~~~~~~
 
 .. code-block:: python
 
-    def insert(self, text: str, index: int) -> None:
-        """Insert ``text`` at ``index``."""
+   def insert(self, text: str, index: int) -> None:
+       """Insert ``text`` at ``index``. No-op if ``text`` is empty."""
 
-    def delete(self, index: int) -> None:
-        """Delete the character at ``index``."""
+   def delete(self, index: int) -> None:
+       """Delete the character immediately right of ``index``.
+       No-op if ``index == len(buffer)``."""
 
-    def get_text(self) -> str:
-        """Return the buffer contents as a single string."""
+   def get_text(self) -> str:
+       """Return the buffer contents as a single string."""
 
 ``CursorState``
 ~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
-    def get_position(self) -> int:
-        """Return the current cursor position as an absolute index."""
+   def get_position(self) -> int:
+       """Return the current cursor position as an absolute index."""
 
-    def set_position(self, position: int) -> None:
-        """Set the cursor position to an absolute index."""
+   def set_position(self, position: int) -> None:
+       """Set the cursor position. Caller is responsible for bounds validation."""
 
-       def move_left(self) -> None:
-           """Move cursor one character left."""
+   def move_left(self) -> None:
+       """Decrement position by 1. Caller is responsible for bounds validation."""
 
-       def move_right(self) -> None:
-           """Move cursor one character right."""
+   def move_right(self) -> None:
+       """Increment position by 1. Caller is responsible for bounds validation."""
 
-       def move_home(self, len_text) -> None:
-           """Move cursor to the absolute start of the buffer (index 0)."""
+   def move_home(self) -> None:
+       """Set position to 0."""
 
-       def move_end(self, len_text) -> None:
-           """Move cursor to the absolute end of the buffer (index len_text)."""
+   def move_end(self, text_len: int) -> None:
+       """Set position to ``text_len``."""
 
 ``LogicalDomainService``
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
-    def _to_logical(self, position: int) -> LogicalPosition:
-        """Convert absolute index to logical coordinate."""
+   def get_lines(self) -> list[str]:
+       """Return the buffer split at newline boundaries, newline characters excluded."""
 
-    def _to_abs(self, position: LogicalPosition) -> int:
-        """Convert logical coordinate to absolute index."""
+   def get_logical_cursor(self) -> LogicalPosition:
+       """Return cursor position as a logical coordinate ``(row, col)``."""
+
+   def _to_logical(self, position: int) -> LogicalPosition:
+       """Convert absolute index to logical coordinate."""
+
+   def _to_abs(self, position: LogicalPosition) -> int:
+       """Convert logical coordinate to absolute index."""
 
 ``VisualLogicalAdapter``
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
-    def _to_visual(self, abs_index: int) -> VisualPosition:
-        """Convert absolute index to visual coordinate."""
+   def insert(self, text: str) -> None:
+       """Insert ``text`` at the current cursor position. Cursor moves to end of inserted text."""
 
-    def _to_abs(self, position: VisualPosition) -> int:
-        """Convert visual coordinate to absolute index."""
+   def delete(self) -> None:
+       """Delete the character immediately right of the cursor. No-op at end of buffer."""
 
-    def _rebuild_wrap_map(self) -> List[List[Span]]:
-        """Rebuild and return the internal wrapping map."""
+   def backspace(self) -> None:
+       """Delete the character immediately left of the cursor. Cursor moves left. No-op at start of buffer."""
+
+   def get_lines(self) -> list[VisualLineGroup]:
+       """Return all visual lines across the entire buffer."""
+
+   def get_cursor(self) -> VisualPosition:
+       """Return cursor position as a visual coordinate ``(v_row, v_col)``."""
+
+   def set_cursor(self, position: VisualPosition) -> None:
+       """Set the cursor position."""
+
+   def move_left(self) -> None:
+       """Move cursor one character left. No-op at start of buffer."""
+
+   def move_right(self) -> None:
+       """Move cursor one character right. No-op at end of buffer."""
+
+   def move_home(self) -> None:
+       """Move cursor to the absolute start of the buffer (index ``0``)."""
+
+   def move_end(self) -> None:
+       """Move cursor to the absolute end of the buffer (index ``len(buffer)``)."""
+
+   def _to_visual(self, abs_index: int) -> VisualPosition:
+       """Convert absolute index to visual coordinate."""
+
+   def _to_abs(self, position: VisualPosition) -> int:
+       """Convert visual coordinate to absolute index."""
+
+   def _rebuild_wrap_map(self) -> List[List[Span]]:
+       """Recompute and store the internal wrapping map from the current buffer state.
+       Must be called after every mutation before any read or coordinate translation
+       is served. (`INV-WRAP-003`)"""
 
 ``MovementResolver``
 ~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
-    @staticmethod
-    def move_up(line_lengths: List[int], cursor: VisualPosition) -> VisualPosition:
-        """Return new cursor position after moving up one visual line."""
+   @staticmethod
+   def move_up(line_lengths: list[int], cursor: VisualPosition) -> VisualPosition:
+       """Return new cursor position after moving up one visual line.
+       Jumps to ``(0, 0)`` if already on the first visual line. (`FR-CURSOR-050`)
+       Truncates column to target line length if necessary. (`FR-CURSOR-031`)"""
 
-    @staticmethod
-    def move_down(line_lengths: List[int], cursor: VisualPosition) -> VisualPosition:
-        """Return new cursor position after moving down one visual line."""
-
+   @staticmethod
+   def move_down(line_lengths: list[int], cursor: VisualPosition) -> VisualPosition:
+       """Return new cursor position after moving down one visual line.
+       Jumps to end of last line if already on the last visual line. (`FR-CURSOR-050`)
+       Truncates column to target line length if necessary. (`FR-CURSOR-031`)"""
 
 ``ViewportState``
 ~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
-    def get_range(): Span
-        """Return [window_start, window_start + display_height - 1]"""
+   def get_range(self) -> tuple[int, int]:
+       """Return ``(window_start, window_start + display_height - 1)``."""
 
-    def update(cursor: VisualPosition, num_visual_lines: int) -> int:
-        """Calculate and return the new window_start"""
+   def update(self, cursor: VisualPosition, num_visual_lines: int) -> int:
+       """Update ``window_start`` to satisfy cursor visibility and scrolloff constraints.
+       Adjusts by the minimum amount required. (:need:`FR-VIEW-003`)"""
