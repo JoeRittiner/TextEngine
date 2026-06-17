@@ -1,3 +1,5 @@
+.. _arch_index:
+
 Architecture
 ============
 
@@ -467,6 +469,10 @@ Error Contract
 The engine uses standard Python exception types. No custom exception hierarchy is defined.
 The ``TextEditor`` facade is the sole exception boundary visible to the host application.
 
+.. seealso::
+
+   The full error contract is maintained in :doc:`arch-error_contract`.
+
 .. list-table::
    :widths: 20 80
    :header-rows: 1
@@ -517,6 +523,16 @@ Appendix B: Revision History
 -----------------------------
 
 :doc:`arch-history`
+
+Appendix C: Supporting Documents
+----------------------------------
+
+.. toctree::
+   :hidden:
+
+   arch-error_contract
+
+* :doc:`arch-error_contract` — full error contract and per-operation failure modes.
 
 Indices and tables
 ------------------
