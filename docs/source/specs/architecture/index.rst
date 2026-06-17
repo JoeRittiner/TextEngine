@@ -1,3 +1,5 @@
+.. _arch_index:
+
 Architecture
 ============
 
@@ -38,7 +40,8 @@ Relationship to Other Documents
   requirements but does not reproduce them.
 * **Component Descriptions:** individual component pages under :ref:`arch_components`.
 * **Architectural Decisions:** individual decision pages under :ref:`arch_decisions`.
-* **Glossary:** shared terminology for all architecture documents. (:doc:`../../glossary`)
+* **Code (C4 Level 4):** class diagrams and method-level interface contracts: :doc:`code/index`.
+* **Glossary:** shared terminology for all architecture documents: :doc:`../../glossary`.
 
 References
 ~~~~~~~~~~
@@ -218,6 +221,10 @@ The caller never observes a partially-updated state.
   Returns the current text content in a caller-specified form (logical lines, visual lines, or display lines).
   (:doc:`../requirements/f-req_output_modes`)
 
+.. seealso::
+
+   Full method signatures, parameters, and return types: :doc:`code/index`.
+
 .. _arch_containers:
 
 Containers
@@ -356,6 +363,14 @@ Get Cursor
 Components
 ----------
 
+Component Diagrams
+~~~~~~~~~~~~~~~~~~
+
+.. plantuml:: diagrams/display_components.puml
+.. plantuml:: diagrams/visual_components.puml
+.. plantuml:: diagrams/logical_components.puml
+
+
 .. _arch_component_descriptions:
 
 Component Descriptions
@@ -409,12 +424,26 @@ are in :ref:`arch_component_descriptions`.
   This rule applies to components within domains; the ``TextEditor`` facade is the designated
   cross-domain coordinator and is explicitly exempt. (See :doc:`decisions/arch-layer_reads`.)
 
-Component Diagram
-~~~~~~~~~~~~~~~~~
 
-.. plantuml:: diagrams/display_components.puml
-.. plantuml:: diagrams/visual_components.puml
-.. plantuml:: diagrams/logical_components.puml
+.. _arch_code:
+
+Code (C4 Level 4)
+-----------------
+
+The Code level describes the internal structure of individual components: class diagrams, method
+signatures, and the interface contracts that components publish to one another. This is the level at
+which implementation begins.
+
+.. seealso::
+
+   Full class diagrams, method signatures, and interface contracts: :doc:`code/index`.
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Code
+   :hidden:
+
+   code/index
 
 .. _arch_decisions:
 
@@ -438,21 +467,25 @@ Error Contract
 --------------
 
 The engine uses standard Python exception types. No custom exception hierarchy is defined.
-
-* ``TypeError`` is raised when a parameter is of the wrong Python type (e.g. a non-integer
-  ``display_width``, a non-string insert argument).
-* ``ValueError`` is raised when a parameter has the correct type but an invalid value
-  (e.g. a negative ``display_height``, a ``scrolloff`` that violates
-  ``2 * scrolloff < display_height``).
-* ``IndexError`` is raised when a cursor or index position is outside the valid range for the
-  current buffer state.
-
 The ``TextEditor`` facade is the sole exception boundary visible to the host application.
-Internal components raise the above exceptions when they detect a contract violation;
-the facade catches these and either resolves them (where the violation can be corrected at the
-boundary without surfacing it to the host) or re-raises them with sufficient context for the
-host to act on. The host application never receives a raw exception from an internal component
-directly.
+
+.. seealso::
+
+   The full error contract is maintained in :doc:`arch-error_contract`.
+
+.. list-table::
+   :widths: 20 80
+   :header-rows: 1
+
+   * - Exception
+     - When raised
+   * - ``TypeError``
+     - A parameter is of the wrong Python type (e.g. a float ``display_width``, a non-string insert argument).
+   * - ``ValueError``
+     - A parameter has the correct type but an invalid value (e.g. a negative ``display_height``,
+       a ``scrolloff`` that violates ``2 * scrolloff < display_height``).
+   * - ``IndexError``
+     - A cursor or index position is outside the valid range for the current buffer state.
 
 Open Questions
 --------------
@@ -490,6 +523,16 @@ Appendix B: Revision History
 -----------------------------
 
 :doc:`arch-history`
+
+Appendix C: Supporting Documents
+----------------------------------
+
+.. toctree::
+   :hidden:
+
+   arch-error_contract
+
+* :doc:`arch-error_contract` — full error contract and per-operation failure modes.
 
 Indices and tables
 ------------------

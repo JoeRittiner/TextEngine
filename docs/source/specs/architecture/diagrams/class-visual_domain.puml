@@ -1,0 +1,91 @@
+@startuml
+
+interface LogicalDomain
+
+interface VisualDomain {
+    +insert(text: str)
+    +delete()
+    +backspace()
+    ..
+    +get_lines() : List[VisualLineGroup]
+    +get_cursor() : VisualPosition
+    +set_cursor(position: VisualPosition)
+    ..
+    +move_up()
+    +move_down()
+    +move_left()
+    +move_right()
+    +move_home()
+    +move_end()
+}
+
+class VisualDomainService {
+    -_adapter : VisualLogicalAdapter
+    __
+    +__init__(logical_domain: LogicalDomain, display_width: int)
+}
+
+class MovementResolver <<static>>{
+    {static} +move_up(line_lengths: List[int], cursor: VisualPosition) : VisualPosition
+    {static} +move_down(line_lengths: List[int], cursor: VisualPosition) : VisualPosition
+}
+
+class VisualLogicalAdapter {
+    -_logical_domain : LogicalDomain
+    -_display_width : int
+    -_wrap_map : List[List[Span]]
+    __
+    +__init__(logical_domain: LogicalDomain, display_width: int)
+    ..
+    +insert(text: str)
+    +delete()
+    +backspace()
+    ..
+    +get_lines() : List[VisualLineGroup]
+    +get_cursor() : VisualPosition
+    +set_cursor(position: VisualPosition)
+    ..
+    +move_left()
+    +move_right()
+    +move_home()
+    +move_end()
+    __
+    -_to_visual(abs_index: int) : VisualPosition
+    -_to_abs(position: VisualPosition) : int
+    -_rebuild_wrap_map() : List[List[Span]]
+}
+
+class VisualLineGroup <<dataclass>> {
+    +segments : List[str]
+    __
+    +__iter__() : Iterator[str]
+    +__len__() : int
+    +__getitem__(index: int) : str
+}
+
+class VisualPosition <<NamedTuple>> {
+    +row : int
+    +col : int
+}
+
+class Span <<NamedTuple>> {
+    +start : int
+    +end : int
+}
+
+' ----
+
+VisualDomain <|.down. VisualDomainService
+
+VisualDomainService *-down- VisualLogicalAdapter
+VisualDomainService .right.> MovementResolver : uses
+
+VisualLogicalAdapter o-- LogicalDomain
+VisualLogicalAdapter .right.> Span : uses
+
+' ----
+
+VisualDomain .right.> VisualPosition : returns
+VisualDomain .left.> VisualLineGroup : returns
+
+@enduml

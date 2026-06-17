@@ -1,0 +1,60 @@
+@startuml
+
+interface VisualDomain
+
+interface DisplayDomain {
+    +insert(text: str)
+    +delete()
+    +backspace()
+    ..
+    +get_lines() : List[VisualLineGroup]
+    +get_cursor() : WindowPosition
+    ..
+    +move_up()
+    +move_down()
+    +move_left()
+    +move_right()
+    +move_home()
+    +move_end()
+}
+
+class DisplayDomainService {
+    -_visual_domain : VisualDomain
+    -_viewport : ViewportState
+    __
+    +__init__(visual_domain: VisualDomain, display_height: int, scrolloff: int)
+    __
+    -_to_window(position: VisualPosition) : WindowPosition
+    -_clip_to_window(lines: List[VisualLineGroup]) : List[VisualLineGroup]
+}
+
+class ViewportState {
+    -_display_height : int
+    -_scrolloff : int
+    -_window_start : int
+    __
+    +__init__(display_height: int, scrolloff: int, initial_cursor: VisualPosition, num_visual_lines: int)
+    ..
+    +get_range() : Span
+    ' Returns [window_start, window_start + display_height - 1]
+    +update(cursor: VisualPosition, num_visual_lines: int): int
+}
+
+class WindowPosition <<NamedTuple>> {
+    +x : int
+    +y : int
+}
+
+' ----
+
+DisplayDomain <|.down. DisplayDomainService
+
+DisplayDomainService *- ViewportState
+DisplayDomainService o-- VisualDomain
+
+' ----
+
+DisplayDomain .right.> WindowPosition : returns
+DisplayDomain .left.> VisualLineGroup : returns
+
+@enduml
