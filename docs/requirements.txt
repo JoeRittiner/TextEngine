@@ -1,3 +1,4 @@
 sphinx ~= 9.1.0
 sphinx-needs ~= 8.0.0
 sphinxcontrib-plantuml ~= 0.31
+furo ~= 2025.12.19
