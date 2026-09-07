@@ -16,6 +16,8 @@ rather than its internal implementation or architectural patterns.
 This specification serves as the foundational "contract" for developers integrating the :term:`TextEditor` into larger
 applications.
 
+.. _req_conventions:
+
 Document Conventions
 ~~~~~~~~~~~~~~~~~~~~
 
