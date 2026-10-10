@@ -27,6 +27,13 @@ Scope
 Intended Audience
 ~~~~~~~~~~~~~~~~~~
 
+.. GUIDANCE: Every Responsibility block further down lists Dev / CI / QA /
+.. Stakeholder as if they might be distinct people. If they're always the same
+.. person, consider stating that once here ("all roles below are held by the
+.. author; the labels indicate which hat is worn for which activity") instead
+.. of re-justifying it each time it comes up (it currently resurfaces under
+.. Acceptance Testing and implicitly under Risk Priority Index).
+
 The primary audience is (again) the author, in multiple roles:
 
 * The Dev: The person implementing the engine, and designing the logic, interfaces, etc. CI maintainer
@@ -39,17 +46,19 @@ The primary audience is (again) the author, in multiple roles:
 
 
 Testing Principles
--------------------
+------------------
 
 1. Test against contracts, not implementations.
 2. Prefer automation where practical.
-3. Use risk to determine test depth.
+3. Use risk (RPI) to determine test depth.
 4. Lower test levels provide defect localization; higher levels provide requirement verification.
 5. Individual tests may isolate dependencies, but each test level's suite must demonstrate its full intended boundary.
 6. Tests should be deterministic and reproducible.
+7. Traceability: The relationship between artifacts (requirements, test cases, implementations) should be trackable.
 
-7. Automated tests shall be implemented using an appropriate automated testing framework and executed in CI.
-8. Testing is performed continuously throughout development, with regression testing performed automatically in CI.
+Each of these principles should have concrete explanations in the Test plan. (e.g. How exactly will artifacts be traced
+and linked? What tool(s) are used and why? traceability matrix or through links between requirements and tests? etc.)
+
 
 Test levels
 -----------
