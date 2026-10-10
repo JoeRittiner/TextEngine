@@ -104,14 +104,12 @@ Testing Principles
   property-based tests (:doc:`property_based`), not only example-based unit tests. See also
   :need:`NFREQ-QA-222`.
 
-* **Domain isolation.** Each domain is unit-tested in isolation by mocking the domain
-  service immediately below it (:ref:`arch_containers`). A test of the Display Domain
-  supplies a mock ``VisualDomainService`` and never instantiates the Visual or Logical
-  Domains.
+* **Component isolation.** Each component is unit-tested with its collaborators replaced by
+  test doubles. A test of ``Cursor`` never instantiates a ``LogicalDomainService``.
 
-* **Domain expansion.** Each domain is also integration-tested with the domain immediately
-  below it, using the real service instead of a mock, to verify the contract between them
-  holds in practice, not just on paper.
+* **Container isolation.** Integration tests exercise the real components of a single domain together. Anything
+  outside that domain is replaced by a test double (e.g. a Display Domain test supplies a fake
+  ``VisualDomainService``). System tests combine domains, using real ones instead of doubles.
 
 * **No host dependency.** No test requires a GUI framework, terminal library, or external
   process. Every test runs in a standard ``pytest`` session with no special setup
