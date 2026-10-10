@@ -27,9 +27,16 @@ Scope
 Intended Audience
 ~~~~~~~~~~~~~~~~~~
 
-The primary audience is (again) the author, in a dual role: as the engineer verifying the engine
-against its contract, and as a learner using this project to deliberately learn about and practice writing a test
-strategy.
+The primary audience is (again) the author, in multiple roles:
+
+* The Dev: The person implementing the engine, and designing the logic, interfaces, etc. CI maintainer
+* The QA: The person responsible for making sure requirements are met, and designed to satisfy Stakeholder needs.
+* The Stakeholder: The person who wants to use the finished project. And defines the requirements
+* The Learner: Using this project to deliberately learn about and practice writing a test strategy and test plan.
+  And learn about/ to live the different roles.
+
+"all roles below are held by the author; the labels indicate which hat is worn for which activity"
+
 
 Testing Principles
 -------------------
