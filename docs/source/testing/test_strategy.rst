@@ -68,7 +68,6 @@ Integration tests integrate all components within an architectural domain while 
 dependencies.
 System tests integrate the complete system across domain boundaries.
 
-.. TODO: mock vs stub vs fake vs ...
 
 Unit testing
 ~~~~~~~~~~~~
@@ -134,10 +133,10 @@ Responsibility:
 
 Integration test should verify/ find defects in the components making sure they adhere to their descriptions. :ref:`arch_component_descriptions`
 
-Dependencies of components (As described in each components :ref:`arch_component_descriptions`) in the same Domain  may be mocked.
-Dependencies of lower domains must be mocked. E.g. the `Visual-Logical Adapter`s (Visual Domain) dependency on the `LogicalDomainService`. (Logical Domain)
+Dependencies of components (As described in each components :ref:`arch_component_descriptions`) in the same Domain  may be replaced with a test double or otherwise substituted.
+Dependencies of lower domains must be replaced by test doubles. E.g. the `Visual-Logical Adapter`s (Visual Domain) dependency on the `LogicalDomainService`. (Logical Domain)
 
-A mock inside the integration boundary is allowed for an individual test, but cannot be the only way that component is exercised at the integration level.
+Test doubles inside the integration boundary are allowed for an individual test, but cannot be the only way that component is exercised at the integration level.
 
 The integration test suite must demonstrate integration of all components within its defined boundary, but individual test cases may isolate components within that boundary when doing so provides useful test control.
 
@@ -164,10 +163,10 @@ Exit Criteria
 
 Per Container
 
-Tests that don't rely on mocks within the same Domain. (I.e. The visual Domain is tested in full without mocking any components in the visual domain. The Logical Domain must be mocked.)
-At the end of integration testing, we have tested the complete domain with its internal components integrated, while external/lower-level dependencies remain isolated/ mocked.
+Tests that don't rely on test double within the same Domain. (I.e. The visual Domain is tested in full without test doubles of any components in the visual domain. The Logical Domain must be replaced with a test double.)
+At the end of integration testing, we have tested the complete domain with its internal components integrated, while external/lower-level dependencies remain isolated/ doubled.
 
-The complete integration test suite includes tests exercising all components within the integration boundary without internal mocks.
+The complete integration test suite includes tests exercising all components within the integration boundary without internal test doubles.
 
 System testing
 ~~~~~~~~~~~~~~
