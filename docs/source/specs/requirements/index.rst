@@ -189,7 +189,8 @@ Software Quality Attributes
    :id: NFREQ-QA-221
    :tags: qa
 
-   Because the system produces no side effects beyond its internal state, it must be 100% unit-testable.
+   Because the system produces no side effects beyond its internal state, every component must be testable in isolation
+   without GUI, I/O, or external dependencies.
 
 .. nfreq:: Reliability
    :id: NFREQ-QA-222

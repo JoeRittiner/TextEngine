@@ -89,8 +89,7 @@ Testing Objectives
 Testing Principles
 -------------------
 
-* **Testability.** Per :need:`NFREQ-QA-221`, the project must be 100% unit-testable, and
-  100% unit-test coverage is the goal.
+* **Testability.** Per :need:`NFREQ-QA-221`, the project must be testable in isolation
 
 * **Requirement traceability.** Every ``FR-*`` and ``INV-*`` in the
   :doc:`../specs/requirements/index` maps to at least one test. The mapping is maintained

@@ -123,10 +123,7 @@ Exit Criteria
 
 Per Component (or container):
 
-Code coverage must be 100%. (As per :need:`NFREQ-QA-221`)
-100% coverage = every relevant piece of code was executed
-
-.. TODO: what does "coverage" means in NFREQ-QA-221. Line coverage? Statement? Branch? Decision?
+100% Requirement Coverage (Every FR and INV must be tested) and 100% Branch Coverage.
 
 No unresolved defects found by tests that map to requirements with an RPI of 4(?) or higher.
 
