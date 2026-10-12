@@ -11,18 +11,29 @@ Purpose
 
 This document describes my Test Strategy. How I approach testing in general.
 
-"outline that describes the testing approach of the software development cycle"
-"to provide a rational deduction from organizational, high-level objectives to actual test activities to meet those objectives from a quality assurance perspective."
-"ensure that all objectives are fully covered and understood by all stakeholders."
+This document provides me with **structure**. How I should approach Testing as a discipline rather than a "TODO".
 
-.. Quoted from Wikipedia: https://en.wikipedia.org/wiki/Test_strategy
+Rather than writing a couple of Unit tests and calling it a day, writing this document itself forces me to think how I
+want to test this project. The thinking and consistency that the document forces me to establish.
+When do I write Unit tests, how do I write them, what tools/ technologies/ methodologies can I and should I rely on.
+(Testing Principles, Test Levels, Test Techniques, etc.) As well as when to move on to the next testing levels
+(exit/ entry criteria) and when not to. It also makes me think about Test Techniques, what could be valuable for
+this project, and why?
 
-"What is our overall testing approach, why are we testing this way, what are our rules, and what determines sufficient testing?"
+Then, the structure tells me how to trace and log tests rather than inventing stuff on-the fly when executing tests.
+How to structure the tests themselves, how to group dirs, files, scripts, data, etc.
+Makes me think about what metrics are actually important. (E.g. RPI, what "code coverage" actually means, and what
+it's value actually is.)
 
 Scope
 ~~~~~
 
- ...
+This document is not meant as a Test Plan. I.e. no concrete decisions on when to test, what specific tools to use etc.
+Instead, this descries a guideline.
+This Strategy likely will evolve over time. It is currently being written before any implementation details. I might
+later realize that different tools, ways of thinking or whatever might change this strategy.
+
+In the case of a change in strategy, the change and reasoning should be documented as well.
 
 Intended Audience
 ~~~~~~~~~~~~~~~~~~
