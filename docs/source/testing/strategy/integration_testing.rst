@@ -3,65 +3,89 @@
 Integration Testing
 ~~~~~~~~~~~~~~~~~~~
 
-What/ Why:
-    Components (C4 Level 3)
-    Full Classes, Multiple Components
+Integration tests verify that components within the same container / domain interact correctly and collectively fulfill
+the domain's intended behavior.
 
-    E.g. `Cursor`, and `LogicalDomainService` + `TextBuffer`,
-        and all "Logical Domain Layer" Components together
-
+For example, testing `LogicalDomainService` together with `TextBuffer` can reveal defects in how the service uses the
+buffer, even when both components pass their unit tests independently.
 
 Person Responsibility
 .....................
 
-Who defines the tests? Dev
-Who executes the tests? Dev/ CI
-Who is accountable for the result? Dev
-
+* **Defines tests:** Developer
+* **Executes tests:** Developer and CI pipeline
+* **Accountable for results:** Developer
 
 Test Level Responsibility
 .........................
 
-Integration test should verify/ find defects in the components making sure they adhere to their descriptions. :ref:`arch_component_descriptions`
+Integration tests verify the behavior and interactions of components within a container, as described in
+:ref:`arch_containers` and :ref:`arch_component_descriptions`.
 
-Dependencies of components (As described in each components :ref:`arch_component_descriptions`) in the same Domain  may be replaced with a test double or otherwise substituted.
-Dependencies of lower domains must be replaced by test doubles. E.g. the `Visual-Logical Adapter`s (Visual Domain) dependency on the `LogicalDomainService`. (Logical Domain)
+Requirements generally specify the system (`TextEngine`) as a black box, using a strict behavioral model
+(:ref:`req_conventions`). Integration tests therefore focus on domain-level behavior and interactions rather than
+necessarily verifying complete system-level requirements.
 
-Test doubles inside the integration boundary are allowed for an individual test, but cannot be the only way that component is exercised at the integration level.
+Dependencies on lower domains must be replaced with test doubles to keep the integration boundary isolated. For
+example, integration tests of the Visual Domain replace its dependency on the `LogicalDomainService` in the Logical
+Domain with a test double.
 
-The integration test suite must demonstrate integration of all components within its defined boundary, but individual test cases may isolate components within that boundary when doing so provides useful test control.
-
+Test doubles may also replace components within the integration boundary in individual tests where this provides useful
+control. However, the suite must include tests that exercise all components within the boundary together, without
+internal test doubles.
 
 How?
 ....
-- As deep as possible.
-- Automated, including CI pipelines
-- (May be triggered manually)
+
+* **Scope:** One domain / container per integration test suite.
+  Test component interactions and the resulting domain behavior.
+  Higher test levels verify behavior across domain boundaries and against system-level requirements.
+* **Isolation:** Replace dependencies on lower domains with test doubles.
+  Internal components may be doubled in individual tests, but the suite must also exercise their real integration.
+* **Automation:** Automate integration tests and include them in CI pipelines.
+* **Execution:** Tests may also be triggered manually during development.
 
 Test Basis
 ..........
 
-Component descriptions (:ref:`arch_component_descriptions`) + domain boundaries + interaction contracts.
-.. TODO: add relevant :ref:
+The test basis defines the intended behavior and interactions against which the integrated components are tested.
+
+It consists of:
+
+* Container and component descriptions in the architecture documentation (:ref:`arch_containers`,
+  :ref:`arch_component_descriptions`), which define responsibilities and boundaries.
+* Component contracts and interfaces, which specify the behavior expected from each component.
+* Expected interactions, including relevant data passed between components, call sequences where significant, and
+  resulting state changes.
+* Requirements and invariants relevant to the domain and its components, linked to tests according to
+  :ref:`test_traceability`.
+* Applicable design documentation, where needed to clarify intended behavior or interactions.
+
+The test basis must make the expected interactions clear enough to determine whether the integrated behavior is correct.
+Component contracts describe individual components; the architecture and applicable requirements provide the context for
+how those components are expected to work together.
 
 Entry Criteria
 ..............
 
-Per Component
+Per container, before executing integration tests:
 
-Unit Test Exit Criteria for this Component is met.
+* The interfaces and intended interactions of the components are defined sufficiently to determine expected behavior.
+* Unit test exit criteria are met for each component in the container.
+
+**Test-driven development (TDD):** Integration tests may be designed and written before these criteria are met. The
+criteria govern execution, not when test design may begin.
 
 Exit Criteria
 .............
 
-Per Container
+Per container:
 
-Tests that don't rely on test double within the same Domain. (I.e. The visual Domain is tested in full without test doubles of any components in the visual domain. The Logical Domain must be replaced with a test double.)
-At the end of integration testing, we have tested the complete domain with its internal components integrated, while external/lower-level dependencies remain isolated/ doubled.
+* The integration test suite passes.
+* All components within the container are exercised together in tests without internal test doubles.
+* Relevant interactions between components are covered by tests.
+* Any test doubles used for lower-domain dependencies remain outside the integration boundary.
 
-The complete integration test suite includes tests exercising all components within the integration boundary without internal test doubles.
-
-.. GUIDANCE: the two paragraphs above this say much the same thing twice --
-.. worth merging into one. Also decide whether Integration needs its own
-.. RPI-driven exit condition (like Unit's "no unresolved defects at RPI>=4"),
-.. or whether "no internal mocks remain" is the only gate at this level.
+Passing integration tests provides evidence that the domain's components work together as intended. It does not
+establish that behavior across domain boundaries or complete system-level requirements has been verified; those are
+addressed at higher test levels.
