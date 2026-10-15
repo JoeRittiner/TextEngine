@@ -3,48 +3,56 @@
 Acceptance Testing
 ~~~~~~~~~~~~~~~~~~
 
-What/ Why: Interface, UX
-
+Acceptance testing evaluates whether the system meets stakeholder needs and is fit for its intended use. It also
+provides an opportunity to identify requirements, design decisions, or interfaces that no longer match stakeholder
+expectations.
 
 Person Responsibility
 .....................
 
-Who defines the tests? Stakeholder / Product Owner
-Who executes the tests? Stakeholder / Product Owner
-Who is accountable for the result? Dev/ QA
-
+* **Defines acceptance criteria:** Stakeholder, supported by Developer and QA
+* **Executes tests:** Stakeholder, supported by Developer and QA
+* **Makes the acceptance decision:** Stakeholder
+* **Resolves identified defects:** Developer
 
 Test Level Responsibility
 .........................
 
-This is more about "testing" the requirements and interfaces themselves. Now that it's tested and live, does this
-requirement/ decision/ interface still make sense as written?
+Acceptance testing evaluates the system from the stakeholder's perspective, rather than focusing on its internal
+implementation.
+
+Relevant requirements, particularly high-priority requirements as indicated by their RPI, are reviewed against their
+intended purpose and acceptance criteria. The interfaces and user workflows are also evaluated for suitability and
+usability.
 
 How?
 ....
 
-* Manual
-
-* Exploratory testing
+* Manual testing.
+* Exploratory testing.
+* Scenario-based testing using representative user workflows.
+* Review of requirements, interfaces, and stakeholder expectations.
 
 Test Basis
 ..........
 
-Requirements + interfaces + stakeholder expectations.
+* Functional requirements and invariants.
+* Acceptance criteria.
+* Stakeholder expectations and intended use.
+* Relevant interfaces and user workflows.
 
 Entry Criteria
 ..............
 
-Integration or System Tests.
+System Tests pass, and the system is sufficiently stable for acceptance testing.
 
 Exit Criteria
 .............
 
-User satisfaction? (How to measure)
+* Relevant requirements and acceptance criteria have been reviewed and evaluated.
+* Relevant interfaces and user workflows have been evaluated.
+* Acceptance criteria are met, or outstanding deviations are explicitly documented and accepted by the responsible stakeholder.
+* The Stakeholder / Product Owner records the acceptance decision.
 
-.. GUIDANCE: fine to leave open for now, but consider replacing this with a
-.. concrete (even if informal) checklist eventually -- "unmeasured" as a
-.. permanent state undermines the point of an exit criterion.
-
-Each requirement (especially high priority ones, as defined by their RPI) is considered and accepted. The interface(s)
-are also looked at and accepted.
+Acceptance is based on stakeholder judgment against agreed criteria; it is not established by code coverage or passing
+tests alone.
