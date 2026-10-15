@@ -22,7 +22,7 @@ Test Level Responsibility
 Integration tests verify the behavior and interactions of components within a container, as described in
 :ref:`arch_containers` and :ref:`arch_component_descriptions`.
 
-Requirements generally specify the system (`TextEngine`) as a black box, using a strict behavioral model
+Requirements generally specify the system (`TextEditor`) as a black box, using a strict behavioral model
 (:ref:`req_conventions`). Integration tests therefore focus on domain-level behavior and interactions rather than
 necessarily verifying complete system-level requirements.
 

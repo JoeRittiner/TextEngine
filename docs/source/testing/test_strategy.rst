@@ -20,16 +20,16 @@ When do I write Unit tests, how do I write them, what tools/ technologies/ metho
 (exit/ entry criteria) and when not to. It also makes me think about Test Techniques, what could be valuable for
 this project, and why?
 
-Then, the structure tells me how to trace and log tests rather than inventing stuff on-the fly when executing tests.
+Then, the structure tells me how to trace and log tests rather than inventing stuff on-the-fly when executing tests.
 How to structure the tests themselves, how to group dirs, files, scripts, data, etc.
 Makes me think about what metrics are actually important. (E.g. RPI, what "code coverage" actually means, and what
-it's value actually is.)
+its value actually is.)
 
 Scope
 ~~~~~
 
 This document is not meant as a Test Plan. I.e. no concrete decisions on when to test, what specific tools to use etc.
-Instead, this descries a guideline.
+Instead, this describes a guideline.
 This Strategy likely will evolve over time. It is currently being written before any implementation details. I might
 later realize that different tools, ways of thinking or whatever might change this strategy.
 
@@ -47,7 +47,8 @@ Intended Audience
 
 The primary audience is (again) the author, in multiple roles:
 
-* The Dev: The person implementing the engine, and designing the logic, interfaces, etc. CI maintainer
+* The Dev: The person implementing the engine, and designing the logic, interfaces, etc.
+* The CI maintainer: ...
 * The QA: The person responsible for making sure requirements are met, and designed to satisfy Stakeholder needs.
 * The Stakeholder: The person who wants to use the finished project. And defines the requirements
 * The Learner: Using this project to deliberately learn about and practice writing a test strategy and test plan.
@@ -75,8 +76,10 @@ Test levels
 -----------
 
 Unit tests isolate an individual component.
+
 Integration tests integrate all components within an architectural domain while isolating that domain's external
 dependencies.
+
 System tests integrate the complete system across domain boundaries.
 
 .. include:: ./strategy/unit_testing.rst
@@ -100,9 +103,13 @@ für die konsequente Bestimmung der Testtiefe, des Testumfangs sowie der
 Testreihenfolge."
 
   RPI >= 27  ->  Very High
+
   RPI >= 12  ->  High
+
   RPI >= 6   ->  Medium
+
   RPI >= 2   ->  Low
+
   RPI >= 1   ->  Very Low
 
 Test Techniques
@@ -112,10 +119,11 @@ Static Testing
 ~~~~~~~~~~~~~~
 
 E.g.
-- Reviews
-- Inspections
-- Static analysis
-- ...
+
+* Reviews
+* Inspections
+* Static analysis
+* ...
 
 (Solo Project, so...)
 
@@ -134,9 +142,11 @@ Test Environment & Test Data
 
 .. What properties must the test environment have?
 
-Test data should be deterministic, reproducible, version-controlled where appropriate, and representative of relevant equivalence classes/boundary conditions.
+Test data should be deterministic, reproducible, version-controlled where appropriate, and representative of relevant
+equivalence classes/boundary conditions.
 
-.. The system is pure-logic/deterministic. Therefore it is basically independent of the Test Environment. (Python Version and library versions?) A simplification because of the architecture.
+The system is pure-logic/deterministic. Therefore it is basically independent of the Test Environment.
+(Minimum Python version and library versions must be defined) A simplification because of the architecture.
 .. Fixtures: input strings/configs
 
 Test Automation & CI

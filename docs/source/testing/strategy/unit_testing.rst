@@ -5,7 +5,7 @@ Unit Testing
 
 Unit tests verify the behavior of individual components. Such as functions, methods and classes.
 
-Example: `CursorState.move_up()`
+Example: `CursorState.move_left()`
 
 Their primary purpose is to detect and localize defects early in development.
 
@@ -21,7 +21,7 @@ Person Responsibility
 Test Level Responsibility
 .........................
 
-Requirements generally specify the system (`TextEngine`) as a black box, using a strict behavioral model
+Requirements generally specify the system (`TextEditor`) as a black box, using a strict behavioral model
 (:ref:`req_conventions`).
 
 Consequently, a unit test may verify only part of a requirement's behavior and does not necessarily establish that the
