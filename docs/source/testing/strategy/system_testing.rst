@@ -3,61 +3,67 @@
 System Testing
 ~~~~~~~~~~~~~~
 
-What/ Why:
-    Containers
-    Full System End-to-End (C4 Levels 2 and/ or 1)
+System tests verify the complete system against its functional requirements and invariants, exercising behavior across
+domain boundaries and through the Facade.
 
-    E.g. Logical Domain + Visual Domain
-        and Visual Domain + Display Domain
-        and all three
-        and all three + Facade
+The test scope covers the system at C4 Levels 1 and/or 2.
 
+The test suite includes the following domain combinations:
+
+* Visual Domain + Logical Domain
+* Display Domain + Visual Domain
+* **Mandatory:** Display Domain + Visual Domain + Logical Domain
+* **Mandatory:** Facade + Display Domain + Visual Domain + Logical Domain
 
 Person Responsibility
 .....................
 
-Who defines the tests? Dev/ QA
-Who executes the tests? Dev/ QA/ CI
-Who is accountable for the result? Dev/ QA
-
+* **Defines tests:** Developer and QA
+* **Executes tests:** Developer, QA and CI pipeline
+* **Accountable for results:** Developer and QA
 
 Test Level Responsibility
 .........................
 
-All functional requirements and invariants.
+System testing verifies the system's functional requirements and invariants against the specified behavior.
 
-The system test suite must demonstrate the complete system, but individual test cases may isolate domains when doing so provides useful test control.
-
+The suite must exercise the complete system, including interactions across domain boundaries and through the Facade.
+Individual tests may isolate domains or use other test controls where useful, provided the required combinations are
+covered by the suite.
 
 How?
 ....
 
-- As broad and deep as possible
-- Automated, including CI pipelines
-
-.. GUIDANCE: given the engine is deterministic pure logic, is there a real
-.. reason this stays a "?" -- consider just deciding this one.
+* **Scope:** Verify all applicable functional requirements and invariants, especially behavior that spans multiple
+  domains.
+* **Automation:** Automate system tests and include them in CI pipelines.
 
 Test Basis
 ..........
 
-Requirements + invariants.
+* Functional requirements.
+* Invariants.
 
 Entry Criteria
 ..............
 
-The Integration Tests of all Containers are passing.
+The integration tests for all containers pass.
+
+System tests may be designed before this criterion is met, but execution requires the entry criterion to be satisfied.
 
 Exit Criteria
 .............
 
-Every applicable functional requirement and invariant has
-traceable verification evidence, and all required verification
-activities have passed.
+* Every applicable functional requirement and invariant has traceable verification evidence.
+* All required verification activities have passed.
+* The test suite covers all mandatory system combinations.
 
-100% Requirement Coverage (Every FR and INV must be tested)
+**Verification evidence:** A passing CI run that generates a test report, including the requirement-to-test traceability
+matrix. :ref:`test_traceability`
 
-.. GUIDANCE: "traceable verification evidence" -- decide now what counts as
-.. evidence (a passing CI run? a generated report?) since Test Records &
-.. Reporting further down still needs to define this term, and this criterion
-.. depends on that definition existing.
+**Requirement coverage:** 100% of functional requirements and invariants must be fully addressed by the system test
+suite. Coverage is established through traceability and review of the test cases against each requirement and invariant;
+it cannot be established by code coverage alone.
+
+Passing tests provide verification evidence but do not prove the absence of defects.
+
