@@ -118,53 +118,34 @@ Test Techniques
 Static Testing
 ~~~~~~~~~~~~~~
 
-**Reviews:**
+Static testing examines work products without executing code. It finds requirement gaps, design issues,
+documentation errors and coding issues. Work products under test: requirements and architecture documents,
+code, test code, and documentation.
 
-Given the solo nature of this project, reviews will be performed by the author (ideally) a few days after the commit.
-The delay and a fixed checklist is intended to compensate for author blindness
-Including, but not limited to:
+**Automated static analysis.** Linting, type checking, architecture-constraint checks (layer direction,
+standard library only, no I/O) and a warnings-as-errors documentation build run in CI
+(:ref:`test_automation_ci`). On a push, a failure is reported as a warning. A failure blocks merging.
+.. Tools and configuration are decided in the Test Plan.
 
-* ...
-* ...
+**Self-review.** There is no second reviewer, and a formal inspection (which needs defined roles) is not
+possible. Every change goes through a pull request and is reviewed by the author against a fixed checklist.
+The review should happen after a delay of a few days, since distance reduces author blindness. The delay
+cannot be enforced, so it is a recommendation, not a rule. Author blindness is therefore only reduced, never
+removed. This is a known limitation, and part of why automated checks carry extra weight here.
 
-**Static Analysis:**
+Review focus:
 
-Architecture gives the project free static checks. Several constraints can be verified without running anything:
+* Which requirements does this change apply to?
+* Is each wholly covered? If not, is the missing part documented? Are there edge cases the requirement
+  does not list? (Doubts about a requirement's wording lead to a spec change, not a workaround.)
+* Do the linked tests verify the requirement, including those edge cases?
+* Does the change respect the architecture (layering, one responsibility per component)?
+* Is it documented where relevant?
 
-* Dependencies point in one direction only: Logical must never import Visual or Display.
-* Python standard library only (a banned-imports check).
-* No I/O, no stdin/stdout, no randomness or time (determinism).
+The RTM (Requirement Traceability Matrix) is reviewed too: gaps are flagged automatically, so the review judges whether
+the linked tests are adequate.
 
-Build the docs with warnings as errors. Sphinx with -W
-
----
-
-* Reviews
-* Inspections
-* Static analysis
-* Tools (e.g. ruff, mypy) .. decide specifics in test Plan
-* CI
-* ...
-
-Solo Project, so I'll review/ inspect my own work, ideally a few days later. This includes checking whether stuff meant to cover/ hande a requirement does so correctly and wholely, including edge cases and cases that the requirement doesn't specifically list itself. This *could* also include questioning the wording or the requirement itself.
-Probably belongs in the test plan, but; avoid merging feature branches directly. Even if it is solo: Pull Request -> Review (which includes what exactly?) -> Fixes -> Merge (or whatever is typical)
-Also includes checking the RTM (any missed requirements? How many tests are associated with each req? etc.)
-
-In short:
-
-* Which reqs does this code/ change apply to?
-* Is the req wholly covered? If not, is the missing part documented?
-* Is the implementation clean/ efficient?
-* Are tests comprehensive, clean, efficient?
-* Do the linked tests actually verify the requirement, including its edge cases?
-* Is the relevant stuff well documented?
-* Check RTM
-
-To find Requirement gaps, design issues, documentation errors, and coding issues detectable without execution.
-
-.. GUIDANCE: finish this thought -- what does review/inspection actually look
-.. like without a second person? (self-review after a time delay? leaning
-.. harder on static analysis / type-checking as a substitute for peer review?)
+.. The PR template, detailed checklist and merge flow are defined in the Test Plan.
 
 Dynamic Testing
 ~~~~~~~~~~~~~~~
